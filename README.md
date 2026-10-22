@@ -147,7 +147,7 @@ This container's Chromium requires extracted system libraries. Its environment-s
 LD_LIBRARY_PATH=/tmp/cs-roadmap-browser-libs/extracted/usr/lib/x86_64-linux-gnu npm run test:e2e
 ```
 
-This path is not an application dependency. See [the V0.3 review](docs/v0.3-review.md) for actual delivery results, and [the previous review](docs/v0.2-review.md) for historical V0.2 results.
+This path is not an application dependency. See [the V0.3 review](docs/v0.3-review.md) for original delivery results, [the post-merge acceptance audit](docs/v0.3-acceptance-audit.md) for fresh verification against merged main, and [the previous review](docs/v0.2-review.md) for historical V0.2 results.
 
 ## Limitations and recommended V0.4
 
