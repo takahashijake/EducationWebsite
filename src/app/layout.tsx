@@ -32,7 +32,7 @@ export default function RootLayout({
               <p>
                 An open learning journey.
                 <span className="footer-version">
-                  V0.2 · Growing thoughtfully
+                  V0.3 · Growing thoughtfully
                 </span>
               </p>
               <Link href="/roadmap">

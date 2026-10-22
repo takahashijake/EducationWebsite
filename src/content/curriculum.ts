@@ -128,7 +128,7 @@ export const topics: Topic[] = [
     description:
       "Solve a problem through smaller calls to the same function and a base case.",
     order: 6,
-    status: "planned",
+    status: "available",
     prerequisites: ["functions"],
   },
   {
@@ -139,8 +139,8 @@ export const topics: Topic[] = [
     description:
       "Reproduce bugs, inspect program state, and test a focused fix.",
     order: 7,
-    status: "planned",
-    prerequisites: ["functions"],
+    status: "available",
+    prerequisites: ["conditionals", "loops", "functions"],
   },
   {
     id: "propositional-logic",
@@ -550,6 +550,8 @@ export const programmingPath = [
   "conditionals",
   "loops",
   "functions",
+  "recursion",
+  "debugging",
 ];
 export function lessonNeighbors(topic: Topic) {
   const sequence = programmingPath.includes(topic.id)

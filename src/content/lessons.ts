@@ -1,8 +1,12 @@
+import { recursionLesson } from "./recursion-lesson";
+import { debuggingLesson } from "./debugging-lesson";
 import { programmingLessons } from "./programming-lessons";
 import type { Lesson } from "./types";
 
 export const lessons: Record<string, Lesson> = {
   ...programmingLessons,
+  recursion: recursionLesson,
+  debugging: debuggingLesson,
   "variables-data-types": {
     topicId: "variables-data-types",
     minutes: 12,

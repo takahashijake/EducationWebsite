@@ -29,8 +29,8 @@ if (trace.kind !== "trace") throw new Error("Missing loop trace");
 describe("authored content integrity", () => {
   it("validates the published catalog and globally unique assessment IDs", () => {
     expect(validateContent(topics, lessons, programmingPath)).toEqual([]);
-    expect(availableTopics).toHaveLength(7);
-    expect(topics.filter((t) => t.status === "planned")).toHaveLength(39);
+    expect(availableTopics).toHaveLength(9);
+    expect(topics.filter((t) => t.status === "planned")).toHaveLength(37);
   });
   it("rejects missing references, cycles, duplicate slugs, incomplete content and bad path order", () => {
     const cyclic = topics.map((t) =>
@@ -89,9 +89,9 @@ describe("authored content integrity", () => {
       }).join(" "),
     ).toMatch(/Invalid step.*Invalid variables/);
   });
-  it("validates all eight predictions deterministically, including invalid answers", () => {
+  it("validates all fourteen predictions deterministically, including invalid answers", () => {
     const exercises = Object.values(lessons).flatMap((l) => l.exercises ?? []);
-    expect(exercises).toHaveLength(8);
+    expect(exercises).toHaveLength(14);
     for (const e of exercises) {
       e.options.forEach((_, index) =>
         expect(evaluateAnswer(e, index)).toBe(index === e.correctIndex),
@@ -114,12 +114,15 @@ describe("authored content integrity", () => {
       "conditionals",
       "loops",
       "functions",
+      "recursion",
+      "debugging",
     ]);
     programmingPath.forEach((id, i) => {
       const topic = topics.find((t) => t.id === id)!;
       expect(lessonNeighbors(topic).previous?.id).toBe(programmingPath[i - 1]);
       expect(lessonNeighbors(topic).next?.id).toBe(programmingPath[i + 1]);
-      if (i) expect(topic.prerequisites).toContain(programmingPath[i - 1]);
+      for (const prerequisite of topic.prerequisites ?? [])
+        expect(programmingPath.indexOf(prerequisite)).toBeLessThan(i);
     });
     expect(
       lessonNeighbors(topics.find((t) => t.id === "big-o-notation")!).next,
@@ -132,13 +135,13 @@ describe("authored content integrity", () => {
     expect(ids).toHaveLength(3);
     expect(progressSummary(ids)).toEqual({
       completed: 3,
-      available: 7,
-      percentage: 43,
+      available: 9,
+      percentage: 33,
     });
-    expect(pathProgress([...ids, ids[0], "recursion"])).toEqual({
+    expect(pathProgress([...ids, ids[0], "propositional-logic"])).toEqual({
       completed: 1,
-      available: 5,
-      percentage: 20,
+      available: 7,
+      percentage: 14,
       recommendedId: "operators-expressions",
     });
     expect(pathProgress(programmingPath).recommendedId).toBeUndefined();
@@ -240,7 +243,7 @@ describe("interactive teaching", () => {
         <LearningPath currentId="operators-expressions" />
       </ProgressProvider>,
     );
-    expect(screen.getByText("Lesson 2 of 5")).toBeInTheDocument();
+    expect(screen.getByText("Lesson 2 of 7")).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: "Operators and Expressions" }),
     ).toHaveAttribute("aria-current", "page");
@@ -248,7 +251,7 @@ describe("interactive teaching", () => {
       screen.getByText("Available · Recommended next step").parentElement,
     ).toHaveTextContent("Operators and Expressions");
   });
-  it("renders contextual previous and next links and ends the core path at Functions", () => {
+  it("renders contextual previous and next links and continues from Functions to Recursion", () => {
     const topic = topics.find((t) => t.id === "functions")!;
     render(
       <ProgressProvider>
@@ -260,7 +263,7 @@ describe("interactive teaching", () => {
       within(nav).getByRole("link", { name: "Previous Lesson: Loops" }),
     ).toHaveAttribute("href", "/lessons/loops");
     expect(
-      within(nav).queryByRole("link", { name: /Next Lesson/ }),
-    ).not.toBeInTheDocument();
+      within(nav).getByRole("link", { name: "Next Lesson: Recursion" }),
+    ).toHaveAttribute("href", "/lessons/recursion");
   });
 });

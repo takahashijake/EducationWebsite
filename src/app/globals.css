@@ -2420,3 +2420,85 @@ code {
 .lesson-article {
   min-width: 0;
 }
+
+/* Project and assessment content use the existing lesson typography and palette. */
+.activity-shell {
+  max-width: 960px;
+  padding-top: 32px;
+  padding-bottom: 64px;
+}
+.activity-shell h1 {
+  font-size: clamp(28px, 5vw, 44px);
+  line-height: 1.2;
+}
+.activity-shell p {
+  line-height: 1.9;
+}
+.activity-shell fieldset {
+  min-width: 0;
+}
+.activity-shell pre,
+.knowledge-check pre {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.activity-shell legend,
+.activity-shell .quiz-option {
+  overflow-wrap: anywhere;
+}
+.checkpoint-nav {
+  display: grid;
+  gap: 8px;
+}
+.checkpoint-nav button {
+  white-space: normal;
+  text-align: left;
+  height: auto;
+}
+.checkpoint-nav button[aria-current="step"] {
+  border: 2px solid var(--green);
+  font-weight: 700;
+}
+.project-checkpoint {
+  min-width: 0;
+}
+.project-checkpoint h2 {
+  scroll-margin-top: 110px;
+}
+.review-link {
+  display: inline-block;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  margin-right: 12px;
+}
+.call-stack ol {
+  padding-left: 24px;
+}
+.call-stack li {
+  padding: 10px;
+  border: 1px solid var(--line);
+  margin: 8px 0;
+  overflow-wrap: anywhere;
+}
+.call-stack li[aria-current="step"] {
+  border-left: 4px solid #405d43;
+  background: #e6eddc;
+}
+.call-stack li p {
+  margin: 4px 0;
+}
+@media (max-width: 600px) {
+  .activity-shell {
+    width: calc(100% - 32px);
+  }
+  .activity-shell .knowledge-check {
+    padding: 16px;
+  }
+  .checkpoint-nav {
+    padding-left: 12px;
+  }
+  .activity-shell .button {
+    max-width: 100%;
+    white-space: normal;
+  }
+}

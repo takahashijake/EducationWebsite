@@ -1126,6 +1126,6 @@ export const programmingLessons: Record<string, Lesson> = {
       },
     ],
     nextStep:
-      "You have reached the end of the five-lesson core path. Combine expressions, decisions, loops, and functions in a small program, such as a study-session summary. Recursion and Basic Debugging remain planned previews; Programming Fundamentals as a whole is still growing.",
+      "Continue to Recursion to see how separate function invocations cooperate on a shrinking problem, then practice systematic investigation in Basic Debugging. The guided Number Guessing Game combines expressions, decisions, loops, and functions in one tested program.",
   },
 };

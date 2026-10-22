@@ -1,6 +1,6 @@
 {
   "name": "cs-fundamentals-roadmap",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "private": true,
   "scripts": {
     "dev": "next dev --hostname 0.0.0.0",
@@ -11,7 +11,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "format": "prettier --write src tests e2e *.ts *.mts *.mjs *.json README.md"
+    "format": "prettier --write src tests e2e *.ts *.mts *.mjs *.json README.md",
+    "verify:python": "vitest run tests/python.test.ts --reporter=verbose --disableConsoleIntercept"
   },
   "dependencies": {
     "next": "^16.4.2",

@@ -62,6 +62,65 @@ export function CodeTrace({ trace }: { trace: Trace }) {
           </p>
         )}
         <p>{step.explanation}</p>
+        {step.stack && (
+          <section aria-label="Call stack" className="call-stack">
+            <h4>Call stack · depth {step.stack.length}</h4>
+            <p>
+              Oldest caller first; newest invocation last. Each frame owns its
+              local names.
+            </p>
+            {step.stackEvent && (
+              <p>
+                <strong>Stack event: {step.stackEvent.kind}</strong> ·{" "}
+                {step.stackEvent.frameId}
+              </p>
+            )}
+            {step.stack.length ? (
+              <ol>
+                {step.stack.map((frame, index) => (
+                  <li
+                    key={frame.id}
+                    aria-current={
+                      index === step.stack!.length - 1 ? "step" : undefined
+                    }
+                  >
+                    <strong>
+                      {frame.id}: {frame.functionName}(
+                      {frame.arguments
+                        .map((a) => `${a.name}=${pythonValue(a.value)}`)
+                        .join(", ")}
+                      )
+                    </strong>
+                    <p>
+                      {frame.status === "running"
+                        ? "Currently executing"
+                        : frame.status === "waiting"
+                          ? "Waiting for child call"
+                          : `Returning ${pythonValue(frame.returnValue!)}`}
+                    </p>
+                    <dl>
+                      {frame.locals.map((v) => (
+                        <div key={v.name}>
+                          <dt>
+                            Local <code>{v.name}</code>
+                          </dt>
+                          <dd>
+                            <code>{pythonValue(v.value)}</code>
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <p>
+                No active function calls. Control is in the caller outside the
+                function.
+              </p>
+            )}
+          </section>
+        )}
         <h4>Variables</h4>
         {step.variables.length ? (
           <dl>

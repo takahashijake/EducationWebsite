@@ -42,10 +42,20 @@ export function LearningPath({ currentId }: { currentId?: string }) {
       </ol>
       {!progress.recommendedId && (
         <p>
-          Core path completed. Recursion and Basic Debugging remain planned in
-          Programming Fundamentals.
+          All Programming Fundamentals lessons recorded. Apply your
+          understanding in the guided project, then review with the assessment.
         </p>
       )}
+      <p>
+        <Link href="/projects/number-guessing">
+          Build a Number Guessing Game
+        </Link>
+      </p>
+      <p>
+        <Link href="/assessments/programming-fundamentals">
+          Integrated fundamentals assessment
+        </Link>
+      </p>
     </nav>
   );
 }

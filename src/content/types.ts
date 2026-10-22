@@ -25,6 +25,7 @@ export type Topic = {
 };
 export type Question = {
   id: string;
+  source?: string;
   prompt: string;
   options: string[];
   correctIndex: number;
@@ -59,6 +60,8 @@ export type TraceStep = {
   variables: { name: string; value: TraceValue; scope: string }[];
   output: string[]; // Complete output so far, not a delta.
   detail?: string; // Branch decision, iteration, call, or return.
+  stack?: StackFrame[]; // Optional for existing nonrecursive traces.
+  stackEvent?: StackEvent;
 };
 export type CodeTrace = {
   kind: "trace";
@@ -71,3 +74,41 @@ export type CodeTrace = {
 export type Demonstration =
   { kind: "types" | "binary" | "complexity"; caption: string } | CodeTrace;
 export type PracticeExercise = Question & { source: string };
+
+// Frames are ordered oldest caller first, active/returning invocation last.
+export type StackFrame = {
+  id: string;
+  functionName: string;
+  arguments: { name: string; value: TraceValue }[];
+  locals: { name: string; value: TraceValue }[];
+  status: "running" | "waiting" | "returned";
+  returnValue?: TraceValue;
+};
+export type StackEvent = {
+  kind: "push" | "base" | "return" | "pop";
+  frameId: string;
+};
+
+export type ProjectCheckpoint = {
+  id: string;
+  title: string;
+  paragraphs: string[];
+  expected: string;
+  source?: string;
+  exercise?: PracticeExercise;
+  trace?: CodeTrace;
+};
+export type GuidedProject = {
+  id: string;
+  slug: string;
+  title: string;
+  introduction: string;
+  topicIds: string[];
+  checkpoints: ProjectCheckpoint[];
+};
+export type AssessmentQuestion = PracticeExercise & { topicIds: string[] };
+export type Assessment = {
+  id: string;
+  title: string;
+  questions: AssessmentQuestion[];
+};

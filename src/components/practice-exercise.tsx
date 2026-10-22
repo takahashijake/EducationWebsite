@@ -2,7 +2,15 @@
 import { useId, useState } from "react";
 import type { PracticeExercise as Exercise } from "@/content/types";
 import { evaluateAnswer } from "@/lib/quiz";
-export function PracticeExercise({ exercise }: { exercise: Exercise }) {
+export function PracticeExercise({
+  exercise,
+  onResult,
+  completionNotice = "Practice attempts do not mark this lesson complete.",
+}: {
+  exercise: Exercise;
+  onResult?: (correct: boolean) => void;
+  completionNotice?: string;
+}) {
   const id = useId();
   const [answer, setAnswer] = useState<number>();
   const [submitted, setSubmitted] = useState(false);
@@ -12,7 +20,10 @@ export function PracticeExercise({ exercise }: { exercise: Exercise }) {
       className="practice-exercise"
       onSubmit={(event) => {
         event.preventDefault();
-        if (answer !== undefined) setSubmitted(true);
+        if (answer !== undefined) {
+          setSubmitted(true);
+          onResult?.(evaluateAnswer(exercise, answer));
+        }
       }}
     >
       <pre tabIndex={0} aria-label="Python program to predict">
@@ -51,6 +62,7 @@ export function PracticeExercise({ exercise }: { exercise: Exercise }) {
           onClick={() => {
             setAnswer(undefined);
             setSubmitted(false);
+            onResult?.(false);
           }}
         >
           Retry exercise
@@ -64,9 +76,7 @@ export function PracticeExercise({ exercise }: { exercise: Exercise }) {
           Check prediction
         </button>
       )}
-      <p className="quiz-intro">
-        Practice attempts do not mark this lesson complete.
-      </p>
+      <p className="quiz-intro">{completionNotice}</p>
     </form>
   );
 }
