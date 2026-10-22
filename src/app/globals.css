@@ -2304,3 +2304,119 @@ code {
     animation: none !important;
   }
 }
+
+/* Authored walkthroughs and the advisory core path reuse the lesson palette. */
+.code-trace,
+.practice-exercise,
+.learning-path {
+  min-width: 0;
+  max-width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  margin: 24px 0;
+  background: #f3f6ef;
+  overflow: hidden;
+}
+.code-trace figcaption,
+.trace-state,
+.trace-controls,
+.learning-path {
+  padding: 20px;
+}
+.code-trace p,
+.learning-path p,
+.learning-path li,
+.next-guidance,
+.prerequisite-links {
+  font-size: 12px;
+  line-height: 1.9;
+  overflow-wrap: anywhere;
+}
+.trace-line {
+  display: block;
+  min-width: max-content;
+}
+.trace-line.active {
+  background: #405d43;
+  border-left: 3px solid #e2cb88;
+}
+.line-number {
+  display: inline-block;
+  width: 3ch;
+  margin-right: 1ch;
+  color: #c1cdb7;
+}
+.code-trace > pre {
+  padding: 14px 8px;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.trace-state h4 {
+  margin: 12px 0 8px;
+}
+.trace-state dl {
+  margin: 8px 0;
+}
+.trace-state dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--line);
+  padding: 6px 0;
+}
+.trace-state dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.trace-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.practice-exercise {
+  padding: 18px;
+}
+.practice-exercise fieldset {
+  border: 0;
+  min-width: 0;
+  margin: 20px 0;
+  padding: 0;
+}
+.practice-exercise legend {
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+.practice-exercise > .quiz-intro {
+  margin: 12px 0 0;
+}
+.learning-path h2 {
+  font-size: 20px;
+}
+.learning-path ol {
+  padding-left: 22px;
+}
+.learning-path li span {
+  display: block;
+  color: var(--body);
+  font-size: 11px;
+}
+.learning-path a,
+.prerequisite-links a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.learning-path a[aria-current="page"] {
+  font-weight: 700;
+}
+.prerequisite-links a {
+  display: inline-block;
+  margin-right: 10px;
+}
+.next-guidance {
+  margin-top: 24px;
+}
+.lesson-article {
+  min-width: 0;
+}

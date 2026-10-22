@@ -1,12 +1,20 @@
 import Link from "next/link";
 import type { Lesson, Topic } from "@/content/types";
-import { availableTopics, sections, topicHref } from "@/content/curriculum";
+import {
+  lessonNeighbors,
+  programmingPath,
+  topics,
+  sections,
+  topicHref,
+} from "@/content/curriculum";
 import { CodeExample } from "./code-example";
 import { KnowledgeCheck } from "./knowledge-check";
 import { LessonDemonstration } from "./lesson-demonstration";
 import { CompletionButton } from "./completion-button";
 import { ProgressIndicator } from "./progress-indicator";
 import { Icon } from "./icon";
+import { PracticeExercise } from "./practice-exercise";
+import { LearningPath } from "./learning-path";
 const anchors = [
   ["objectives", "Learning objectives"],
   ["understanding", "The idea"],
@@ -24,10 +32,7 @@ export function LessonLayout({
   lesson: Lesson;
 }) {
   const section = sections.find((section) => section.id === topic.sectionId)!;
-  const next =
-    availableTopics[
-      availableTopics.findIndex((item) => item.id === topic.id) + 1
-    ];
+  const { previous, next } = lessonNeighbors(topic);
   return (
     <div className="shell lesson-shell">
       <nav className="breadcrumbs" aria-label="Breadcrumb">
@@ -49,6 +54,9 @@ export function LessonLayout({
                 {label}
               </a>
             ))}
+            {lesson.exercises?.length ? (
+              <a href="#practice">Prediction practice</a>
+            ) : null}
           </nav>
           <ProgressIndicator compact />
         </aside>
@@ -66,6 +74,22 @@ export function LessonLayout({
           </div>
           <h1>{topic.title}</h1>
           <p className="lesson-deck">{topic.description}</p>
+          {programmingPath.includes(topic.id) && (
+            <LearningPath currentId={topic.id} />
+          )}
+          {!!topic.prerequisites?.length && (
+            <div className="prerequisite-links">
+              <strong>Helpful foundations: </strong>
+              {topic.prerequisites.map((id) => {
+                const prerequisite = topics.find((item) => item.id === id)!;
+                return (
+                  <Link key={id} href={topicHref(prerequisite)}>
+                    {prerequisite.title} ({prerequisite.status})
+                  </Link>
+                );
+              })}
+            </div>
+          )}
           <section className="objectives-box" id="objectives">
             <div className="eyebrow">
               <Icon name="book" size={16} />
@@ -89,6 +113,19 @@ export function LessonLayout({
             ))}
             <LessonDemonstration demonstration={lesson.demonstration} />
           </section>
+          {lesson.sections?.map((section) => (
+            <section key={section.title}>
+              <h2>{section.title}</h2>
+              {section.paragraphs.map((text) => (
+                <p key={text}>{text}</p>
+              ))}
+              {section.code && (
+                <pre tabIndex={0}>
+                  <code>{section.code}</code>
+                </pre>
+              )}
+            </section>
+          ))}
           <section id="worked-example">
             <span className="eyebrow">LET’S WORK THROUGH IT</span>
             <h2>{lesson.workedExample.title}</h2>
@@ -125,6 +162,15 @@ export function LessonLayout({
               ))}
             </ul>
           </section>
+          {!!lesson.exercises?.length && (
+            <section id="practice">
+              <h2>Predict program behavior</h2>
+              <p>Trace the values on paper before choosing an answer.</p>
+              {lesson.exercises.map((exercise) => (
+                <PracticeExercise key={exercise.id} exercise={exercise} />
+              ))}
+            </section>
+          )}
           <section id="knowledge-check">
             <span className="eyebrow">PAUSE & PRACTICE</span>
             <h2>Check your understanding</h2>
@@ -134,11 +180,20 @@ export function LessonLayout({
             <h2>One more concept, understood.</h2>
             <CompletionButton topicId={topic.id} />
           </div>
+          {lesson.nextStep && (
+            <p className="next-guidance">{lesson.nextStep}</p>
+          )}
           <nav className="lesson-next" aria-label="Continue learning">
-            <Link href="/roadmap">← Explore the roadmap</Link>
+            {previous ? (
+              <Link href={topicHref(previous)}>
+                Previous Lesson: {previous.title}
+              </Link>
+            ) : (
+              <Link href="/roadmap">← Explore the roadmap</Link>
+            )}
             {next && (
               <Link href={topicHref(next)}>
-                Next sample: {next.title} <Icon name="arrow" size={16} />
+                Next Lesson: {next.title} <Icon name="arrow" size={16} />
               </Link>
             )}
           </nav>

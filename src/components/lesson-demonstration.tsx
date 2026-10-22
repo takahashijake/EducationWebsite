@@ -1,9 +1,12 @@
+import { CodeTrace } from "./code-trace";
 import type { Lesson } from "@/content/types";
 export function LessonDemonstration({
   demonstration,
 }: {
   demonstration: Lesson["demonstration"];
 }) {
+  if (demonstration.kind === "trace")
+    return <CodeTrace key={demonstration.source} trace={demonstration} />;
   return (
     <figure className={`concept-demo ${demonstration.kind}`}>
       {demonstration.kind === "types" && (

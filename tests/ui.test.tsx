@@ -73,7 +73,7 @@ describe("progress interface", () => {
     );
     expect(screen.getByRole("progressbar")).toHaveAttribute(
       "aria-valuenow",
-      "33",
+      "14",
     );
     expect(
       screen.getByRole("link", { name: /completed/i }),
@@ -100,7 +100,7 @@ describe("progress interface", () => {
     fireEvent(window, new StorageEvent("storage", { key: PROGRESS_KEY }));
     expect(screen.getByRole("progressbar")).toHaveAttribute(
       "aria-valuenow",
-      "33",
+      "14",
     );
   });
 });
@@ -122,24 +122,24 @@ describe("navigation and pages", () => {
     expect(
       screen.getByRole("link", { name: /^Start learning$/ }),
     ).toHaveAttribute("href", "/roadmap");
-    expect(screen.getAllByRole("link", { name: /available/i })).toHaveLength(3);
+    expect(screen.getAllByRole("link", { name: /available/i })).toHaveLength(7);
   });
   it("renders every roadmap section and topic link with truthful status", () => {
     localStorage.setItem(
       PROGRESS_KEY,
-      JSON.stringify({ version: 1, completed: ["loops"] }),
+      JSON.stringify({ version: 1, completed: ["recursion"] }),
     );
     render(
       <ProgressProvider>
         <RoadmapPage />
       </ProgressProvider>,
     );
-    expect(screen.getAllByRole("heading", { level: 2 })).toHaveLength(8);
+    expect(screen.getAllByRole("heading", { level: 2 })).toHaveLength(9);
     const topicLinks = screen
       .getAllByRole("link")
       .filter((link) => link.classList.contains("topic-card"));
     expect(topicLinks).toHaveLength(46);
-    expect(screen.getAllByText("Planned", { exact: true })).toHaveLength(44); // 43 topics plus legend
+    expect(screen.getAllByText("Planned", { exact: true })).toHaveLength(40); // 39 topics plus legend
     expect(screen.getByRole("progressbar")).toHaveAttribute(
       "aria-valuenow",
       "0",
@@ -161,7 +161,9 @@ describe("navigation and pages", () => {
       expect(
         screen.getByRole("heading", { name: "Key takeaways" }),
       ).toBeInTheDocument();
-      expect(screen.getAllByRole("group")).toHaveLength(3);
+      expect(screen.getAllByRole("group")).toHaveLength(
+        3 + (lessons[topic.id].exercises?.length ?? 0),
+      );
       expect(
         screen.getByRole("button", { name: /mark lesson complete/i }),
       ).toBeInTheDocument();
@@ -172,7 +174,7 @@ describe("navigation and pages", () => {
     );
   });
   it("renders planned overviews without a quiz or completion action", async () => {
-    render(await TopicPage({ params: Promise.resolve({ slug: "loops" }) }));
+    render(await TopicPage({ params: Promise.resolve({ slug: "recursion" }) }));
     expect(screen.getByText("Planned topic")).toBeInTheDocument();
     expect(screen.queryByRole("radio")).not.toBeInTheDocument();
     expect(
