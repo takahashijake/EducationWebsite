@@ -56,6 +56,7 @@ input {
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
+select:focus-visible,
 pre:focus-visible {
   outline: 3px solid #a17126;
 }
@@ -2419,4 +2420,28 @@ code {
 }
 .lesson-article {
   min-width: 0;
+}
+.trace-input label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.trace-input select {
+  max-width: 100%;
+  width: 100%;
+  padding: 10px;
+  color: var(--body);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--paper, #fafbf7);
+  font: inherit;
+}
+.trace-frames ol {
+  padding-left: 24px;
+}
+.trace-frames li {
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid var(--line);
+  border-radius: 5px;
 }
