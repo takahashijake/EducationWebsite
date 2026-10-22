@@ -84,7 +84,7 @@ export const topics: Topic[] = [
     description:
       "Combine values with arithmetic, comparison, and logical operators.",
     order: 2,
-    status: "planned",
+    status: "available",
     prerequisites: ["variables-data-types"],
   },
   {
@@ -95,7 +95,8 @@ export const topics: Topic[] = [
     description:
       "Choose which instructions run using if, else, and boolean conditions.",
     order: 3,
-    status: "planned",
+    status: "available",
+    prerequisites: ["operators-expressions"],
   },
   {
     id: "loops",
@@ -105,7 +106,8 @@ export const topics: Topic[] = [
     description:
       "Repeat work with for and while loops, and recognize stopping conditions.",
     order: 4,
-    status: "planned",
+    status: "available",
+    prerequisites: ["conditionals"],
   },
   {
     id: "functions",
@@ -115,7 +117,8 @@ export const topics: Topic[] = [
     description:
       "Break programs into reusable operations with parameters and return values.",
     order: 5,
-    status: "planned",
+    status: "available",
+    prerequisites: ["loops"],
   },
   {
     id: "recursion",
@@ -126,6 +129,7 @@ export const topics: Topic[] = [
       "Solve a problem through smaller calls to the same function and a base case.",
     order: 6,
     status: "planned",
+    prerequisites: ["functions"],
   },
   {
     id: "debugging",
@@ -136,6 +140,7 @@ export const topics: Topic[] = [
       "Reproduce bugs, inspect program state, and test a focused fix.",
     order: 7,
     status: "planned",
+    prerequisites: ["functions"],
   },
   {
     id: "propositional-logic",
@@ -536,4 +541,25 @@ export function topicsForSection(sectionId: string) {
 }
 export function topicHref(topic: Topic) {
   return `/lessons/${topic.slug}`;
+}
+
+// Stable IDs define the core path independently of other published sections.
+export const programmingPath = [
+  "variables-data-types",
+  "operators-expressions",
+  "conditionals",
+  "loops",
+  "functions",
+];
+export function lessonNeighbors(topic: Topic) {
+  const sequence = programmingPath.includes(topic.id)
+    ? programmingPath.map((id) => topics.find((item) => item.id === id)!)
+    : topicsForSection(topic.sectionId).filter(
+        (item) => item.status === "available",
+      );
+  const index = sequence.findIndex((item) => item.id === topic.id);
+  return {
+    previous: index > 0 ? sequence[index - 1] : undefined,
+    next: index >= 0 ? sequence[index + 1] : undefined,
+  };
 }

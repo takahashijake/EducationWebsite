@@ -216,8 +216,9 @@ export default function Home() {
           </div>
           <p className="scope-note">
             <Icon name="book" size={16} />
-            This is the beginning: three complete lessons, with a full
-            curriculum outline to grow into.
+            {availableTopics.length} complete lessons, including a five-lesson
+            programming core path.
+            {topics.length - availableTopics.length} topics remain planned.
           </p>
         </div>
       </section>
