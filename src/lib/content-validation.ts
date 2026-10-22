@@ -93,7 +93,11 @@ export function validateContent(
       topic.status !== "available" ||
       topic.sectionId !== "programming" ||
       (index > 0 &&
-        (!topic.prerequisites?.includes(path[index - 1]) ||
+        (topic.prerequisites?.some(
+          (prerequisite) =>
+            path.indexOf(prerequisite) < 0 ||
+            path.indexOf(prerequisite) >= index,
+        ) ||
           !previous ||
           previous.order >= topic.order))
     )

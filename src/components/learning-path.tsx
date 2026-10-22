@@ -40,10 +40,15 @@ export function LearningPath({ currentId }: { currentId?: string }) {
           );
         })}
       </ol>
+      <p>
+        <Link href="/projects/number-guessing">
+          Guided project: Python Number Guessing Game →
+        </Link>
+      </p>
       {!progress.recommendedId && (
         <p>
-          Core path completed. Recursion and Basic Debugging remain planned in
-          Programming Fundamentals.
+          Programming path reading completed. Apply these concepts in the guided
+          project; completion alone does not establish understanding.
         </p>
       )}
     </nav>

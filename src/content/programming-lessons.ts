@@ -638,6 +638,6 @@ export const programmingLessons: Record<string, Lesson> = {
       },
     ],
     nextStep:
-      "You have reached the end of the published core path. Combine expressions, decisions, loops, and functions in a small program, such as a study-session summary. Recursion and Basic Debugging remain planned previews; Programming Fundamentals as a whole is still growing.",
+      "Continue to Recursion to trace repeated calls and returns. Basic Debugging then develops systematic failure investigation before the guided number guessing project.",
   },
 };

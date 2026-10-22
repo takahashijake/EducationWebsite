@@ -3,7 +3,13 @@ import { useState } from "react";
 import type { Question } from "@/content/types";
 import { evaluateAnswer } from "@/lib/quiz";
 import { Icon } from "./icon";
-export function KnowledgeCheck({ questions }: { questions: Question[] }) {
+export function KnowledgeCheck({
+  questions,
+  onResult,
+}: {
+  questions: Question[];
+  onResult?: (results: boolean[] | undefined) => void;
+}) {
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [submitted, setSubmitted] = useState(false);
   const allAnswered = questions.every(
@@ -17,7 +23,14 @@ export function KnowledgeCheck({ questions }: { questions: Question[] }) {
       className="knowledge-check"
       onSubmit={(event) => {
         event.preventDefault();
-        if (allAnswered) setSubmitted(true);
+        if (allAnswered) {
+          setSubmitted(true);
+          onResult?.(
+            questions.map((question) =>
+              evaluateAnswer(question, answers[question.id]),
+            ),
+          );
+        }
       }}
     >
       <p className="quiz-intro">
@@ -74,7 +87,7 @@ export function KnowledgeCheck({ questions }: { questions: Question[] }) {
                 {score} of {questions.length} correct.
               </strong>{" "}
               {score === questions.length
-                ? "Nicely done — you have the essentials."
+                ? "All checks are correct. Try explaining the reasoning without hints."
                 : "Review the explanations, then give it another try."}
             </p>
             <button
@@ -83,6 +96,7 @@ export function KnowledgeCheck({ questions }: { questions: Question[] }) {
               onClick={() => {
                 setSubmitted(false);
                 setAnswers({});
+                onResult?.(undefined);
               }}
             >
               Try again
@@ -96,7 +110,7 @@ export function KnowledgeCheck({ questions }: { questions: Question[] }) {
             <span aria-live="polite">
               {allAnswered
                 ? "Ready when you are."
-                : "Answer all three questions to check."}
+                : "Answer every question to check."}
             </span>
           </>
         )}

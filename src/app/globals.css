@@ -57,6 +57,7 @@ a:focus-visible,
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
+summary:focus-visible,
 pre:focus-visible {
   outline: 3px solid #a17126;
 }
@@ -2444,4 +2445,85 @@ code {
   margin: 8px 0;
   border: 1px solid var(--line);
   border-radius: 5px;
+}
+
+.understanding-summary,
+.project-milestone,
+.project-page > nav[aria-label="Project milestones"] {
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 20px;
+  margin: 28px 0;
+  background: #f3f6ef;
+}
+.project-page {
+  max-width: 820px;
+  padding-top: 25px;
+  padding-bottom: 60px;
+  overflow-wrap: anywhere;
+}
+.project-page p,
+.project-page li,
+.project-checklist {
+  font-size: 14px;
+  line-height: 1.9;
+}
+.project-page ul,
+.project-page ol {
+  padding-left: 24px;
+}
+.project-page h2 {
+  margin: 24px 0 16px;
+}
+.project-page h3 {
+  margin: 20px 0 12px;
+}
+.project-page pre {
+  max-width: 100%;
+  overflow: auto;
+  overflow-wrap: normal;
+}
+.project-page a,
+.understanding-summary a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.project-page details {
+  margin: 20px 0;
+}
+.project-page summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 12px 0;
+}
+.project-checklist {
+  min-width: 0;
+  padding: 16px;
+  margin-top: 24px;
+  border: 1px solid var(--line);
+}
+.project-checklist label {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 10px 0;
+}
+.project-checklist input {
+  flex-shrink: 0;
+}
+.project-hints button {
+  max-width: 100%;
+  white-space: normal;
+}
+@media (max-width: 600px) {
+  .project-milestone {
+    padding: 14px;
+  }
+  .project-page .practice-exercise {
+    padding: 12px;
+  }
+  .project-page p,
+  .project-page li {
+    font-size: 13px;
+  }
 }

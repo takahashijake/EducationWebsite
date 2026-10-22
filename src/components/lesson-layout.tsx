@@ -8,12 +8,11 @@ import {
   topicHref,
 } from "@/content/curriculum";
 import { CodeExample } from "./code-example";
-import { KnowledgeCheck } from "./knowledge-check";
+import { LessonPractice } from "./lesson-practice";
 import { LessonDemonstration } from "./lesson-demonstration";
 import { CompletionButton } from "./completion-button";
 import { ProgressIndicator } from "./progress-indicator";
 import { Icon } from "./icon";
-import { PracticeExercise } from "./practice-exercise";
 import { LearningPath } from "./learning-path";
 const anchors = [
   ["objectives", "Learning objectives"],
@@ -162,22 +161,9 @@ export function LessonLayout({
               ))}
             </ul>
           </section>
-          {!!lesson.exercises?.length && (
-            <section id="practice">
-              <h2>Predict program behavior</h2>
-              <p>Trace the values on paper before choosing an answer.</p>
-              {lesson.exercises.map((exercise) => (
-                <PracticeExercise key={exercise.id} exercise={exercise} />
-              ))}
-            </section>
-          )}
-          <section id="knowledge-check">
-            <span className="eyebrow">PAUSE & PRACTICE</span>
-            <h2>Check your understanding</h2>
-            <KnowledgeCheck key={topic.id} questions={lesson.questions} />
-          </section>
+          <LessonPractice key={topic.id} lesson={lesson} />
           <div className="lesson-finish">
-            <h2>One more concept, understood.</h2>
+            <h2>Record your reading progress.</h2>
             <CompletionButton topicId={topic.id} />
           </div>
           {lesson.nextStep && (
@@ -194,6 +180,11 @@ export function LessonLayout({
             {next && (
               <Link href={topicHref(next)}>
                 Next Lesson: {next.title} <Icon name="arrow" size={16} />
+              </Link>
+            )}
+            {topic.id === programmingPath.at(-1) && (
+              <Link href="/projects/number-guessing">
+                Apply it: Number Guessing Game →
               </Link>
             )}
           </nav>
