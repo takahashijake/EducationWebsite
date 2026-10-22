@@ -6,3 +6,6 @@ playwright-report/
 test-results/
 *.tsbuildinfo
 .env*
+
+# Generated from the pinned npm runtime before dev/build
+public/python/

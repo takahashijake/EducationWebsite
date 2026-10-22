@@ -1,3 +1,4 @@
+import type { CodingExercise } from "./coding-types";
 export type Section = {
   id: string;
   title: string;
@@ -39,6 +40,7 @@ export type Lesson = {
   demonstration: Demonstration;
   sections?: { title: string; paragraphs: string[]; code?: string }[];
   exercises?: PracticeExercise[];
+  codingExercises?: CodingExercise[];
   nextStep?: string;
   workedExample: { title: string; introduction: string; steps: string[] };
   code: {

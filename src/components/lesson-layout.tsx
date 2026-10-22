@@ -1,3 +1,5 @@
+import { CodeLab } from "./code-lab";
+import { lessonWorkspaceId } from "@/lib/workspace";
 import Link from "next/link";
 import type { Lesson, Topic } from "@/content/types";
 import {
@@ -53,6 +55,9 @@ export function LessonLayout({
                 {label}
               </a>
             ))}
+            {!!lesson.codingExercises?.length && (
+              <a href="#coding-practice">Write and test Python</a>
+            )}
             {lesson.exercises?.length ? (
               <a href="#practice">Prediction practice</a>
             ) : null}
@@ -162,6 +167,17 @@ export function LessonLayout({
             </ul>
           </section>
           <LessonPractice key={topic.id} lesson={lesson} />
+          {!!lesson.codingExercises?.length && (
+            <div id="coding-practice">
+              {lesson.codingExercises.map((exercise) => (
+                <CodeLab
+                  key={exercise.id}
+                  exercise={exercise}
+                  workspaceId={lessonWorkspaceId(topic.id, exercise.id)}
+                />
+              ))}
+            </div>
+          )}
           <div className="lesson-finish">
             <h2>Record your reading progress.</h2>
             <CompletionButton topicId={topic.id} />
