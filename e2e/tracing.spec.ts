@@ -66,7 +66,14 @@ test("each new lesson provides retryable practice along the coherent path withou
   page,
 }) => {
   await page.goto("/lessons/operators-expressions");
-  const ids = ["operators-expressions", "conditionals", "loops", "functions"];
+  const ids = [
+    "operators-expressions",
+    "conditionals",
+    "loops",
+    "functions",
+    "recursion",
+    "debugging",
+  ];
   for (const [index, id] of ids.entries()) {
     await expect(page).toHaveURL(`/lessons/${id}`);
     const exercise = lessons[id].exercises![0];
@@ -101,7 +108,7 @@ test("each new lesson provides retryable practice along the coherent path withou
       .getByRole("link", { name: /^Next Lesson:/ }),
   ).toHaveCount(0);
   await expect(
-    page.getByText(/Recursion and Basic Debugging remain planned previews/),
+    page.getByText(/Apply the complete programming path/),
   ).toBeVisible();
   expect(
     await page.evaluate((key) => localStorage.getItem(key), key),
@@ -120,7 +127,7 @@ test("original progress survives expansion, completion and undo synchronize acro
   await page.goto("/roadmap");
   await expect(page.getByRole("progressbar")).toHaveAttribute(
     "aria-valuenow",
-    "43",
+    "33",
   );
   expect(await page.evaluate((key) => localStorage.getItem(key), key)).toBe(
     oldProgress,
@@ -130,12 +137,12 @@ test("original progress survives expansion, completion and undo synchronize acro
   await other.getByRole("button", { name: "Mark lesson complete" }).click();
   await expect(page.getByRole("progressbar")).toHaveAttribute(
     "aria-valuenow",
-    "57",
+    "44",
   );
   await other.getByRole("button", { name: "Completed · Undo" }).click();
   await expect(page.getByRole("progressbar")).toHaveAttribute(
     "aria-valuenow",
-    "43",
+    "33",
   );
   await page.reload();
   expect(await page.evaluate((key) => localStorage.getItem(key), key)).toBe(

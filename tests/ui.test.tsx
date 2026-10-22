@@ -73,7 +73,7 @@ describe("progress interface", () => {
     );
     expect(screen.getByRole("progressbar")).toHaveAttribute(
       "aria-valuenow",
-      "14",
+      "11",
     );
     expect(
       screen.getByRole("link", { name: /completed/i }),
@@ -100,7 +100,7 @@ describe("progress interface", () => {
     fireEvent(window, new StorageEvent("storage", { key: PROGRESS_KEY }));
     expect(screen.getByRole("progressbar")).toHaveAttribute(
       "aria-valuenow",
-      "14",
+      "11",
     );
   });
 });
@@ -122,12 +122,12 @@ describe("navigation and pages", () => {
     expect(
       screen.getByRole("link", { name: /^Start learning$/ }),
     ).toHaveAttribute("href", "/roadmap");
-    expect(screen.getAllByRole("link", { name: /available/i })).toHaveLength(7);
+    expect(screen.getAllByRole("link", { name: /available/i })).toHaveLength(9);
   });
   it("renders every roadmap section and topic link with truthful status", () => {
     localStorage.setItem(
       PROGRESS_KEY,
-      JSON.stringify({ version: 1, completed: ["recursion"] }),
+      JSON.stringify({ version: 1, completed: ["propositional-logic"] }),
     );
     render(
       <ProgressProvider>
@@ -139,7 +139,7 @@ describe("navigation and pages", () => {
       .getAllByRole("link")
       .filter((link) => link.classList.contains("topic-card"));
     expect(topicLinks).toHaveLength(46);
-    expect(screen.getAllByText("Planned", { exact: true })).toHaveLength(40); // 39 topics plus legend
+    expect(screen.getAllByText("Planned", { exact: true })).toHaveLength(38); // 37 topics plus legend
     expect(screen.getByRole("progressbar")).toHaveAttribute(
       "aria-valuenow",
       "0",
@@ -174,7 +174,11 @@ describe("navigation and pages", () => {
     );
   });
   it("renders planned overviews without a quiz or completion action", async () => {
-    render(await TopicPage({ params: Promise.resolve({ slug: "recursion" }) }));
+    render(
+      await TopicPage({
+        params: Promise.resolve({ slug: "propositional-logic" }),
+      }),
+    );
     expect(screen.getByText("Planned topic")).toBeInTheDocument();
     expect(screen.queryByRole("radio")).not.toBeInTheDocument();
     expect(

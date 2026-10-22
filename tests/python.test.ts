@@ -11,6 +11,12 @@ const examples: Record<string, string[]> = {
   conditionals: ["ready", "Continue", "Member, below minimum"],
   loops: ["6", "40 2", "3\n2\n1\nDone", "1\n3\nDone", "1 1\n1 2\n2 1\n2 2"],
   functions: ["12", "6\nNone 6", "5 6", "14"],
+  debugging: [
+    "59 False\n60 True\n61 True",
+    "count must be positive",
+    "boundary tests passed",
+  ],
+  recursion: ["1\n1\n6", "6 6\n0", "1\n2\n-1\n-1"],
 };
 const predictions: Record<string, string> = {
   "operators-p1": "14",
@@ -21,6 +27,10 @@ const predictions: Record<string, string> = {
   "loops-p2": "1",
   "functions-p1": "5 6",
   "functions-p2": "6\nNone",
+  "debugging-p1": "3",
+  "debugging-p2": "retry",
+  "recursion-p1": "6",
+  "recursion-p2": "None",
 };
 function execute(source: string, expected: string) {
   const result = spawnSync("python3", ["-I", "-"], {
@@ -44,8 +54,20 @@ it("checks every runnable lesson example, supplementary program, prediction and 
       execute(source, examples[lesson.topicId][i]),
     );
     for (const exercise of lesson.exercises ?? []) {
-      expect(predictions[exercise.id]).toBeDefined();
-      execute(exercise.source, predictions[exercise.id]);
+      if (exercise.id === "debugging-p3") {
+        const result = spawnSync("python3", ["-I", "-"], {
+          input: exercise.source,
+          encoding: "utf8",
+          timeout: 3000,
+        });
+        expect(result.status).toBe(1);
+        expect(result.stderr).toContain("ZeroDivisionError");
+        expect(result.stderr).toContain("in average");
+        expect(result.stdout).toBe("");
+      } else {
+        expect(predictions[exercise.id]).toBeDefined();
+        execute(exercise.source, predictions[exercise.id]);
+      }
     }
     const demo = lesson.demonstration;
     if (demo.kind === "trace")

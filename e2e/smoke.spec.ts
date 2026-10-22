@@ -42,7 +42,7 @@ test("learn, check answers, persist completion, and explore a planned topic", as
   await page.goto("/roadmap");
   await expect(page.getByRole("progressbar")).toHaveAttribute(
     "aria-valuenow",
-    "14",
+    "11",
   );
   await expect(page.locator(".topic-card.completed")).toContainText(
     "Variables and Data Types",
@@ -50,7 +50,10 @@ test("learn, check answers, persist completion, and explore a planned topic", as
   await page
     .locator(".topic-card")
     .filter({
-      has: page.getByRole("heading", { name: "Recursion", exact: true }),
+      has: page.getByRole("heading", {
+        name: "Propositional Logic",
+        exact: true,
+      }),
     })
     .click();
   await expect(page.getByText("Planned topic", { exact: true })).toBeVisible();
@@ -95,7 +98,7 @@ test("malformed and planned-only saved progress cannot inflate completion", asyn
     "{bad",
     JSON.stringify({
       version: 1,
-      completed: ["recursion", "unknown", "recursion"],
+      completed: ["propositional-logic", "unknown", "propositional-logic"],
     }),
   ]) {
     await page.evaluate(
@@ -150,7 +153,7 @@ test("follow the programming path, trace, practice, check knowledge and retain m
   await page
     .getByRole("link", { name: "Next Lesson: Operators and Expressions" })
     .click();
-  await expect(page.getByText("Lesson 2 of 5")).toBeVisible();
+  await expect(page.getByText("Lesson 2 of 7")).toBeVisible();
   const trace = page.locator(".code-trace");
   while (await trace.getByRole("button", { name: "Next step" }).isEnabled()) {
     await trace.getByRole("button", { name: "Next step" }).click();
@@ -193,7 +196,7 @@ test("follow the programming path, trace, practice, check knowledge and retain m
   await expect(conditional.getByRole("status")).toContainText(
     "Selected branch: elif score >= 60",
   );
-  await page.goto("/lessons/recursion");
+  await page.goto("/lessons/propositional-logic");
   await expect(page.getByText("Planned topic", { exact: true })).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Mark lesson complete" }),

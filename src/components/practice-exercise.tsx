@@ -2,17 +2,32 @@
 import { useId, useState } from "react";
 import type { PracticeExercise as Exercise } from "@/content/types";
 import { evaluateAnswer } from "@/lib/quiz";
-export function PracticeExercise({ exercise }: { exercise: Exercise }) {
+export function PracticeExercise({
+  exercise,
+  onResult,
+  initialAnswer,
+  submitLabel = "Check prediction",
+  completionNote = "Practice attempts do not mark this lesson complete.",
+}: {
+  exercise: Exercise;
+  onResult?: (correct: boolean | undefined, answer?: number) => void;
+  initialAnswer?: number;
+  submitLabel?: string;
+  completionNote?: string;
+}) {
   const id = useId();
-  const [answer, setAnswer] = useState<number>();
-  const [submitted, setSubmitted] = useState(false);
+  const [answer, setAnswer] = useState<number | undefined>(initialAnswer);
+  const [submitted, setSubmitted] = useState(initialAnswer !== undefined);
   const correct = answer !== undefined && evaluateAnswer(exercise, answer);
   return (
     <form
       className="practice-exercise"
       onSubmit={(event) => {
         event.preventDefault();
-        if (answer !== undefined) setSubmitted(true);
+        if (answer !== undefined) {
+          setSubmitted(true);
+          onResult?.(evaluateAnswer(exercise, answer), answer);
+        }
       }}
     >
       <pre tabIndex={0} aria-label="Python program to predict">
@@ -51,6 +66,7 @@ export function PracticeExercise({ exercise }: { exercise: Exercise }) {
           onClick={() => {
             setAnswer(undefined);
             setSubmitted(false);
+            onResult?.(undefined);
           }}
         >
           Retry exercise
@@ -61,12 +77,10 @@ export function PracticeExercise({ exercise }: { exercise: Exercise }) {
           type="submit"
           disabled={answer === undefined}
         >
-          Check prediction
+          {submitLabel}
         </button>
       )}
-      <p className="quiz-intro">
-        Practice attempts do not mark this lesson complete.
-      </p>
+      <p className="quiz-intro">{completionNote}</p>
     </form>
   );
 }
