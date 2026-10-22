@@ -1,6 +1,7 @@
+import { LearningPath } from "@/components/learning-path";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { sections, topics } from "@/content/curriculum";
+import { availableTopics, sections, topics } from "@/content/curriculum";
 import { RoadmapSection } from "@/components/roadmap-section";
 import { ProgressIndicator } from "@/components/progress-indicator";
 import { Icon } from "@/components/icon";
@@ -29,12 +30,14 @@ export default function RoadmapPage() {
             </span>
             <span>{topics.length} topics</span>
             <span className="status available">
-              <span className="status-dot" />3 lessons available
+              <span className="status-dot" />
+              {availableTopics.length} lessons available
             </span>
           </div>
         </div>
         <ProgressIndicator />
       </div>
+      <LearningPath />
       <div className="roadmap-columns">
         <aside className="roadmap-sidebar">
           <div className="eyebrow">ON THIS ROADMAP</div>

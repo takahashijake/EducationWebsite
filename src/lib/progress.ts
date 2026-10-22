@@ -1,4 +1,4 @@
-import { availableTopics } from "@/content/curriculum";
+import { availableTopics, programmingPath } from "@/content/curriculum";
 export const PROGRESS_KEY = "cs-fundamentals:progress:v1";
 const availableIds = new Set(availableTopics.map((topic) => topic.id));
 export type ProgressStorage = Pick<Storage, "getItem" | "setItem">;
@@ -63,4 +63,17 @@ export function toggleCompletion(ids: string[], id: string): string[] {
   return ids.includes(id)
     ? valid.filter((value) => value !== id)
     : [...new Set([...valid, id])];
+}
+
+export function pathProgress(ids: string[]) {
+  const members = programmingPath.filter((id) => availableIds.has(id));
+  const completed = members.filter((id) => ids.includes(id)).length;
+  return {
+    completed,
+    available: members.length,
+    percentage: members.length
+      ? Math.round((completed / members.length) * 100)
+      : 0,
+    recommendedId: members.find((id) => !ids.includes(id)),
+  };
 }

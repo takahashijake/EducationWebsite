@@ -69,7 +69,7 @@ export default async function TopicPage({
           </p>
           <p>
             Planned topics don’t count toward your completion progress. In the
-            meantime, you can explore one of the three available sample lessons.
+            meantime, you can explore an available lesson.
           </p>
         </div>
         {prerequisites.length > 0 && (

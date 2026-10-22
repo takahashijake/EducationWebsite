@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Icon } from "@/components/icon";
 import {
   availableTopics,
+  programmingPath,
   sections,
   topics,
   topicHref,
@@ -216,8 +217,9 @@ export default function Home() {
           </div>
           <p className="scope-note">
             <Icon name="book" size={16} />
-            This is the beginning: three complete lessons, with a full
-            curriculum outline to grow into.
+            {availableTopics.length} complete lessons, including a{" "}
+            {programmingPath.length}-lesson programming core path.{" "}
+            {topics.length - availableTopics.length} topics remain planned.
           </p>
         </div>
       </section>

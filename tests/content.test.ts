@@ -22,6 +22,10 @@ describe("curriculum contracts", () => {
     expect(availableTopics.map((topic) => topic.id).sort()).toEqual([
       "big-o-notation",
       "binary-number-representation",
+      "conditionals",
+      "functions",
+      "loops",
+      "operators-expressions",
       "variables-data-types",
     ]);
   });

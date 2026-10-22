@@ -1,78 +1,144 @@
-# CS Fundamentals Roadmap · V0.1
+# CS Fundamentals Roadmap · V0.2
 
-A guided introduction to computer science, inspired by the clarity of roadmap.sh. The goal is to teach the concepts behind each stop with explanations, illustrations, code, practice, and eventually deeper assessments—not simply list what to study.
+A guided introduction to computer science that teaches the reasoning behind each topic through explanations, worked examples, Python programs, interactive traces, and practice.
 
-This MVP includes the broad curriculum outline and three complete lessons. It is not a complete curriculum.
+The roadmap has **46 topics in eight sections: seven complete lessons and 39 planned previews**. The wider curriculum is still in development.
 
-## What works
+## Available lessons and core path
 
-- Responsive landing page, curriculum roadmap, lesson pages, and planned-topic previews.
-- All **46 topics in eight sections**, each with a stable ID, section, slug, description, order, status, and optional prerequisites.
-- Complete lessons for **Variables and Data Types**, **Binary Number Representation**, and **Introduction to Big O Notation**.
-- Each lesson has objectives, original explanations, a conceptual illustration, a worked example, Python 3 code, common mistakes, takeaways, and three multiple-choice questions with explanations and retry.
-- Manual completion with browser-local persistence, undo, completion states, and completed/available counts. Planned topics cannot count toward progress.
-- Keyboard-accessible controls, visible focus states, native quiz radio groups, breadcrumb links, skip link, reduced-motion support, and responsive CSS layouts.
-- No accounts, database, backend service, analytics, paid APIs, or external font requests.
+Follow the advisory Programming Fundamentals core sequence:
 
-## Stack and layout
+**Variables and Data Types → Operators and Expressions → Conditionals → Loops → Functions**
 
-Next.js App Router, React, TypeScript, Tailwind CSS 4, and ESLint. Vitest, Testing Library, and Playwright provide regression coverage. Server components render the curriculum and instructional content; small client components handle quizzes and local progress. Topic routes are prerendered at build time.
+**Binary Number Representation** and **Introduction to Big O Notation** are also complete, in their respective sections. Recursion and Basic Debugging remain planned previews. Completing the five-lesson core does not complete the entire Programming Fundamentals section.
 
-```text
-src/app/                     Pages, metadata, layout, and responsive styles
-src/app/lessons/[slug]/       Available lesson or honest planned-topic overview
-src/content/types.ts         Content contracts
-src/content/curriculum.ts    Ordered sections and all topic metadata
-src/content/lessons.ts       Complete instructional content and quizzes
-src/components/               Reusable UI, lessons, quiz, and progress components
-src/lib/progress.ts          Defensive serialization, completion, and counts
-src/lib/quiz.ts              Answer evaluation
-tests/                      Content, persistence, and component regression tests
-e2e/                        Desktop/mobile production smoke tests
-```
+The four new programming lessons each include two prediction exercises and three knowledge-check questions, alongside objectives, detailed explanations, worked examples, common misconceptions, summaries, and next steps. Completion remains a separate manual action.
 
-The pre-existing `LLM-Town/` directory is an unrelated Python simulation and remains untouched. Its uncommitted files are not part of this application. Application tools exclude that directory.
+- **Operators and Expressions:** arithmetic and types, precedence and evaluation order, comparisons, boolean operators, and short-circuiting. Inspect the multiplication result before addition and assignment.
+- **Conditionals:** branch selection, compound and nested decisions, indentation, unreachable branches, and boundary mistakes. Choose scores 59, 60, 72, 79, 80, or 90 and inspect why exactly one branch executes.
+- **Loops:** `for`/`while`, termination, counters and accumulators, off-by-one errors, `break`/`continue`, and introductory nesting. Step through each accumulator update and range exhaustion.
+- **Functions:** definitions/calls, arguments/parameters, local/global scope, decomposition/composition, and side effects versus returned values. Follow the suspended caller, local call frame, returning value, and restored caller.
 
 ## Run locally
 
-Use Node.js **20.19 or newer** (Node 22 LTS is a suitable default) and npm.
+Use Node.js **20.19 or newer** and npm. The test suite also needs **Python 3** on PATH to verify repository-authored examples; Python is not a website runtime dependency:
 
 ```bash
 npm ci
 npm run dev
 ```
 
-Open `http://localhost:3000`. For a production server:
+Open `http://localhost:3000`. For production, run `npm run build` followed by `npm start`. No service credentials or environment variables are needed.
 
-```bash
-npm run build
-npm start
+## Architecture
+
+Next.js App Router, React, TypeScript, Tailwind CSS 4, and ESLint; Vitest, Testing Library, and Playwright provide regression coverage. Topic pages remain statically prerendered. Server components render instructional content; small client components handle interaction and browser-local progress.
+
+```text
+src/app/                         Routes, metadata, responsive styles
+src/content/types.ts             Shared content and interaction contracts
+src/content/curriculum.ts        Sections, topics, prerequisites, core path
+src/content/lessons.ts           Original lessons and combined lesson catalog
+src/content/programming-lessons.ts Four new complete programming lessons
+src/content/programming-traces.ts  Typed states, fixed score scenarios, and call frames
+src/components/lesson-layout.tsx Shared lesson renderer
+src/components/code-trace.tsx    Generic authored walkthrough player
+src/components/practice-exercise.tsx Prediction submission, feedback, retry
+src/components/learning-path.tsx Core sequence, position, recommendation, progress
+src/lib/trace.ts                 Trace navigation and validation
+src/lib/content-validation.ts    Catalog, prerequisite, assessment, path checks
+src/lib/quiz.ts                  Shared deterministic answer evaluation
+src/lib/progress.ts              Defensive v1 persistence and progress calculations
+tests/                          Content, unit, component, and Python example checks
+e2e/                            Production desktop/mobile browser checks
 ```
 
-The application has no environment variables or service credentials. Dependencies are locked in `package-lock.json`.
+The unrelated `LLM-Town/` project, if present in the workspace, is outside this application's scope.
 
-## Add a topic or lesson
+## Authoring lessons
 
-1. Add a `Topic` record to `src/content/curriculum.ts`. Choose a unique, permanent kebab-case `id` and `slug`, reference an existing `sectionId`, and set its order within that section. IDs are used for saved completion; slugs are public URLs. Keep both stable when editing titles.
-2. Supply a specific description and initially use `status: 'planned'`. The roadmap and `/lessons/<slug>` overview will appear automatically. Optional `prerequisites` reference topic IDs; prerequisites are advisory and do not gate access.
-3. To publish a full lesson, add a matching entry in `src/content/lessons.ts` and change its topic status to `available`. Include every field from `Lesson`: objectives, introductory explanation, concept paragraphs, demonstration, worked steps, code and its explanation, misconceptions, takeaways, and three questions.
-4. Each question needs a stable ID, distinct options, one valid zero-based `correctIndex`, and an explanation. The shared quiz displays feedback for both correct and incorrect choices. Quiz attempts do not mark completion automatically.
-5. Reuse one of the three demonstration types or extend the small union and `LessonDemonstration` when a new illustration is actually needed. Add a new section by inserting an ordered `Section` record with a stable ID.
-6. Run all verification commands. The content tests intentionally assert V0.1’s topic/lesson totals; update those expectations when deliberately expanding the curriculum. Rebuild to generate routes for new topics.
+1. Add a `Topic` in `src/content/curriculum.ts` using a unique, permanent ID and slug, a valid section, and an order. Keep saved-completion IDs and public slugs stable. Start with `status: "planned"` for an honest preview.
+2. Add a `Lesson` to the combined catalog in `src/content/lessons.ts`, either directly or through an imported content module such as `programming-lessons.ts`. Follow `src/content/types.ts`: objectives, introduction, concept explanation, demonstration, worked example, runnable Python code, misconceptions, takeaways, and three knowledge questions. Optional `sections` provide additional focused explanations and code examples. Add `nextStep` for contextual guidance.
+3. Publish by setting the topic to `available` only after its instructional content is complete. Counts and global progress derive from published topics.
+4. Use unique question/exercise IDs across the catalog. Options must be distinct, nonempty, and include one valid zero-based `correctIndex`. Explain the reasoning, including why a tempting wrong answer fails.
+5. Run the checks below. The catalog tests enforce unique IDs/slugs, complete lessons, valid section/prerequisite references, acyclic prerequisites, valid assessment answers, trace data, and path ordering. Update milestone totals deliberately when publishing additional lessons.
 
-Content is typed independently from presentation; no CMS or framework-specific markup is needed to add prose. This deliberately small structure can grow into multiple roadmaps and richer assessment models later.
+Keep educational content in typed data rather than adding topic-specific rendering branches. The original three diagram kinds remain supported unchanged.
 
-## Progress storage
+## Authoring code traces
 
-The key `cs-fundamentals:progress:v1` contains JSON:
+Set `demonstration.kind` to `"trace"`. Supply a title, caption, short Python `source`, nonempty `steps`, and a conceptual final `result`. The four new lessons are complete examples of this contract.
+
+```ts
+{
+  kind: "trace",
+  title: "Follow a value",
+  caption: "Assignment first, output second.",
+  source: "x = 2\nprint(x)",
+  steps: [
+    {
+      lines: [1],
+      explanation: "Assign 2 to x.",
+      variables: [{ name: "x", value: 2, scope: "global" }],
+      output: [],
+    },
+    {
+      lines: [2],
+      explanation: "Display x without changing it.",
+      variables: [{ name: "x", value: 2, scope: "global" }],
+      output: ["2"],
+    },
+  ],
+  result: "x remains 2 and the output is 2.",
+}
+```
+
+`lines` contains **one-based source line numbers** for the step just explained. Each snapshot describes the state **after the explained action**, including condition evaluation, an intermediate expression, or range exhaustion. Several snapshots may highlight the same line when a calculation has multiple meaningful actions; do not bind an assignment target before its right-hand expression finishes. `variables` is the complete relevant active state, with explicit scope and primitive values (string, finite number, boolean, or null). Use separate scopes for caller and function locals. `output` is the complete output so far, not an incremental append. Optional `detail` labels branch selection, iteration, arguments, or return values. Represent skipped branches and termination explicitly in explanations.
+
+For selectable inputs, set `inputLabel`, `defaultLabel`, and `scenarios`. Each scenario contains a permanent `id`, visible `label`, and its own `source`, complete `steps`, and `result`. The top-level program is the default. The player resets to step 1 when a student selects an input; Reset rewinds the selected scenario. `conditionalsTrace` authors a fixed set of threshold cases, with explicit branch outcomes. This is a catalog of examples, not an evaluator for arbitrary input.
+
+For function calls, supply `frames` on every step. Each frame has a stable invocation `id`, a readable `name`, a `scope` matching its variables, and `status` (`active`, `suspended`, or `returning`). Frames are ordered caller first. A suspended caller may name its `resumeLine`; a returning frame must provide `returnValue`. Keep the returning frame visible for inspection, then remove it and restore the caller in the next step. `functionsTrace` demonstrates this convention. Returning snapshots are teaching pauses, not additional Python instructions. Variables remain in the shared scoped table, so frame locals are not separately duplicated.
+
+`validateTrace` checks required data, nonblank source line references, finite primitive values, unique scoped names, cumulative output, scenario identities, and basic frame structure and transitions. Invalid definitions display a readable fallback without interactive controls. Validation does not prove program semantics; compare snapshots and results against real Python when authoring.
+
+The player highlights lines and provides Next, Previous, and Reset buttons, an announced execution state, scoped variables, cumulative output, and a final result. Code panes scroll within their container; controls wrap on small screens. There is no animation. **No Python interpreter, arbitrary code editor, eval, or external execution service is involved.** Authors must verify semantic correctness; structural validation alone cannot prove that a trace matches Python.
+
+## Authoring prediction exercises
+
+Add `exercises` to a lesson. Each exercise extends `Question` with a Python `source` string:
+
+```ts
+{
+  id: "example-prediction",
+  source: "total = 2 + 3 * 4\nprint(total)",
+  prompt: "What does this print?",
+  options: ["14", "20", "10"],
+  correctIndex: 0,
+  explanation: "Multiplication yields 12 first; then 2 + 12 is 14.",
+}
+```
+
+`evaluateAnswer` checks fixed choice indices deterministically. Submission reveals correctness and reasoning; Retry clears the attempt without reloading. Exercises do not write to progress storage. Use problems that require tracing or explaining a decision rather than guessing syntax. The separate three-question knowledge check retains its existing feedback and retry behavior.
+
+## Prerequisites and navigation
+
+Topic `prerequisites` reference stable topic IDs and display advisory links. They never lock a published lesson. The explicit `programmingPath` defines the five core topics in order; `lessonNeighbors` resolves previous and next lessons using that sequence. Other published topics navigate within their own section. Functions ends the core path without sending the learner to unrelated binary or Big O lessons. Planned topics retain direct preview routes.
+
+The path panel shows position, completed/available states, a completed count, and the first incomplete core lesson as the recommended next step. After finishing the core it explicitly identifies the remaining planned programming topics. The same panel on the roadmap helps learners resume.
+
+## Progress and compatibility
+
+The unchanged localStorage key **`cs-fundamentals:progress:v1`** contains:
 
 ```json
 { "version": 1, "completed": ["variables-data-types"] }
 ```
 
-Only known, available IDs survive loading, saving, and counting. Duplicate IDs, planned IDs, and unknown IDs are ignored. Malformed JSON or unsupported schemas start at zero. Percentages are rounded from completed / available lessons (**three** in V0.1), never from all 46 topics.
+Existing completions survive this release. There is no migration or automatic overwrite on load. Unknown IDs, planned IDs, duplicates, and malformed data cannot inflate progress. Manual completion and undo use the same IDs as before. Neither prediction exercises nor knowledge checks automatically mark completion.
 
-`ProgressProvider` uses `useSyncExternalStore` with a deterministic server snapshot, so server rendering never reads `window` or localStorage. Client hydration reads browser storage and storage events keep other tabs current. A failed write preserves an in-memory session value and displays a persistence notice. Completion is manual and independent of quiz scores. Undo removes a completion. There is no cross-device sync. Clearing site storage clears progress. No personal data is collected.
+Global progress is completed published lessons / **seven** available lessons, rounded to a percentage. Core path progress separately counts completed members / **five**, using the same stored IDs. For example, all three original lessons yield 3/7 global and 1/5 core completion. Publishing lessons increases the global denominator without deleting earned completions.
+
+`ProgressProvider` retains `useSyncExternalStore`, a deterministic server snapshot, cross-tab storage events, and an in-memory session fallback for denied writes. A failed write displays a persistence notice. Storage is browser- and origin-specific; clearing it clears progress. No accounts, database, cloud sync, or personal information collection are introduced.
 
 ## Verification
 
@@ -81,54 +147,28 @@ npm run lint
 npm run typecheck
 npm test
 npm run build
-npx playwright install --with-deps chromium   # once per machine; browser and OS libraries
+npx playwright install --with-deps chromium # once per environment
 npm run test:e2e
 ```
 
-`test:e2e` starts the production server, so build first. It covers desktop Chromium and a narrow mobile viewport using Chromium; it does not claim Safari coverage. A pre-existing server on port 3000 can be reused locally. In CI the test runner always owns its server.
+`test:e2e` starts a production server, so build first. It covers desktop Chromium and a mobile viewport using Chromium. Tests include all seven published pages, all 46 routes, unknown routes, planned previews, malformed/denied storage, persistence, manual completion and undo, trace boundaries/state/reset, prediction correctness/retry, prerequisite cycles, path ordering, and the Variables → Operators → Conditionals learning flow. Loop and function traces have dedicated browser checks. `npm run test:watch` supports local iteration.
 
-Tests cover IDs and references, ordering and URL resolution, complete lesson structures, valid answer keys and quiz evaluation, malformed storage, denied storage, available-only completion, correct percentage calculations, quiz interaction and retry, persistence and undo across remounts, cross-tab updates, navigation, full lesson rendering, planned-state behavior, and unknown routes. Browser smoke checks cover the learning flow, quiz feedback, completion after reload, planned topics, page errors, mobile overflow, and real 404 responses.
+Current delivery verification is recorded in [docs/v0.2-review.md](docs/v0.2-review.md). `npm test` includes an automated Python output check for all runnable lesson examples, supplementary programs, prediction exercises, and every default/scenario trace. Browser tests cover each new lesson’s feedback/retry, all score scenarios, call frames, the complete core path, existing v1 progress without rewriting on load, and real cross-tab completion/undo. No test result is inferred from a previous branch.
 
-For repeatable type checking from a clean checkout, `npm run typecheck` works without generated route types; Next.js generates those during development/build. Run tests in watch mode with `npm run test:watch`.
-
-## Verified for this delivery
-
-Executed on 2026-10-17 with Node 20.20.2:
-
-| Check                               | Result                                         |
-| ----------------------------------- | ---------------------------------------------- |
-| `npm run lint`                      | Passed, no warnings                            |
-| `npm run typecheck`                 | Passed                                         |
-| `npm test`                          | 30 tests passed across three files             |
-| `npm run build`                     | Passed; all 46 topic routes prerendered        |
-| `npm run test:e2e`                  | 10 passed: five desktop and five mobile checks |
-| `npm ci --dry-run --ignore-scripts` | Passed; lockfile resolves                      |
-| `npm audit --omit=dev`              | No runtime vulnerabilities reported            |
-
-Desktop landing/roadmap and mobile lesson screenshots were also visually inspected.
-
-The environment initially lacked Chromium libraries and did not allow sudo. Browser tests were successfully executed after downloading the Ubuntu `libnspr4`, `libnss3`, `libatk-bridge2.0-0t64`, and `libatspi2.0-0t64` packages into `/tmp`, extracting them without installing system packages, and running:
+This container provides extracted Chromium system libraries rather than a system installation. Run the production browser suite with that library path:
 
 ```bash
 LD_LIBRARY_PATH=/tmp/cs-roadmap-browser-libs/extracted/usr/lib/x86_64-linux-gnu npm run test:e2e
 ```
 
-That temporary directory is environment-specific and is not an application dependency. On a normal development machine, the standard `playwright install --with-deps chromium` command above provides the required libraries. Browser verification covers Chromium, including a mobile viewport, rather than every browser or assistive technology.
+That directory is environment-specific, not an application dependency. On a normal development machine use Playwright's installation command above.
 
-## Dependency audit
+## Known limitations and V0.3
 
-`npm audit --omit=dev` reports no runtime advisories. The full audit reports five high-severity development-only findings in the Next.js ESLint dependency chain (`fast-glob` → `micromatch` → `braces`). The installed lint stack has no patched compatible release in the registry used for this build. Do not downgrade the application framework using `npm audit fix --force`; update the lint tooling when a compatible fix is available. The test runner is updated to Vitest 4.1.12.
+- Seven published lessons; 39 topics remain planned. No claim of a complete CS curriculum.
+- Fixed authored traces, selectable example inputs, and answer choices. No arbitrary code execution or open-ended grading; attempts are not persisted. Structural validation cannot establish that every authored intermediate state matches Python.
+- Browser-local completion is a learning aid, not a credential or assessment score.
+- Chromium desktop/mobile checks do not establish cross-browser or assistive-technology certification. No independent human educational review or accessibility certification has been performed.
+- No authentication, backend database, CMS, AI tutor, payments, or unrelated gamification.
 
-## Deliberate limits
-
-- Three complete lessons; the other 43 topics are clearly labeled Planned.
-- Static authored material, fixed multiple-choice questions, and conceptual diagrams. No code execution or grading of open-ended work.
-- Progress is specific to the browser and origin; it is not a credential, score, or certification.
-- Prerequisites are metadata and selected preview links, not a dependency engine or enforced learning sequence.
-- No authentication, persistence server, CMS, search, gamification, or publishing integration.
-- Educational and accessibility review by additional human reviewers remains valuable; automated checks are not a substitute for either.
-
-## Most valuable V0.2 milestone
-
-Complete a coherent **Programming Fundamentals** learning path rather than adding isolated topics: deeper lessons for operators, conditionals, loops, and functions, with richer exercises and human content review. Then add lightweight interactive visualizations, more useful prerequisite guidance, and assessments that connect concepts across a more complete learning path. Introduce these as concrete learning needs emerge.
-# EducationWebsite
+**Recommended V0.3:** complete Basic Debugging and Recursion, then build a small guided project that combines the core concepts. Add boundary-case exercises and targeted human educational/accessibility review before expanding the roadmap into more sections.
