@@ -53,6 +53,11 @@ export function LearningPath({ currentId }: { currentId?: string }) {
           public tests
         </Link>
       </p>
+      <p>
+        <Link href="/assessments/programming-fundamentals">
+          Take the integrated fundamentals assessment
+        </Link>
+      </p>
       {!progress.recommendedId && (
         <p>
           Programming path reading completed. Apply these concepts in the guided

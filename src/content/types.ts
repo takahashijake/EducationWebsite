@@ -24,6 +24,7 @@ export type Topic = {
   prerequisites?: string[];
 };
 export type Question = {
+  source?: string;
   id: string;
   prompt: string;
   options: string[];
@@ -85,3 +86,10 @@ export type CodeTrace = TraceProgram & {
 export type Demonstration =
   { kind: "types" | "binary" | "complexity"; caption: string } | CodeTrace;
 export type PracticeExercise = Question & { source: string };
+
+export type AssessmentQuestion = PracticeExercise & { topicIds: string[] };
+export type Assessment = {
+  id: string;
+  title: string;
+  questions: AssessmentQuestion[];
+};

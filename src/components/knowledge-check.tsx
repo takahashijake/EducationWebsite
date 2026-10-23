@@ -1,23 +1,36 @@
 "use client";
 import { useState } from "react";
 import type { Question } from "@/content/types";
-import { evaluateAnswer } from "@/lib/quiz";
+import Link from "next/link";
+import { topics, topicHref } from "@/content/curriculum";
+import { evaluateAnswer, scoreQuestions } from "@/lib/quiz";
 import { Icon } from "./icon";
 export function KnowledgeCheck({
   questions,
   onResult,
+  reviewTopics = {},
+  submitLabel = "Check answers",
+  retryLabel = "Try again",
 }: {
   questions: Question[];
   onResult?: (results: boolean[] | undefined) => void;
+  reviewTopics?: Record<string, string[]>;
+  submitLabel?: string;
+  retryLabel?: string;
 }) {
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [submitted, setSubmitted] = useState(false);
   const allAnswered = questions.every(
     (question) => answers[question.id] !== undefined,
   );
-  const score = questions.filter((question) =>
-    evaluateAnswer(question, answers[question.id]),
-  ).length;
+  const score = scoreQuestions(questions, answers);
+  const missedTopicIds = [
+    ...new Set(
+      questions
+        .filter((q) => !evaluateAnswer(q, answers[q.id]))
+        .flatMap((q) => reviewTopics[q.id] ?? []),
+    ),
+  ];
   return (
     <form
       className="knowledge-check"
@@ -42,6 +55,11 @@ export function KnowledgeCheck({
           <legend>
             <span>{index + 1}.</span> {question.prompt}
           </legend>
+          {question.source && (
+            <pre tabIndex={0} aria-label="Python assessment problem">
+              <code>{question.source}</code>
+            </pre>
+          )}
           <div className="quiz-options">
             {question.options.map((option, optionIndex) => (
               <label
@@ -66,16 +84,31 @@ export function KnowledgeCheck({
             ))}
           </div>
           {submitted && (
-            <p
-              className={`answer-feedback ${evaluateAnswer(question, answers[question.id]) ? "correct" : "incorrect"}`}
-            >
-              <strong>
-                {evaluateAnswer(question, answers[question.id])
-                  ? "Correct."
-                  : "Not quite."}
-              </strong>{" "}
-              {question.explanation}
-            </p>
+            <div>
+              <p
+                className={`answer-feedback ${evaluateAnswer(question, answers[question.id]) ? "correct" : "incorrect"}`}
+              >
+                <strong>
+                  {evaluateAnswer(question, answers[question.id])
+                    ? "Correct."
+                    : "Not quite."}
+                </strong>{" "}
+                {question.explanation}
+              </p>
+              {!evaluateAnswer(question, answers[question.id]) &&
+                reviewTopics[question.id]?.map((id) => {
+                  const topic = topics.find((t) => t.id === id);
+                  return topic ? (
+                    <Link
+                      className="review-link"
+                      key={id}
+                      href={topicHref(topic)}
+                    >
+                      Review {topic.title}
+                    </Link>
+                  ) : null;
+                })}
+            </div>
           )}
         </fieldset>
       ))}
@@ -87,9 +120,18 @@ export function KnowledgeCheck({
                 {score} of {questions.length} correct.
               </strong>{" "}
               {score === questions.length
-                ? "All checks are correct. Try explaining the reasoning without hints."
+                ? "All answers correct on this attempt. Try explaining the reasoning without the choices."
                 : "Review the explanations, then give it another try."}
             </p>
+            {missedTopicIds.length > 0 && (
+              <p>
+                Suggested review:{" "}
+                {missedTopicIds
+                  .map((id) => topics.find((t) => t.id === id)?.title)
+                  .join(", ")}
+                .
+              </p>
+            )}
             <button
               type="button"
               className="button secondary"
@@ -99,18 +141,18 @@ export function KnowledgeCheck({
                 onResult?.(undefined);
               }}
             >
-              Try again
+              {retryLabel}
             </button>
           </>
         ) : (
           <>
             <button className="button" type="submit" disabled={!allAnswered}>
-              Check answers <Icon name="arrow" size={16} />
+              {submitLabel} <Icon name="arrow" size={16} />
             </button>
             <span aria-live="polite">
               {allAnswered
                 ? "Ready when you are."
-                : "Answer every question to check."}
+                : `Answer all ${questions.length} questions to check.`}
             </span>
           </>
         )}
