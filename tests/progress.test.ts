@@ -35,14 +35,14 @@ describe("browser progress", () => {
       parseProgress(
         JSON.stringify({
           version: 1,
-          completed: [id, id, "recursion", "unknown", 3, null],
+          completed: [id, id, "propositional-logic", "unknown", 3, null],
         }),
       ),
     ).toEqual([id]);
-    expect(parseProgress(serializeProgress(["recursion", id, id]))).toEqual([
-      id,
-    ]);
-    expect(toggleCompletion([id], "recursion")).toEqual([id]);
+    expect(
+      parseProgress(serializeProgress(["propositional-logic", id, id])),
+    ).toEqual([id]);
+    expect(toggleCompletion([id], "propositional-logic")).toEqual([id]);
   });
   it("toggles available lessons without duplicate counts", () => {
     expect(toggleCompletion([], id)).toEqual([id]);
@@ -51,27 +51,27 @@ describe("browser progress", () => {
   it("uses only available lessons as its denominator", () => {
     expect(progressSummary([])).toEqual({
       completed: 0,
-      available: 7,
+      available: 9,
       percentage: 0,
     });
-    expect(progressSummary([id, id, "recursion", "fake"])).toEqual({
+    expect(progressSummary([id, id, "propositional-logic", "fake"])).toEqual({
       completed: 1,
-      available: 7,
-      percentage: 14,
+      available: 9,
+      percentage: 11,
     });
     expect(progressSummary([id, "big-o-notation"])).toEqual({
       completed: 2,
-      available: 7,
-      percentage: 29,
+      available: 9,
+      percentage: 22,
     });
     expect(
       progressSummary([id, "big-o-notation", "binary-number-representation"]),
-    ).toEqual({ completed: 3, available: 7, percentage: 43 });
+    ).toEqual({ completed: 3, available: 9, percentage: 33 });
   });
-  it("counts full completion across all seven available lessons", () => {
+  it("counts full completion across all nine available lessons", () => {
     expect(progressSummary(availableTopics.map((topic) => topic.id))).toEqual({
-      completed: 7,
-      available: 7,
+      completed: 9,
+      available: 9,
       percentage: 100,
     });
   });

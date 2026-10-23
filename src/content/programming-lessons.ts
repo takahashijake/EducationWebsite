@@ -1,4 +1,10 @@
 import type { Lesson } from "./types";
+import {
+  operatorsTrace,
+  conditionalsTrace,
+  loopsTrace,
+  functionsTrace,
+} from "./programming-traces";
 
 export const programmingLessons: Record<string, Lesson> = {
   "operators-expressions": {
@@ -44,128 +50,12 @@ export const programmingLessons: Record<string, Lesson> = {
         paragraphs: [
           "Suppose a shop accepts an order when the total fits a budget and stock is available. For boolean operands, and is True only if both operands are True; or is True if at least one is True; not flips a boolean. If affordable is False and in_stock is True, affordable and in_stock is False, while affordable or in_stock is True.",
           "Comparisons bind more tightly than and: total <= budget and quantity > 0 combines two comparisons. Use parentheses to make the two questions visible. Python short-circuits: and skips the right operand when the left is false, and or skips it when the left is true. For general operands these operators return an operand, not necessarily a bool; use boolean comparisons while learning.",
+          "Short-circuiting can protect an operation: with count = 0, count != 0 and total / count >= 5 yields False without dividing. The left comparison is False, so Python never evaluates total / count. Reversing the operands would attempt division first and raise ZeroDivisionError. For or, True or (1 / 0 > 2) yields True without evaluating the division, because the first operand already settles the result.",
         ],
         code: "total = 26\nbudget = 30\nin_stock = True\ncan_order = (total <= budget) and in_stock\nprint(can_order)",
       },
     ],
-    demonstration: {
-      kind: "trace",
-      title: "Trace a notebook bill",
-      caption:
-        "Follow the highlighted instructions and compare each resulting state.",
-      source:
-        "price = 8\nquantity = 3\ntotal = price * quantity + 2\naffordable = total <= 25\nprint(total, affordable)",
-      steps: [
-        {
-          lines: [1],
-          explanation: "Bind price to 8.",
-          variables: [
-            {
-              name: "price",
-              value: 8,
-              scope: "global",
-            },
-          ],
-          output: [],
-        },
-        {
-          lines: [2],
-          explanation: "Bind quantity to 3.",
-          variables: [
-            {
-              name: "price",
-              value: 8,
-              scope: "global",
-            },
-            {
-              name: "quantity",
-              value: 3,
-              scope: "global",
-            },
-          ],
-          output: [],
-        },
-        {
-          lines: [3],
-          explanation:
-            "Evaluate 8 * 3 + 2: 24 + 2 becomes 26, then assign total.",
-          variables: [
-            {
-              name: "price",
-              value: 8,
-              scope: "global",
-            },
-            {
-              name: "quantity",
-              value: 3,
-              scope: "global",
-            },
-            {
-              name: "total",
-              value: 26,
-              scope: "global",
-            },
-          ],
-          output: [],
-          detail: "Expression: 8 * 3 + 2 → 24 + 2 → 26",
-        },
-        {
-          lines: [4],
-          explanation: "26 <= 25 is False; assign the boolean to affordable.",
-          variables: [
-            {
-              name: "price",
-              value: 8,
-              scope: "global",
-            },
-            {
-              name: "quantity",
-              value: 3,
-              scope: "global",
-            },
-            {
-              name: "total",
-              value: 26,
-              scope: "global",
-            },
-            {
-              name: "affordable",
-              value: false,
-              scope: "global",
-            },
-          ],
-          output: [],
-        },
-        {
-          lines: [5],
-          explanation: "print displays the two values separated by a space.",
-          variables: [
-            {
-              name: "price",
-              value: 8,
-              scope: "global",
-            },
-            {
-              name: "quantity",
-              value: 3,
-              scope: "global",
-            },
-            {
-              name: "total",
-              value: 26,
-              scope: "global",
-            },
-            {
-              name: "affordable",
-              value: false,
-              scope: "global",
-            },
-          ],
-          output: ["26 False"],
-        },
-      ],
-      result: "The bill is 26 and exceeds the 25-credit budget.",
-    },
+    demonstration: operatorsTrace,
     workedExample: {
       title: "Work out the bill before comparing it",
       introduction:
@@ -315,90 +205,7 @@ export const programmingLessons: Record<string, Lesson> = {
         ],
       },
     ],
-    demonstration: {
-      kind: "trace",
-      title: "Trace a score recommendation",
-      caption:
-        "Follow the highlighted instructions and compare each resulting state.",
-      source:
-        'score = 72\nif score >= 80:\n    grade = "advanced"\nelif score >= 60:\n    grade = "ready"\nelse:\n    grade = "review"\nprint(grade)',
-      steps: [
-        {
-          lines: [1],
-          explanation: "Assign score 72.",
-          variables: [
-            {
-              name: "score",
-              value: 72,
-              scope: "global",
-            },
-          ],
-          output: [],
-        },
-        {
-          lines: [2],
-          explanation: "72 >= 80 is False. Skip the advanced body on line 3.",
-          variables: [
-            {
-              name: "score",
-              value: 72,
-              scope: "global",
-            },
-          ],
-          output: [],
-          detail: "First condition: False · branch skipped",
-        },
-        {
-          lines: [4],
-          explanation: "72 >= 60 is True. Choose the elif body.",
-          variables: [
-            {
-              name: "score",
-              value: 72,
-              scope: "global",
-            },
-          ],
-          output: [],
-          detail: "Selected branch: elif score >= 60",
-        },
-        {
-          lines: [5],
-          explanation: "Assign ready. The else body on line 7 is skipped.",
-          variables: [
-            {
-              name: "score",
-              value: 72,
-              scope: "global",
-            },
-            {
-              name: "grade",
-              value: "ready",
-              scope: "global",
-            },
-          ],
-          output: [],
-          detail: "Selected body: line 5",
-        },
-        {
-          lines: [8],
-          explanation: "After the chain, print the selected recommendation.",
-          variables: [
-            {
-              name: "score",
-              value: 72,
-              scope: "global",
-            },
-            {
-              name: "grade",
-              value: "ready",
-              scope: "global",
-            },
-          ],
-          output: ["ready"],
-        },
-      ],
-      result: "Only the ready branch executes; output is ready.",
-    },
+    demonstration: conditionalsTrace,
     workedExample: {
       title: "Choose the first matching recommendation",
       introduction:
@@ -561,172 +368,7 @@ export const programmingLessons: Record<string, Lesson> = {
         code: "for row in range(1, 3):\n    for column in range(1, 3):\n        print(row, column)",
       },
     ],
-    demonstration: {
-      kind: "trace",
-      title: "Trace an accumulator",
-      caption:
-        "Follow the highlighted instructions and compare each resulting state.",
-      source: "total = 0\nfor i in range(1, 4):\n    total += i\nprint(total)",
-      steps: [
-        {
-          lines: [1],
-          explanation: "Initialize the accumulator once.",
-          variables: [
-            {
-              name: "total",
-              value: 0,
-              scope: "global",
-            },
-          ],
-          output: [],
-        },
-        {
-          lines: [2],
-          explanation: "Get the first item, 1, from the range.",
-          variables: [
-            {
-              name: "total",
-              value: 0,
-              scope: "global",
-            },
-            {
-              name: "i",
-              value: 1,
-              scope: "global",
-            },
-          ],
-          output: [],
-          detail: "Iteration 1 · next item exists",
-        },
-        {
-          lines: [3],
-          explanation: "Read total 0 and i 1, then store 1.",
-          variables: [
-            {
-              name: "total",
-              value: 1,
-              scope: "global",
-            },
-            {
-              name: "i",
-              value: 1,
-              scope: "global",
-            },
-          ],
-          output: [],
-          detail: "Iteration 1 complete",
-        },
-        {
-          lines: [2],
-          explanation: "Get the next item, 2. Retain total 1.",
-          variables: [
-            {
-              name: "total",
-              value: 1,
-              scope: "global",
-            },
-            {
-              name: "i",
-              value: 2,
-              scope: "global",
-            },
-          ],
-          output: [],
-          detail: "Iteration 2 · next item exists",
-        },
-        {
-          lines: [3],
-          explanation: "1 + 2 = 3, so total becomes 3.",
-          variables: [
-            {
-              name: "total",
-              value: 3,
-              scope: "global",
-            },
-            {
-              name: "i",
-              value: 2,
-              scope: "global",
-            },
-          ],
-          output: [],
-          detail: "Iteration 2 complete",
-        },
-        {
-          lines: [2],
-          explanation: "Get the next item, 3.",
-          variables: [
-            {
-              name: "total",
-              value: 3,
-              scope: "global",
-            },
-            {
-              name: "i",
-              value: 3,
-              scope: "global",
-            },
-          ],
-          output: [],
-          detail: "Iteration 3 · next item exists",
-        },
-        {
-          lines: [3],
-          explanation: "3 + 3 = 6, so total becomes 6.",
-          variables: [
-            {
-              name: "total",
-              value: 6,
-              scope: "global",
-            },
-            {
-              name: "i",
-              value: 3,
-              scope: "global",
-            },
-          ],
-          output: [],
-          detail: "Iteration 3 complete",
-        },
-        {
-          lines: [2],
-          explanation:
-            "The range is exhausted: 4 is excluded. Exit the loop without changing i.",
-          variables: [
-            {
-              name: "total",
-              value: 6,
-              scope: "global",
-            },
-            {
-              name: "i",
-              value: 3,
-              scope: "global",
-            },
-          ],
-          output: [],
-          detail: "Termination · no next item",
-        },
-        {
-          lines: [4],
-          explanation: "The unindented print runs once after the loop.",
-          variables: [
-            {
-              name: "total",
-              value: 6,
-              scope: "global",
-            },
-            {
-              name: "i",
-              value: 3,
-              scope: "global",
-            },
-          ],
-          output: ["6"],
-        },
-      ],
-      result: "Three iterations accumulate 6; the range is exhausted.",
-    },
+    demonstration: loopsTrace,
     workedExample: {
       title: "Sum without losing earlier work",
       introduction: "Follow a running total across three iterations.",
@@ -860,6 +502,7 @@ export const programmingLessons: Record<string, Lesson> = {
         title: "Return a value when other code needs to use it",
         paragraphs: [
           "print sends text to output. return supplies a value to the caller and immediately leaves the function. Printing 12 does not give a caller the number 12 to calculate with. A function that reaches its end without return, or uses bare return, returns None.",
+          "A side effect is an observable change beyond producing the returned value, such as printing output or modifying shared data. A function can return a value, have side effects, or do both. add_fee only returns its calculation; print(result) makes displaying it the caller’s decision. Keeping calculation separate from display lets the same function support a screen, a test, or another calculation.",
           "In the first function below, x is None even though 6 appears on screen. In the second, y receives 6 without printing anything during the call. Statements after an executed return in that body do not run. A function with a conditional return needs every intended result path covered; otherwise some calls may return None.",
         ],
         code: "def show_double(n):\n    print(n * 2)\n\ndef double(n):\n    return n * 2\n\nx = show_double(3)\ny = double(3)\nprint(x, y)",
@@ -888,138 +531,7 @@ export const programmingLessons: Record<string, Lesson> = {
         ],
       },
     ],
-    demonstration: {
-      kind: "trace",
-      title: "Trace arguments, local state, and a return",
-      caption:
-        "Follow the highlighted instructions and compare each resulting state.",
-      source:
-        "def add_fee(amount, fee):\n    total = amount + fee\n    return total\n\nprice = 10\nresult = add_fee(price, 2)\nprint(result)",
-      steps: [
-        {
-          lines: [1],
-          explanation:
-            "Define add_fee. The body on lines 2–3 does not execute yet.",
-          variables: [],
-          output: [],
-          detail: "Definition · no call yet",
-        },
-        {
-          lines: [5],
-          explanation: "Assign global price 10.",
-          variables: [
-            {
-              name: "price",
-              value: 10,
-              scope: "global",
-            },
-          ],
-          output: [],
-        },
-        {
-          lines: [6],
-          explanation:
-            "Evaluate arguments 10 and 2 and enter add_fee. result is not assigned yet.",
-          variables: [
-            {
-              name: "price",
-              value: 10,
-              scope: "global",
-            },
-            {
-              name: "amount",
-              value: 10,
-              scope: "add_fee call",
-            },
-            {
-              name: "fee",
-              value: 2,
-              scope: "add_fee call",
-            },
-          ],
-          output: [],
-          detail: "Call · amount ← 10; fee ← 2",
-        },
-        {
-          lines: [2],
-          explanation: "In the call, compute local total 12.",
-          variables: [
-            {
-              name: "price",
-              value: 10,
-              scope: "global",
-            },
-            {
-              name: "amount",
-              value: 10,
-              scope: "add_fee call",
-            },
-            {
-              name: "fee",
-              value: 2,
-              scope: "add_fee call",
-            },
-            {
-              name: "total",
-              value: 12,
-              scope: "add_fee call",
-            },
-          ],
-          output: [],
-          detail: "Local computation",
-        },
-        {
-          lines: [3],
-          explanation:
-            "Return the value 12. This call ends; its local bindings leave the active state.",
-          variables: [
-            {
-              name: "price",
-              value: 10,
-              scope: "global",
-            },
-          ],
-          output: [],
-          detail: "Return · 12 goes to the caller",
-        },
-        {
-          lines: [6],
-          explanation: "Resume the caller and bind the returned 12 to result.",
-          variables: [
-            {
-              name: "price",
-              value: 10,
-              scope: "global",
-            },
-            {
-              name: "result",
-              value: 12,
-              scope: "global",
-            },
-          ],
-          output: [],
-          detail: "Caller resumes · result ← 12",
-        },
-        {
-          lines: [7],
-          explanation: "Print the caller’s result.",
-          variables: [
-            {
-              name: "price",
-              value: 10,
-              scope: "global",
-            },
-            {
-              name: "result",
-              value: 12,
-              scope: "global",
-            },
-          ],
-          output: ["12"],
-        },
-      ],
-      result: "Arguments 10 and 2 yield returned value 12; output is 12.",
-    },
+    demonstration: functionsTrace,
     workedExample: {
       title: "Track a value through a function boundary",
       introduction:
@@ -1126,6 +638,6 @@ export const programmingLessons: Record<string, Lesson> = {
       },
     ],
     nextStep:
-      "You have reached the end of the five-lesson core path. Combine expressions, decisions, loops, and functions in a small program, such as a study-session summary. Recursion and Basic Debugging remain planned previews; Programming Fundamentals as a whole is still growing.",
+      "Continue to Recursion to trace repeated calls and returns. Basic Debugging then develops systematic failure investigation before the guided number guessing project.",
   },
 };

@@ -28,8 +28,26 @@ export function Navigation() {
           >
             The roadmap
           </Link>
+          <Link
+            href="/projects"
+            className={
+              path.startsWith("/projects") ? "nav-link active" : "nav-link"
+            }
+            aria-current={path === "/projects" ? "page" : undefined}
+          >
+            Projects
+          </Link>
           <Link href="/#how-it-works" className="nav-link how-link">
             How it works
+          </Link>
+          <Link
+            href="/practice/cpp"
+            className={
+              path.startsWith("/practice") ? "nav-link active" : "nav-link"
+            }
+            aria-current={path === "/practice/cpp" ? "page" : undefined}
+          >
+            Practice
           </Link>
           <Link href="/lessons/variables-data-types" className="button small">
             First lesson <Icon name="arrow" size={15} />

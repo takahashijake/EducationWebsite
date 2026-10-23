@@ -54,19 +54,33 @@ export type Lesson = {
 
 export type TraceValue = string | number | boolean | null;
 export type TraceStep = {
-  lines: number[]; // One-based source lines; state is AFTER these lines execute.
+  lines: number[]; // One-based source lines; state follows the explained action, possibly part of a line.
   explanation: string;
   variables: { name: string; value: TraceValue; scope: string }[];
   output: string[]; // Complete output so far, not a delta.
   detail?: string; // Branch decision, iteration, call, or return.
+  frames?: TraceFrame[]; // Oldest caller first; variables are matched by scope.
 };
-export type CodeTrace = {
-  kind: "trace";
-  title: string;
-  caption: string;
+export type TraceFrame = {
+  id: string;
+  name: string;
+  scope: string;
+  status: "active" | "suspended" | "returning";
+  resumeLine?: number;
+  returnValue?: TraceValue;
+};
+export type TraceProgram = {
   source: string;
   steps: TraceStep[];
   result: string;
+};
+export type CodeTrace = TraceProgram & {
+  kind: "trace";
+  title: string;
+  caption: string;
+  defaultLabel?: string;
+  inputLabel?: string;
+  scenarios?: (TraceProgram & { id: string; label: string })[];
 };
 export type Demonstration =
   { kind: "types" | "binary" | "complexity"; caption: string } | CodeTrace;

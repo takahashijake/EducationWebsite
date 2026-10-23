@@ -6,3 +6,6 @@ playwright-report/
 test-results/
 *.tsbuildinfo
 .env*
+
+public/cpp/runtime/
+public/cpp/wasi.js

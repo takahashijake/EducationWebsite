@@ -3,8 +3,10 @@ import Link from "next/link";
 import { programmingPath, topics, topicHref } from "@/content/curriculum";
 import { pathProgress } from "@/lib/progress";
 import { useProgress } from "./progress-provider";
+import { practiceSummary } from "@/lib/practice-progress";
 export function LearningPath({ currentId }: { currentId?: string }) {
-  const { completedIds } = useProgress();
+  const { completedIds, practice } = useProgress();
+  const coding = practiceSummary(practice);
   const progress = pathProgress(completedIds);
   return (
     <nav className="learning-path" aria-label="Programming core learning path">
@@ -40,10 +42,21 @@ export function LearningPath({ currentId }: { currentId?: string }) {
           );
         })}
       </ol>
+      <p>
+        <Link href="/projects/number-guessing">
+          Guided project: Python Number Guessing Game →
+        </Link>
+      </p>
+      <p>
+        <Link href="/practice/cpp">
+          C++ practice: {coding.completed} of {coding.total} exercises passed
+          public tests
+        </Link>
+      </p>
       {!progress.recommendedId && (
         <p>
-          Core path completed. Recursion and Basic Debugging remain planned in
-          Programming Fundamentals.
+          Programming path reading completed. Apply these concepts in the guided
+          project; completion alone does not establish understanding.
         </p>
       )}
     </nav>

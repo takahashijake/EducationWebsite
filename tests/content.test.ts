@@ -23,9 +23,11 @@ describe("curriculum contracts", () => {
       "big-o-notation",
       "binary-number-representation",
       "conditionals",
+      "debugging",
       "functions",
       "loops",
       "operators-expressions",
+      "recursion",
       "variables-data-types",
     ]);
   });
