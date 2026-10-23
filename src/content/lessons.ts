@@ -1,8 +1,9 @@
+import { codingExercises } from "./coding-exercises";
 import { advancedLessons } from "./advanced-lessons";
 import { programmingLessons } from "./programming-lessons";
 import type { Lesson } from "./types";
 
-export const lessons: Record<string, Lesson> = {
+const authoredLessons: Record<string, Lesson> = {
   ...programmingLessons,
   ...advancedLessons,
   "variables-data-types": {
@@ -290,3 +291,15 @@ export const lessons: Record<string, Lesson> = {
     ],
   },
 };
+
+export const lessons: Record<string, Lesson> = Object.fromEntries(
+  Object.entries(authoredLessons).map(([id, lesson]) => [
+    id,
+    {
+      ...lesson,
+      ...(codingExercises[id]
+        ? { codingExercises: [codingExercises[id]] }
+        : {}),
+    },
+  ]),
+);

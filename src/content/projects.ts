@@ -1,3 +1,4 @@
+import { withNumberGuessingLabs } from "./project-coding";
 import type { GuidedProject } from "./project-types";
 
 const comparison = `def compare_guess(guess, secret):
@@ -54,14 +55,14 @@ const terminal = `def main():
     print('Out of attempts')`;
 
 export const projects: GuidedProject[] = [
-  {
+  withNumberGuessingLabs({
     id: "number-guessing",
     slug: "number-guessing",
     title: "Python Number Guessing Game",
     introduction: [
       "Build a game whose rules you can explain and test. The secret is 12, guesses are integers from 1 to 20 inclusive, and the player has three valid attempts. Invalid entries produce feedback and do not consume an attempt. A correct guess ends the game immediately.",
-      "Work one component at a time: comparison, validation, a deterministic round, regression tests, and a terminal interface. Write your implementation in a local Python file before comparing it with the reference. Each stage opens after the preceding stage's check and checklist; hints reveal one step at a time.",
-      "The browser checks fixed reasoning questions and saves your checklist. It does not execute or grade your Python. Copy the assertions into your own Python 3 environment to test your implementation. Passing the questions and checking the boxes records guided-project completion, not independent coding mastery.",
+      "Work one component at a time: comparison, validation, a deterministic round, regression tests, and a terminal interface. Write your implementation in the browser Code Lab before comparing it with the reference. Each stage opens after the preceding stage's check and checklist; hints reveal one step at a time.",
+      "The Code Lab executes your Python in a browser Worker and runs deterministic tests. It saves code separately from your reasoning answers and checklist. Passing tests is advisory evidence; the existing questions and checklist still record guided-project completion, not independent coding mastery.",
     ],
     objectives: [
       "Decompose a specification into small functions with clear contracts.",
@@ -350,7 +351,7 @@ export const projects: GuidedProject[] = [
       "Which functions can you test without keyboard input, and why?",
       "What evidence would you collect if the terminal and finite-input engine disagreed?",
     ],
-  },
+  }),
 ];
 export function getProject(slug: string) {
   return projects.find((project) => project.slug === slug);

@@ -2738,6 +2738,125 @@ code {
   }
 }
 
+/* The Code Lab extends the instructional palette without taking over the lesson. */
+.code-lab {
+  min-width: 0;
+  max-width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #f3f6ef;
+  padding: 22px;
+  margin: 28px 0;
+  overflow-wrap: anywhere;
+}
+.code-lab h2 {
+  margin: 12px 0 18px;
+}
+.code-lab h3 {
+  margin: 24px 0 12px;
+}
+.code-lab h4 {
+  margin: 16px 0 8px;
+}
+.code-lab p,
+.code-lab label,
+.code-lab li {
+  font-size: 13px;
+  line-height: 1.9;
+}
+.code-lab label {
+  display: block;
+  margin-top: 18px;
+  font-weight: 600;
+}
+.code-lab textarea,
+.code-lab select {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  border: 1px solid #849b88;
+  border-radius: 5px;
+  padding: 12px;
+  background: #fffefa;
+  color: #203e34;
+  font: inherit;
+}
+.code-lab textarea {
+  resize: vertical;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  tab-size: 4;
+  white-space: pre;
+  overflow: auto;
+}
+.code-lab .code-editor {
+  min-height: 220px;
+}
+textarea:focus-visible {
+  outline: 3px solid #a17126;
+  outline-offset: 3px;
+}
+.lab-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+.code-lab .button {
+  white-space: normal;
+  max-width: 100%;
+  min-height: 44px;
+}
+.lab-confirm {
+  border: 2px solid #a17126;
+  border-radius: 5px;
+  padding: 16px;
+  margin-top: 20px;
+}
+.lab-carry {
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+.lab-state {
+  font-weight: 600;
+}
+.code-lab pre {
+  max-width: 100%;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 320px;
+  overflow: auto;
+  font-size: 12px;
+}
+.lab-concepts a {
+  display: inline-block;
+  margin-right: 12px;
+  text-decoration: underline;
+}
+.lab-test-results {
+  padding-left: 20px;
+}
+.lab-test-results li {
+  margin-bottom: 20px;
+}
+.code-lab .workspace-note,
+.code-lab .lab-limit-note {
+  font-size: 12px;
+}
+@media (max-width: 600px) {
+  .code-lab {
+    padding: 14px;
+  }
+  .code-lab textarea {
+    font-size: 13px;
+  }
+  .code-lab .eyebrow {
+    font-size: 8px;
+    letter-spacing: 0.5px;
+  }
+}
+
 /* The assessment reuses lesson typography and contains long Python snippets. */
 .activity-shell {
   max-width: 960px;

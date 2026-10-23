@@ -1,10 +1,10 @@
-# CS Fundamentals Roadmap · Guided C++ Practice
+# CS Fundamentals Roadmap · Python and C++ Practice
 
 A guided introduction to computer science through explanations, worked Python examples, interactive execution traces, deliberate practice, and a staged project.
 
 **Integrated C++ practice:** open `/practice/cpp` or the C++ programming practice section in Variables, Operators, Conditionals, Loops, or Functions. Eight guided activities introduce C++ syntax, provide a CodeMirror editor, compile real C++17 to WebAssembly on the learner's device, evaluate public test cases, and save drafts and attempt history through the existing progress provider. Reading and project completion retain their existing behavior. No learner code runs on the application server.
 
-See [C++ architecture, security, authoring, and deployment](docs/cpp-playground.md) and [delivery verification](docs/cpp-review.md). The first execution downloads about 95 MB of self-hosted compiler assets. Programs have a 64 MiB linear-memory cap, a two-second deadline per input, bounded output, and WASI capabilities without host files, secrets, storage, or network access. Tests are visible client-side practice evidence, not hidden grading or certification. The separate, unmerged Python Code Lab branch is not part of this feature.
+See [C++ architecture, security, authoring, and deployment](docs/cpp-playground.md) and [delivery verification](docs/cpp-review.md). The first execution downloads about 95 MB of self-hosted compiler assets. Programs have a 64 MiB linear-memory cap, a two-second deadline per input, bounded output, and WASI capabilities without host files, secrets, storage, or network access. Tests are visible client-side practice evidence, not hidden grading or certification. Python Code Labs also provide editable, executable practice in all seven programming lessons and all five project stages. Python uses a separate disposable Pyodide Worker with explicit deadlines, bounded output, saved drafts, and advisory public checks. See [Python architecture and verification](docs/v0.4-review.md).
 
 The integrated [Programming Fundamentals assessment](/assessments/programming-fundamentals) combines 12 authored Python reasoning problems, deterministic scoring, missed-topic review links, and retry. It preserves lesson/project progress; attempts reset on reload and do not establish mastery.
 
@@ -26,7 +26,7 @@ Every lesson begins with objectives, connects explanations to a demonstration an
 
 The shared **understanding summary** counts checks attempted and correct during the current lesson visit. Reading completion is a separate manual action. Correct fixed-choice answers and checked boxes do **not** establish mastery or independently verify coding skill. Lesson attempts reset on reload; project reasoning answers and checklists persist.
 
-The game fixes the secret at 12, accepts integers from 1 to 20, and allows three valid guesses. Invalid text and out-of-range values do not consume attempts. The finite-input engine accepts supplied strings for reproducible tests; the terminal interface requests input as needed. Students write and run Python locally. **There is no arbitrary-code editor, interpreter, eval, or external execution service in the website.**
+The game fixes the secret at 12, accepts integers from 1 to 20, and allows three valid guesses. Invalid text and out-of-range values do not consume attempts. The finite-input engine accepts supplied strings for reproducible tests; the terminal interface requests input as needed. Students can write and run Python locally or in the browser Code Lab. The Python Code Lab can also run learner implementations in the browser; no learner code runs on the application server.
 
 ## Run locally
 
@@ -67,7 +67,7 @@ src/lib/quiz.ts                  Shared deterministic answer evaluation
 src/lib/progress.ts              Existing v1 lesson completion storage, unchanged
 ```
 
-The guided project uses the original dependencies and generic renderer. C++ practice adds exact-pinned CodeMirror packages, browsercc, the WASI shim, and esbuild for asset preparation. The unrelated `LLM-Town/` project, if present, is outside this application's scope.
+The guided project uses the original dependencies and generic renderer. C++ practice adds exact-pinned CodeMirror packages, browsercc, the WASI shim, and esbuild for asset preparation. Python practice adds exact-pinned Pyodide 0.29.3 assets; both runtime preparation scripts run during installation, development startup, and production builds. The unrelated `LLM-Town/` project, if present, is outside this application's scope.
 
 ## Authoring lessons and traces
 
@@ -166,3 +166,5 @@ This path is not an application dependency. See [the V0.3 review](docs/v0.3-revi
 **Recommended V0.4:** add concept-tagged assessment evidence and transparent knowledge-gap diagnosis, with short delayed retrieval checks and targeted review links. Include an independently completed project variation with rubric-based self-assessment. Arrange human educational/accessibility review before expanding into data structures or building a larger adaptive system.
 
 Python language references used during authoring: [Errors and Exceptions](https://docs.python.org/3/tutorial/errors.html), [Defining Functions](https://docs.python.org/3/tutorial/controlflow.html#defining-functions), and [RecursionError](https://docs.python.org/3/library/exceptions.html#RecursionError). Actual examples are checked with the local Python version recorded in the review.
+
+Python and C++ retain separate typed execution contracts in `src/lib/execution/python-types.ts` and `types.ts`, sharing source/input/output limits. Their grading and workspace records are independent of reading and project completion. Python can access same-origin browser capabilities through its JavaScript bridge; its Worker/deadlines are not a hostile-code security or total-memory boundary. The application has no authenticated data or server execution endpoint. Run only trusted Python; adding sensitive data requires a separate reviewed execution origin.

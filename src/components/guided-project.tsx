@@ -1,4 +1,6 @@
 "use client";
+import { CodeLab } from "./code-lab";
+import { projectWorkspaceId } from "@/lib/workspace";
 import { useState } from "react";
 import Link from "next/link";
 import type {
@@ -22,7 +24,11 @@ function Milestone({
   checked,
   ready,
   update,
+  projectId,
+  previousMilestone,
 }: {
+  projectId: string;
+  previousMilestone?: ProjectMilestone;
   milestone: ProjectMilestone;
   savedAnswer?: number;
   correct: boolean;
@@ -44,9 +50,26 @@ function Milestone({
       </ul>
       <h3>Expected behavior</h3>
       <p>{milestone.expectedBehavior}</p>
+      {milestone.coding && (
+        <CodeLab
+          exercise={milestone.coding}
+          workspaceId={projectWorkspaceId(projectId, milestone.id)}
+          carryFrom={
+            previousMilestone
+              ? {
+                  workspaceId: projectWorkspaceId(
+                    projectId,
+                    previousMilestone.id,
+                  ),
+                  title: previousMilestone.title,
+                }
+              : undefined
+          }
+        />
+      )}
       <h3>Starter code and reasoning check</h3>
       <p>
-        Implement this component in your local Python file. Then use the check
+        Implement this component in the Code Lab. Then use the reasoning check
         to explain one decision.
       </p>
       {ready ? (
@@ -55,7 +78,7 @@ function Milestone({
           exercise={{ ...milestone.question, source: milestone.starter }}
           initialAnswer={savedAnswer}
           submitLabel="Check reasoning"
-          completionNote="This check evaluates reasoning. Run your Python locally and record that work in the checklist."
+          completionNote="This choice checks reasoning separately from the executable Code Lab tests. Record your work in the checklist."
           onResult={(_, answer) =>
             update((current) => {
               const answers = { ...current.answers };
@@ -90,7 +113,7 @@ function Milestone({
           {hints} of {milestone.hints.length} hints revealed.
         </p>
       </div>
-      <h3>Deterministic tests to run locally</h3>
+      <h3>Authored test assertions</h3>
       {milestone.tests.map((test) => (
         <div key={test.label}>
           <p>{test.label}</p>
@@ -136,7 +159,7 @@ function Milestone({
       {!correct && (
         <p>
           Answer the reasoning check correctly to record your checklist. A
-          checked box is your own report of local work.
+          checked box is your own report of work.
         </p>
       )}
     </>
@@ -204,7 +227,7 @@ export function GuidedProject({ project }: { project: Project }) {
         milestones complete.{" "}
         {complete
           ? "Guided project completed. Rebuild a small variation without the solution to check your independence."
-          : "Complete each reasoning check and local-work checklist to continue."}
+          : "Complete each reasoning check and work checklist to continue."}
       </p>
       {storageError && (
         <p role="alert">
@@ -224,6 +247,8 @@ export function GuidedProject({ project }: { project: Project }) {
           </h2>
           {stages[index].unlocked ? (
             <Milestone
+              projectId={project.id}
+              previousMilestone={project.milestones[index - 1]}
               milestone={milestone}
               savedAnswer={progress.answers[milestone.question.id]}
               correct={stages[index].correct}
@@ -265,8 +290,8 @@ export function GuidedProject({ project }: { project: Project }) {
       <p>
         Project progress is stored separately from lesson reading completion on
         this browser. Reasoning answers and checklist choices persist; hint and
-        solution visibility reset on reload. No Python submissions are executed
-        here.
+        solution visibility reset on reload. Python executes only in a
+        disposable browser Worker; test results never rewrite completion.
       </p>
       <Link className="text-link" href="/roadmap">
         Return to the curriculum →

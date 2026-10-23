@@ -1,6 +1,8 @@
+import type { CodingExercise } from "./coding-types";
 import type { Question } from "./types";
 
 export type ProjectMilestone = {
+  coding?: CodingExercise;
   id: string;
   title: string;
   goal: string;
