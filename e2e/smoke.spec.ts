@@ -30,7 +30,12 @@ test("learn, check answers, persist completion, and explore a planned topic", as
     "Variables and Data Types",
   );
   await page.getByLabel("str", { exact: true }).check();
-  await page.getByRole("group").nth(1).getByLabel("5", { exact: true }).check();
+  await page
+    .locator(".knowledge-check")
+    .getByRole("group")
+    .nth(1)
+    .getByLabel("5", { exact: true })
+    .check();
   await page.getByLabel('"32"', { exact: true }).check();
   await page.getByRole("button", { name: "Check answers" }).click();
   await expect(page.getByText("3 of 3 correct.")).toBeVisible();
