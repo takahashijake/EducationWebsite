@@ -125,6 +125,43 @@ test("delayed review becomes due and recommends a direct activity", async ({
     page.getByText("Delayed retrieval completed", { exact: false }),
   ).toBeVisible();
 });
+test("rapid retries do not advance a completed spaced review", async ({
+  page,
+}) => {
+  await page.clock.install({ time: new Date("2026-01-02T00:10:00.000Z") });
+  await page.goto("/learning");
+  await page.evaluate((key) => {
+    const items = [
+      ["variables-q2", "lesson", "2026-01-01T00:00:00.000Z"],
+      ["retrieve-assignment-a", "retrieval", "2026-01-02T00:00:00.000Z"],
+      ["retrieve-assignment-a", "retrieval", "2026-01-02T00:02:00.000Z"],
+      ["retrieve-assignment-b", "retrieval", "2026-01-02T00:05:00.000Z"],
+    ];
+    localStorage.setItem(
+      key,
+      JSON.stringify({
+        version: 1,
+        records: items.map(([activityId, source, at], index) => ({
+          attemptId: `rapid-00${index}`,
+          activityId,
+          source,
+          correct: true,
+          at,
+          revision: 1,
+        })),
+      }),
+    );
+  }, key);
+  await page.reload();
+  await expect(
+    page.getByText("No review is due yet", { exact: false }),
+  ).toBeVisible();
+  await page.clock.setFixedTime(new Date("2026-01-05T00:00:00.000Z"));
+  await page.reload();
+  await expect(
+    page.getByText("Scheduled review is due", { exact: false }),
+  ).toBeVisible();
+});
 test("storage-denied assessment and keyboard retrieval remain usable", async ({
   page,
 }) => {

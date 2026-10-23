@@ -1,7 +1,5 @@
 import { topics, topicHref } from "./curriculum";
-import { lessons } from "./lessons";
 import { fundamentalsAssessment } from "./assessments";
-import { codingExercises } from "./coding-exercises";
 import type { Question } from "./types";
 
 export type Skill = {
@@ -185,18 +183,28 @@ export const assessmentActivities: Activity[] =
     href: "/assessments/programming-fundamentals",
     title: q.prompt,
   }));
-export const lessonActivities: Activity[] = Object.values(lessons).flatMap(
-  (lesson) =>
-    lesson.questions
-      .filter((q) => lessonMap[q.id])
-      .map((q) => ({
-        id: q.id,
-        source: "lesson" as const,
-        skillIds: lessonMap[q.id],
-        revision: 1,
-        href: `${topicHref(topics.find((topic) => topic.id === lesson.topicId)!)}#knowledge-check`,
-        title: q.prompt,
-      })),
+const lessonTopics: Record<string, string> = {
+  variables: "variables-data-types",
+  operators: "operators-expressions",
+  conditionals: "conditionals",
+  loops: "loops",
+  functions: "functions",
+  recursion: "recursion",
+  debugging: "debugging",
+};
+export const lessonActivities: Activity[] = Object.entries(lessonMap).map(
+  ([id, skillIds]) => {
+    const [prefix, number] = id.split("-q");
+    const topic = topics.find((item) => item.id === lessonTopics[prefix])!;
+    return {
+      id,
+      source: "lesson",
+      skillIds,
+      revision: 1,
+      href: `${topicHref(topic)}#knowledge-check`,
+      title: `${topic.title} knowledge check ${number}`,
+    };
+  },
 );
 export type RetrievalQuestion = Question & {
   skillIds: string[];
@@ -493,32 +501,73 @@ export const retrievalActivities: Activity[] = retrievalQuestions.map(
     title: question.prompt,
   }),
 );
-const pythonSkills: Record<string, string[]> = {
-  "variables-conversion": ["types", "arithmetic"],
-  "operators-range": ["boolean", "comparisons"],
-  "conditionals-threshold": ["comparisons", "branches"],
-  "loops-inclusive-sum": ["loop-boundaries"],
-  "functions-return": ["parameters", "returns"],
-  "recursion-factorial": ["base-cases", "unwinding"],
-  "debugging-safe-average": ["error-types", "debug-boundaries"],
-};
-export const pythonActivities: Activity[] = Object.values(codingExercises).map(
-  (exercise) => ({
-    id: exercise.id,
-    source: "python",
-    skillIds: pythonSkills[exercise.id] ?? [],
-    revision: exercise.revision ?? 1,
-    href: `/lessons/${exercise.topicId}#code-lab`,
-    title: exercise.title,
-  }),
-);
+// Keep lightweight authored metadata in the client catalog. The integrity
+// validator compares these entries with full exercise definitions in tests.
+const pythonMetadata: Array<{
+  id: string;
+  topicId: string;
+  title: string;
+  skillIds: string[];
+}> = [
+  {
+    id: "variables-conversion",
+    topicId: "variables-data-types",
+    title: "Convert before calculating",
+    skillIds: ["types", "arithmetic"],
+  },
+  {
+    id: "operators-range",
+    topicId: "operators-expressions",
+    title: "Repair a range condition",
+    skillIds: ["boolean", "comparisons"],
+  },
+  {
+    id: "conditionals-threshold",
+    topicId: "conditionals",
+    title: "Implement an inclusive decision",
+    skillIds: ["comparisons", "branches"],
+  },
+  {
+    id: "loops-inclusive-sum",
+    topicId: "loops",
+    title: "Repair an off-by-one sum",
+    skillIds: ["loop-boundaries"],
+  },
+  {
+    id: "functions-return",
+    topicId: "functions",
+    title: "Return a reusable result",
+    skillIds: ["parameters", "returns"],
+  },
+  {
+    id: "recursion-factorial",
+    topicId: "recursion",
+    title: "Repair the factorial base case",
+    skillIds: ["base-cases", "unwinding"],
+  },
+  {
+    id: "debugging-safe-average",
+    topicId: "debugging",
+    title: "Diagnose an empty average",
+    skillIds: ["error-types", "debug-boundaries"],
+  },
+];
+export const pythonActivities: Activity[] = pythonMetadata.map((exercise) => ({
+  id: exercise.id,
+  source: "python",
+  skillIds: exercise.skillIds,
+  revision: 1,
+  href: `/lessons/${exercise.topicId}#code-lab`,
+  title: exercise.title,
+}));
 export const transferActivity: Activity = {
   id: "python-expense-summary",
   source: "python",
   skillIds: [
+    "assignment",
     "arithmetic",
     "comparisons",
-    "loop-boundaries",
+    "loop-termination",
     "returns",
     "debug-boundaries",
   ],
@@ -536,86 +585,3 @@ export const activities = [
 export const activityById = Object.fromEntries(
   activities.map((activity) => [activity.id, activity]),
 ) as Record<string, Activity>;
-export function validateLearningCatalog(
-  registry: Skill[] = skills,
-  catalog: Activity[] = activities,
-) {
-  const errors: string[] = [];
-  const ids = new Set<string>();
-  const registryById: Record<string, Skill> = {};
-  for (const skill of registry) registryById[skill.id] ??= skill;
-  for (const skill of registry) {
-    if (ids.has(skill.id)) errors.push(`Duplicate skill ${skill.id}`);
-    ids.add(skill.id);
-    if (
-      !topics.some(
-        (topic) => topic.id === skill.topicId && topic.status === "available",
-      ) ||
-      !lessons[skill.topicId]
-    )
-      errors.push(`Unavailable topic ${skill.topicId}`);
-    if (!skill.reviewHref || !skill.reviewHref.startsWith("/lessons/"))
-      errors.push(`Missing review destination ${skill.id}`);
-    for (const id of skill.prerequisites)
-      if (!registry.some((candidate) => candidate.id === id))
-        errors.push(`Missing prerequisite ${id}`);
-  }
-  const visiting = new Set<string>();
-  const visited = new Set<string>();
-  function visit(id: string) {
-    if (visiting.has(id)) {
-      errors.push(`Cyclic prerequisite ${id}`);
-      return;
-    }
-    if (visited.has(id)) return;
-    visiting.add(id);
-    for (const next of registryById[id]?.prerequisites ?? []) visit(next);
-    visiting.delete(id);
-    visited.add(id);
-  }
-  for (const skill of registry) visit(skill.id);
-  const activityIds = new Set<string>();
-  for (const activity of catalog) {
-    if (activityIds.has(activity.id))
-      errors.push(`Duplicate activity ${activity.id}`);
-    activityIds.add(activity.id);
-    if (
-      !activity.skillIds.length ||
-      activity.skillIds.some((id) => !ids.has(id))
-    )
-      errors.push(`Invalid skill mapping ${activity.id}`);
-    if (!Number.isSafeInteger(activity.revision) || activity.revision < 1)
-      errors.push(`Invalid revision ${activity.id}`);
-    if (!activity.href.startsWith("/"))
-      errors.push(`Invalid activity destination ${activity.id}`);
-  }
-  for (const question of fundamentalsAssessment.questions)
-    if (!activityIds.has(question.id))
-      errors.push(`Unmapped assessment ${question.id}`);
-  for (const lesson of Object.values(lessons).filter((item) =>
-    registry.some((skill) => skill.topicId === item.topicId),
-  ))
-    for (const question of lesson.questions)
-      if (!activityIds.has(question.id))
-        errors.push(`Unmapped lesson question ${question.id}`);
-  for (const exercise of Object.values(codingExercises))
-    if (!activityIds.has(exercise.id))
-      errors.push(`Unmapped Python lab ${exercise.id}`);
-  for (const question of retrievalQuestions) {
-    if (
-      question.options.length < 2 ||
-      question.correctIndex < 0 ||
-      question.correctIndex >= question.options.length ||
-      !question.explanation
-    )
-      errors.push(`Invalid retrieval ${question.id}`);
-    if (
-      !topics.some(
-        (topic) =>
-          topic.id === question.topicId && topic.status === "available",
-      )
-    )
-      errors.push(`Unavailable retrieval topic ${question.topicId}`);
-  }
-  return errors;
-}

@@ -40,7 +40,7 @@ export function KnowledgeCheck({
       className="knowledge-check"
       onSubmit={(event) => {
         event.preventDefault();
-        if (allAnswered) {
+        if (allAnswered && !submitted) {
           setSubmitted(true);
           const attempt = crypto.randomUUID();
           const observations = questions

@@ -121,16 +121,43 @@ export type Diagnosis = {
   lastReviewedAt?: string;
 };
 const DAY = 86_400_000;
+const REVIEW_INTERVALS = [1, 3, 7, 14] as const;
+
+// Only a successful retrieval at or after the prior due time advances review.
+// Earlier retries remain practice evidence, but cannot compress several review
+// sessions into one sitting.
+function scheduledReview(successes: Evidence[]) {
+  const first = successes[0];
+  if (!first) return { completed: 0, dueAt: undefined as string | undefined };
+  let due = Date.parse(first.at) + REVIEW_INTERVALS[0] * DAY;
+  let completed = 0;
+  for (const attempt of successes) {
+    if (attempt.source !== "retrieval" || Date.parse(attempt.at) < due)
+      continue;
+    completed++;
+    due =
+      Date.parse(attempt.at) +
+      REVIEW_INTERVALS[Math.min(completed, REVIEW_INTERVALS.length - 1)] * DAY;
+  }
+  return { completed, dueAt: new Date(due).toISOString() };
+}
+
 export function diagnose(records: Evidence[], now: number): Diagnosis[] {
   const safeNow = Number.isFinite(now) ? now : 0;
+  const seen = new Set<string>();
+  const observations = records.filter((record) => {
+    if (
+      !validEvidence(record) ||
+      Date.parse(record.at) > safeNow + 5 * 60_000 ||
+      seen.has(record.attemptId)
+    )
+      return false;
+    seen.add(record.attemptId);
+    return true;
+  });
   return skills.map((skill) => {
-    const all = records
-      .filter(
-        (r) =>
-          validEvidence(r) &&
-          activityById[r.activityId].skillIds.includes(skill.id) &&
-          Date.parse(r.at) <= safeNow + 5 * 60_000,
-      )
+    const all = observations
+      .filter((r) => activityById[r.activityId].skillIds.includes(skill.id))
       .sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
     const direct = all.filter(
       (r) => activityById[r.activityId].skillIds.length === 1,
@@ -143,9 +170,6 @@ export function diagnose(records: Evidence[], now: number): Diagnosis[] {
       .slice(lastMistake + 1)
       .filter((r) => r.correct);
     const distinct = new Set(currentPositive.map((r) => r.activityId)).size;
-    const firstSuccess = currentPositive[0]
-      ? Date.parse(currentPositive[0].at)
-      : undefined;
     const firstEverSuccess = positive[0]
       ? Date.parse(positive[0].at)
       : undefined;
@@ -157,16 +181,9 @@ export function diagnose(records: Evidence[], now: number): Diagnosis[] {
               r.source === "retrieval" &&
               Date.parse(r.at) - firstEverSuccess >= DAY,
           );
-    const delayed =
-      firstSuccess === undefined
-        ? []
-        : currentPositive.filter(
-            (r) =>
-              r.source === "retrieval" &&
-              Date.parse(r.at) - firstSuccess >= DAY,
-          );
+    const schedule = scheduledReview(currentPositive);
     const reinforced =
-      distinct >= 2 && delayed.length > 0 && latest?.correct === true;
+      distinct >= 2 && schedule.completed > 0 && latest?.correct === true;
     let state: SkillState = "Not yet assessed";
     if (latest?.correct === false) state = "Needs review";
     else if (reinforced) state = "Reinforced through repeated evidence";
@@ -184,20 +201,17 @@ export function diagnose(records: Evidence[], now: number): Diagnosis[] {
       !all.at(-1)!.correct;
     if (recentCombinedMiss && state === "Reinforced through repeated evidence")
       state = "Practicing";
-    const schedule = currentPositive.length
-      ? [1, 3, 7, 14][Math.min(delayed.length, 3)]
-      : undefined;
-    const latestSuccess = currentPositive.at(-1);
-    let dueAt =
-      state !== "Needs review" && schedule && latestSuccess
-        ? new Date(Date.parse(latestSuccess.at) + schedule * DAY).toISOString()
-        : undefined;
+    let dueAt = state !== "Needs review" ? schedule.dueAt : undefined;
     if (state === "Needs review" && latest) dueAt = latest.at;
+    const interval =
+      REVIEW_INTERVALS[
+        Math.min(schedule.completed, REVIEW_INTERVALS.length - 1)
+      ];
     const dueReason =
       state === "Needs review"
         ? "A recent focused answer was incorrect, so review is available now."
-        : schedule
-          ? `Scheduled ${schedule} day${schedule === 1 ? "" : "s"} after the latest successful focused practice.`
+        : schedule.dueAt
+          ? `Scheduled ${interval} day${interval === 1 ? "" : "s"} after the latest completed review or initial successful practice. Early retries do not advance this interval.`
           : undefined;
     const reason = recentCombinedMiss
       ? `You missed the combined question “${activityById[all.at(-1)!.activityId].title}”. It does not isolate the cause; try a focused ${skill.title.toLowerCase()} check. ${direct.length ? `${positive.length} focused correct and ${negative.length} focused incorrect attempts are recorded.` : "No focused answer is recorded yet."}`
@@ -208,7 +222,7 @@ export function diagnose(records: Evidence[], now: number): Diagnosis[] {
         : state === "Needs review"
           ? `Your latest focused attempt on “${activityById[latest!.activityId].title}” was incorrect${negative.length > 1 ? `; ${negative.length} misses are recorded` : ""}. Review the explanation and try a different ${skill.title.toLowerCase()} question.`
           : state === "Reinforced through repeated evidence"
-            ? `${distinct} distinct focused activities were correct, including delayed retrieval at least one day later. New mistakes can change this status.`
+            ? `${distinct} distinct focused activities were correct, including ${schedule.completed} completed delayed review${schedule.completed === 1 ? "" : "s"}. New mistakes can change this status.`
             : `${positive.length} focused correct and ${negative.length} focused incorrect attempt${direct.length === 1 ? "" : "s"}; more independent, delayed practice is needed.`;
     return {
       skillId: skill.id,

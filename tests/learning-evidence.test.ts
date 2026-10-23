@@ -1,9 +1,9 @@
+import { validateLearningCatalog } from "@/content/learning-catalog-validation";
 import { describe, expect, it } from "vitest";
 import {
   activities,
   retrievalQuestions,
   skills,
-  validateLearningCatalog,
 } from "@/content/learning-catalog";
 import {
   EVIDENCE_LIMIT,
@@ -103,6 +103,49 @@ describe("evidence and diagnosis", () => {
     )[0];
     expect(recovered.state).toBe("Practicing");
     expect(recovered.dueAt).toBe(at(4.5));
+  });
+  it("advances reviews only when the prior interval has elapsed", () => {
+    const initial = entry("variables-q2", true, 20, 0);
+    const dayOne = entry("retrieve-assignment-a", true, 21, 1);
+    const rapidOne = entry("retrieve-assignment-a", true, 22, 1 + 2 / 1440);
+    const rapidTwo = entry("retrieve-assignment-b", true, 23, 1 + 5 / 1440);
+    const rapid = [initial, dayOne, rapidOne, rapidTwo];
+    expect(diagnose(rapid, Date.parse(at(2)))[0].dueAt).toBe(at(4));
+    expect(diagnose([...rapid].reverse(), Date.parse(at(2)))[0].dueAt).toBe(
+      at(4),
+    );
+    expect(diagnose([...rapid, dayOne], Date.parse(at(2)))[0].dueAt).toBe(
+      at(4),
+    );
+    const dayFour = entry("retrieve-assignment-b", true, 24, 4);
+    expect(diagnose([...rapid, dayFour], Date.parse(at(4)))[0].dueAt).toBe(
+      at(11),
+    );
+    expect(
+      diagnose(
+        [
+          ...rapid,
+          dayFour,
+          entry("retrieve-assignment-a", true, 25, 4 + 1 / 1440),
+        ],
+        Date.parse(at(5)),
+      )[0].dueAt,
+    ).toBe(at(11));
+  });
+  it("resets the interval after a mistaken delayed review and restarts after recovery", () => {
+    const initial = entry("variables-q2", true, 30, 0);
+    const review = entry("retrieve-assignment-a", true, 31, 1);
+    const mistake = entry("retrieve-assignment-b", false, 32, 4);
+    expect(
+      diagnose([initial, review, mistake], Date.parse(at(4)))[0].dueAt,
+    ).toBe(at(4));
+    const recovery = entry("retrieve-assignment-b", true, 33, 4 + 2 / 1440);
+    const state = diagnose(
+      [initial, review, mistake, recovery],
+      Date.parse(at(5)),
+    )[0];
+    expect(state.state).toBe("Practicing");
+    expect(state.dueAt).toBe(at(5 + 2 / 1440));
   });
   it("treats combined misses as clues and recommends focused review", () => {
     const records = [entry("fundamentals-expression", false, 1, 0)];

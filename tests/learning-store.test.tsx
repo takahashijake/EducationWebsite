@@ -1,4 +1,10 @@
-import { renderHook, render, screen, act } from "@testing-library/react";
+import {
+  renderHook,
+  render,
+  screen,
+  act,
+  fireEvent,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { useLearningEvidence } from "@/components/use-learning-evidence";
@@ -37,5 +43,23 @@ describe("learning evidence browser store", () => {
     expect(spy).not.toHaveBeenCalled();
     expect(localStorage.getItem(EVIDENCE_KEY)).toBeNull();
     spy.mockRestore();
+  });
+  it("records a completed quiz submission only once until retry", async () => {
+    localStorage.removeItem(EVIDENCE_KEY);
+    const question = lessons["variables-data-types"].questions[0];
+    const onResult = vi.fn();
+    const user = userEvent.setup();
+    const { container } = render(
+      <KnowledgeCheck questions={[question]} onResult={onResult} />,
+    );
+    await user.click(
+      screen.getByLabelText(question.options[question.correctIndex]),
+    );
+    await user.click(screen.getByRole("button", { name: "Check answers" }));
+    fireEvent.submit(container.querySelector("form")!);
+    expect(onResult).toHaveBeenCalledTimes(1);
+    expect(
+      JSON.parse(localStorage.getItem(EVIDENCE_KEY)!).records,
+    ).toHaveLength(1);
   });
 });

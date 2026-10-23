@@ -128,21 +128,19 @@ export function CodeLab({
       setResult(answer);
       setStreams({ stdout: answer.stdout, stderr: answer.stderr });
       const unique = new Map(answer.tests.map((row) => [row.id, row.status]));
+      const allPassed = exercise.tests.every(
+        (test) => unique.get(test.id) === "passed",
+      );
       if (
         tests &&
         activityById[exercise.id] &&
         (answer.kind === "success" || answer.kind === "test-failure") &&
+        (answer.kind === "success") === allPassed &&
         answer.tests.length === exercise.tests.length &&
         unique.size === exercise.tests.length &&
         exercise.tests.every((test) => unique.has(test.id))
       ) {
-        record([
-          makeEvidence(
-            exercise.id,
-            exercise.tests.every((test) => unique.get(test.id) === "passed"),
-            crypto.randomUUID(),
-          ),
-        ]);
+        record([makeEvidence(exercise.id, allPassed, crypto.randomUUID())]);
       }
     }
   };
@@ -174,7 +172,9 @@ export function CodeLab({
             Reveal next hint
           </button>
           {exercise.hints.slice(0, revealedHints).map((hint, index) => (
-            <p key={hint}>Hint {index + 1}: {hint}</p>
+            <p key={hint}>
+              Hint {index + 1}: {hint}
+            </p>
           ))}
         </div>
       )}
@@ -272,7 +272,18 @@ export function CodeLab({
           className="button secondary"
           type="button"
           disabled={!busy}
-          onClick={() => engine.current?.cancel()}
+          onClick={() => {
+            sequence.current++;
+            engine.current?.cancel();
+            setState("cancelled");
+            setResult({
+              kind: "cancelled",
+              stdout: streams.stdout,
+              stderr: streams.stderr,
+              tests: [],
+              truncated: false,
+            });
+          }}
         >
           Stop
         </button>
