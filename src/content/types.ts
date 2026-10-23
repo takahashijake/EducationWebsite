@@ -24,8 +24,8 @@ export type Topic = {
   prerequisites?: string[];
 };
 export type Question = {
-  id: string;
   source?: string;
+  id: string;
   prompt: string;
   options: string[];
   correctIndex: number;
@@ -55,57 +55,38 @@ export type Lesson = {
 
 export type TraceValue = string | number | boolean | null;
 export type TraceStep = {
-  lines: number[]; // One-based source lines; state is AFTER these lines execute.
+  lines: number[]; // One-based source lines; state follows the explained action, possibly part of a line.
   explanation: string;
   variables: { name: string; value: TraceValue; scope: string }[];
   output: string[]; // Complete output so far, not a delta.
   detail?: string; // Branch decision, iteration, call, or return.
-  stack?: StackFrame[]; // Optional for existing nonrecursive traces.
-  stackEvent?: StackEvent;
+  frames?: TraceFrame[]; // Oldest caller first; variables are matched by scope.
 };
-export type CodeTrace = {
-  kind: "trace";
-  title: string;
-  caption: string;
+export type TraceFrame = {
+  id: string;
+  name: string;
+  scope: string;
+  status: "active" | "suspended" | "returning";
+  resumeLine?: number;
+  returnValue?: TraceValue;
+};
+export type TraceProgram = {
   source: string;
   steps: TraceStep[];
   result: string;
+};
+export type CodeTrace = TraceProgram & {
+  kind: "trace";
+  title: string;
+  caption: string;
+  defaultLabel?: string;
+  inputLabel?: string;
+  scenarios?: (TraceProgram & { id: string; label: string })[];
 };
 export type Demonstration =
   { kind: "types" | "binary" | "complexity"; caption: string } | CodeTrace;
 export type PracticeExercise = Question & { source: string };
 
-// Frames are ordered oldest caller first, active/returning invocation last.
-export type StackFrame = {
-  id: string;
-  functionName: string;
-  arguments: { name: string; value: TraceValue }[];
-  locals: { name: string; value: TraceValue }[];
-  status: "running" | "waiting" | "returned";
-  returnValue?: TraceValue;
-};
-export type StackEvent = {
-  kind: "push" | "base" | "return" | "pop";
-  frameId: string;
-};
-
-export type ProjectCheckpoint = {
-  id: string;
-  title: string;
-  paragraphs: string[];
-  expected: string;
-  source?: string;
-  exercise?: PracticeExercise;
-  trace?: CodeTrace;
-};
-export type GuidedProject = {
-  id: string;
-  slug: string;
-  title: string;
-  introduction: string;
-  topicIds: string[];
-  checkpoints: ProjectCheckpoint[];
-};
 export type AssessmentQuestion = PracticeExercise & { topicIds: string[] };
 export type Assessment = {
   id: string;

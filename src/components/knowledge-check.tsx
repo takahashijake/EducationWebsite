@@ -7,11 +7,13 @@ import { evaluateAnswer, scoreQuestions } from "@/lib/quiz";
 import { Icon } from "./icon";
 export function KnowledgeCheck({
   questions,
+  onResult,
   reviewTopics = {},
   submitLabel = "Check answers",
   retryLabel = "Try again",
 }: {
   questions: Question[];
+  onResult?: (results: boolean[] | undefined) => void;
   reviewTopics?: Record<string, string[]>;
   submitLabel?: string;
   retryLabel?: string;
@@ -34,7 +36,14 @@ export function KnowledgeCheck({
       className="knowledge-check"
       onSubmit={(event) => {
         event.preventDefault();
-        if (allAnswered) setSubmitted(true);
+        if (allAnswered) {
+          setSubmitted(true);
+          onResult?.(
+            questions.map((question) =>
+              evaluateAnswer(question, answers[question.id]),
+            ),
+          );
+        }
       }}
     >
       <p className="quiz-intro">
@@ -88,8 +97,8 @@ export function KnowledgeCheck({
               </p>
               {!evaluateAnswer(question, answers[question.id]) &&
                 reviewTopics[question.id]?.map((id) => {
-                  const topic = topics.find((t) => t.id === id)!;
-                  return (
+                  const topic = topics.find((t) => t.id === id);
+                  return topic ? (
                     <Link
                       className="review-link"
                       key={id}
@@ -97,7 +106,7 @@ export function KnowledgeCheck({
                     >
                       Review {topic.title}
                     </Link>
-                  );
+                  ) : null;
                 })}
             </div>
           )}
@@ -118,7 +127,7 @@ export function KnowledgeCheck({
               <p>
                 Suggested review:{" "}
                 {missedTopicIds
-                  .map((id) => topics.find((t) => t.id === id)!.title)
+                  .map((id) => topics.find((t) => t.id === id)?.title)
                   .join(", ")}
                 .
               </p>
@@ -129,6 +138,7 @@ export function KnowledgeCheck({
               onClick={() => {
                 setSubmitted(false);
                 setAnswers({});
+                onResult?.(undefined);
               }}
             >
               {retryLabel}

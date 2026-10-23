@@ -5,15 +5,19 @@ import { evaluateAnswer } from "@/lib/quiz";
 export function PracticeExercise({
   exercise,
   onResult,
-  completionNotice = "Practice attempts do not mark this lesson complete.",
+  initialAnswer,
+  submitLabel = "Check prediction",
+  completionNote = "Practice attempts do not mark this lesson complete.",
 }: {
   exercise: Exercise;
-  onResult?: (correct: boolean) => void;
-  completionNotice?: string;
+  onResult?: (correct: boolean | undefined, answer?: number) => void;
+  initialAnswer?: number;
+  submitLabel?: string;
+  completionNote?: string;
 }) {
   const id = useId();
-  const [answer, setAnswer] = useState<number>();
-  const [submitted, setSubmitted] = useState(false);
+  const [answer, setAnswer] = useState<number | undefined>(initialAnswer);
+  const [submitted, setSubmitted] = useState(initialAnswer !== undefined);
   const correct = answer !== undefined && evaluateAnswer(exercise, answer);
   return (
     <form
@@ -22,7 +26,7 @@ export function PracticeExercise({
         event.preventDefault();
         if (answer !== undefined) {
           setSubmitted(true);
-          onResult?.(evaluateAnswer(exercise, answer));
+          onResult?.(evaluateAnswer(exercise, answer), answer);
         }
       }}
     >
@@ -62,7 +66,7 @@ export function PracticeExercise({
           onClick={() => {
             setAnswer(undefined);
             setSubmitted(false);
-            onResult?.(false);
+            onResult?.(undefined);
           }}
         >
           Retry exercise
@@ -73,10 +77,10 @@ export function PracticeExercise({
           type="submit"
           disabled={answer === undefined}
         >
-          Check prediction
+          {submitLabel}
         </button>
       )}
-      <p className="quiz-intro">{completionNotice}</p>
+      <p className="quiz-intro">{completionNote}</p>
     </form>
   );
 }

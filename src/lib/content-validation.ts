@@ -92,10 +92,14 @@ export function validateContent(
       !topic ||
       topic.status !== "available" ||
       topic.sectionId !== "programming" ||
-      (topic.prerequisites ?? []).some(
-        (id) => path.includes(id) && path.indexOf(id) >= index,
-      ) ||
-      (index > 0 && (!previous || previous.order >= topic.order))
+      (index > 0 &&
+        (topic.prerequisites?.some(
+          (prerequisite) =>
+            path.indexOf(prerequisite) < 0 ||
+            path.indexOf(prerequisite) >= index,
+        ) ||
+          !previous ||
+          previous.order >= topic.order))
     )
       errors.push(`Invalid path order: ${id}`);
   });

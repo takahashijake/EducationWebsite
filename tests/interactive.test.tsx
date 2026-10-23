@@ -89,9 +89,9 @@ describe("authored content integrity", () => {
       }).join(" "),
     ).toMatch(/Invalid step.*Invalid variables/);
   });
-  it("validates all fourteen predictions deterministically, including invalid answers", () => {
+  it("validates all authored predictions deterministically, including invalid answers", () => {
     const exercises = Object.values(lessons).flatMap((l) => l.exercises ?? []);
-    expect(exercises).toHaveLength(14);
+    expect(exercises).toHaveLength(13);
     for (const e of exercises) {
       e.options.forEach((_, index) =>
         expect(evaluateAnswer(e, index)).toBe(index === e.correctIndex),
@@ -251,7 +251,7 @@ describe("interactive teaching", () => {
       screen.getByText("Available · Recommended next step").parentElement,
     ).toHaveTextContent("Operators and Expressions");
   });
-  it("renders contextual previous and next links and continues from Functions to Recursion", () => {
+  it("renders contextual previous and next links and connects Functions to Recursion", () => {
     const topic = topics.find((t) => t.id === "functions")!;
     render(
       <ProgressProvider>

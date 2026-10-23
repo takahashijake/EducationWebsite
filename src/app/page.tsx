@@ -218,7 +218,7 @@ export default function Home() {
           <p className="scope-note">
             <Icon name="book" size={16} />
             {availableTopics.length} complete lessons, including a{" "}
-            {programmingPath.length}-lesson programming path.{" "}
+            {programmingPath.length}-lesson programming core path.{" "}
             {topics.length - availableTopics.length} topics remain planned.
           </p>
         </div>

@@ -1,288 +1,357 @@
-import type { CodeTrace, GuidedProject } from "./types";
+import type { GuidedProject } from "./project-types";
 
-export const guessLogic = `def evaluate_guess(guess, target):
-    if guess < target:
-        return "Too low"
-    if guess > target:
-        return "Too high"
-    return "Correct"`;
-
-export const guessingGameSource = `${guessLogic}
-
-def play_game(guesses, target=7, max_attempts=3):
+const comparison = `def compare_guess(guess, secret):
+    if guess < secret:
+        return 'Too low'
+    if guess > secret:
+        return 'Too high'
+    return 'Correct'`;
+const validation = `def parse_guess(text):
+    try:
+        guess = int(text)
+    except ValueError:
+        return None
+    if 1 <= guess <= 20:
+        return guess
+    return None`;
+const game = `def play_round(entries, secret, max_attempts=3):
     attempts = 0
-    for guess in guesses:
-        if attempts == max_attempts:
+    messages = []
+    for text in entries:
+        if attempts >= max_attempts:
             break
-        attempts = attempts + 1
-        feedback = evaluate_guess(guess, target)
-        print("Attempt", attempts, ":", feedback)
-        if feedback == "Correct":
-            print("You won!")
-            return "won"
-    if attempts == max_attempts:
-        print("No attempts left.")
-        return "exhausted"
-    print("No more guesses supplied.")
-    return "incomplete"
-
-play_game([3, 9, 7])`;
-
-const state = (attempts: number, guess?: number, feedback?: string) => [
-  { name: "target", value: 7, scope: "play_game" },
-  { name: "max_attempts", value: 3, scope: "play_game" },
-  { name: "attempts", value: attempts, scope: "play_game" },
-  ...(guess === undefined
-    ? []
-    : [{ name: "guess", value: guess, scope: "play_game" }]),
-  ...(feedback === undefined
-    ? []
-    : [{ name: "feedback", value: feedback, scope: "play_game" }]),
-];
-export const guessingGameTrace: CodeTrace = {
-  kind: "trace",
-  title: "A three-attempt game",
-  caption:
-    "A fixed target of 7 and supplied guesses [3, 9, 7] make every state reproducible. Feedback from the previous attempt stays bound until reassigned.",
-  source: guessingGameSource,
-  steps: [
-    {
-      lines: [9],
-      explanation:
-        "Call play_game with the sample guesses. Initialize attempts = 0.",
-      variables: state(0),
-      output: [],
-    },
-    {
-      lines: [10, 11, 13],
-      explanation:
-        "First guess is 3. The limit check is False, so increment attempts to 1.",
-      variables: state(1, 3),
-      output: [],
-    },
-    {
-      lines: [2, 3, 14, 15],
-      explanation:
-        "evaluate_guess(3, 7) returns Too low. Store feedback and print it.",
-      variables: state(1, 3, "Too low"),
-      output: ["Attempt 1 : Too low"],
-    },
-    {
-      lines: [16, 10, 11, 13],
-      explanation:
-        "The guess was not correct. Get 9 and increment attempts to 2. Previous feedback is still Too low until line 14 reassigns it.",
-      variables: state(2, 9, "Too low"),
-      output: ["Attempt 1 : Too low"],
-    },
-    {
-      lines: [4, 5, 14, 15],
-      explanation:
-        "evaluate_guess(9, 7) returns Too high. Replace feedback and print it.",
-      variables: state(2, 9, "Too high"),
-      output: ["Attempt 1 : Too low", "Attempt 2 : Too high"],
-    },
-    {
-      lines: [16, 10, 11, 13],
-      explanation:
-        "The guess was not correct. Get 7; attempts was 2 so another guess is allowed. Increment to 3. The old feedback remains until reassignment.",
-      variables: state(3, 7, "Too high"),
-      output: ["Attempt 1 : Too low", "Attempt 2 : Too high"],
-    },
-    {
-      lines: [2, 4, 6, 14, 15],
-      explanation:
-        "Both comparisons are False for equality. evaluate_guess returns Correct; print the feedback for attempt 3.",
-      variables: state(3, 7, "Correct"),
-      output: [
-        "Attempt 1 : Too low",
-        "Attempt 2 : Too high",
-        "Attempt 3 : Correct",
-      ],
-    },
-    {
-      lines: [16, 17, 18],
-      explanation:
-        "Success is checked before the exhausted result after the loop. Print You won! and return won. There is no fourth attempt and no No attempts left message.",
-      variables: [],
-      output: [
-        "Attempt 1 : Too low",
-        "Attempt 2 : Too high",
-        "Attempt 3 : Correct",
-        "You won!",
-      ],
-    },
-  ],
-  result:
-    "The final allowed guess succeeds: three attempts, then immediate termination with won.",
-};
-
-export const numberGuessingProject: GuidedProject = {
-  id: "number-guessing",
-  slug: "number-guessing",
-  title: "Build a Number Guessing Game",
-  introduction:
-    "Turn separate programming concepts into one small program. Plan its behavior, build a comparison function, add repetition, investigate a failure, and test the boundaries. The browser checks authored choices; run your Python locally to test your own code.",
-  topicIds: [
-    "variables-data-types",
-    "operators-expressions",
-    "conditionals",
-    "loops",
-    "functions",
-    "debugging",
-  ],
-  checkpoints: [
-    {
-      id: "understand",
-      title: "Understand the problem",
-      paragraphs: [
-        "Build a game with a defined target 7, guesses from 1 through 10, and at most three attempts. Each guess gets Too low, Too high, or Correct. A correct guess ends the game immediately, including on the third attempt. After three incorrect guesses, report No attempts left. Do not process extra guesses after termination.",
-        "We will supply guesses as a Python list so you can reproduce tests without typing or randomness. Inputs are integers from 1 through 10; max_attempts is a positive integer. Input parsing and invalid-input recovery are optional extensions. If the supplied list ends before success or the limit, report No more guesses supplied and return incomplete. The reference is a complete deterministic game driver, not an interactive terminal input prompt.",
-        "Acceptance examples: [7] → Correct then You won!, one attempt; [3, 7] → Too low then Correct, two attempts; [9, 9, 9, 7] → three Too high messages then No attempts left, ignoring the fourth guess. Return statuses won, exhausted, and incomplete let tests distinguish outcomes without guessing from a screenshot.",
-        "Before reading more, sketch state and control flow: remember target, attempts, max_attempts, the current guess, and feedback. For each supplied guess, check remaining capacity, count it once, compare it, print feedback, then return on success. After the loop decide whether attempts ran out or input ran out.",
-      ],
-      expected:
-        "A written plan distinguishes state (values we remember) from decisions and repetition (control flow).",
-      exercise: {
-        id: "project-state",
-        source: "target = 7\nmax_attempts = 3\nattempts = 0",
-        prompt: "Which value must change after each processed guess?",
-        options: ["target", "attempts", "max_attempts"],
-        correctIndex: 1,
-        explanation:
-          "attempts counts processed guesses and increases once each time. target stays 7, and max_attempts stays 3. Changing the target moves the goal; changing the limit fails to count work already done.",
-      },
-    },
-    {
-      id: "logic",
-      title: "Implement the logic",
-      paragraphs: [
-        "Write evaluate_guess(guess, target). It has one job: compare two numbers and return feedback. It should not print, increment attempts, or run the whole game. Returning a string lets the caller decide what to do next.",
-        "The first return runs only for a smaller guess. If that condition is false, check whether the guess is larger. If both comparisons are false, the integers must be equal. return ends this call immediately, so these separate if statements cannot return two answers for one call. Equality belongs to neither the low nor the high branch.",
-        "Try predicting evaluate_guess(3, 7), evaluate_guess(9, 7), and evaluate_guess(7, 7) on paper. Then save the function in guessing_game.py and add print(evaluate_guess(7, 7)) temporarily to run it with python3 guessing_game.py. Remove that temporary print when assembling the complete program.",
-      ],
-      source: guessLogic,
-      expected:
-        "The function returns Too low for 3, Too high for 9, and Correct for 7 when the target is 7.",
-      exercise: {
-        id: "project-compare",
-        source: guessLogic + "\n\nprint(evaluate_guess(7, 7))",
-        prompt: "What does the equality case print?",
-        options: ["Too low", "Correct", "Too high"],
-        correctIndex: 1,
-        explanation:
-          "7 < 7 and 7 > 7 are both False, so the final return supplies Correct. Low and high are strict comparisons; neither includes equality.",
-      },
-    },
-    {
-      id: "iteration",
-      title: "Add iteration",
-      paragraphs: [
-        "Keep the comparison function separate from play_game. The loop processes a list one guess at a time. Check the limit before processing the next guess, increment attempts once, then call evaluate_guess and inspect its return. Returning won ends the function and its loop; break only exits the loop so the code after it can report exhaustion.",
-        "Follow the trace before opening the full solution in the final checkpoint. Notice the third guess is legal: before it starts, attempts is 2, not 3. After counting it, attempts is 3, but the guess must still be evaluated. Also notice feedback retains its previous value until assignment replaces it.",
-        "Implement the loop locally using the trace source as guidance. Default parameters target=7 and max_attempts=3 allow play_game([3, 9, 7]) to omit those arguments. A list is an ordered collection of guesses; the loop variable guess receives one element per iteration.",
-      ],
-      trace: guessingGameTrace,
-      expected:
-        "For [3, 9, 7], print three attempt messages followed by You won! and return won.",
-      exercise: {
-        id: "project-attempts",
-        source: "# target = 7, max_attempts = 3\nplay_game([3, 7, 9])",
-        prompt: "How many guesses should be processed before termination?",
-        options: [
-          "3 because the list has three items",
-          "1 because the target is defined",
-          "2 because the second guess succeeds",
-        ],
-        correctIndex: 2,
-        explanation:
-          "Process 3, then 7. The second guess is correct, so return immediately and never process 9. List length is only a maximum supply; a defined target alone does not end a game.",
-      },
-    },
-    {
-      id: "debug",
-      title: "Debug a broken version",
-      paragraphs: [
-        "Observe: with target 7 and guesses [3, 9, 7], this version reports exhaustion although the final permitted guess is correct. Reproduce it with those fixed values. Hypothesize that the limit check runs too early. Inspect attempts and guess when the failure occurs: they are 3 and 7, but evaluate_guess has not run for 7.",
-        "The cause is statement order. Reaching the allowed count does not invalidate the guess you just counted. Evaluate it and check success before declaring exhaustion. The reference checks capacity before beginning a new attempt, then checks success for the current guess. Do not increase the limit: that hides this example by granting an unintended fourth attempt.",
-        "Verify the fix with [3, 9, 7] → won and [3, 9, 9] → exhausted. Keep [7] → won and [3, 7] → won as regression tests. Boundary equality belongs both in comparison tests and in tests of the final allowed attempt.",
-      ],
-      source: `# Broken: evaluate_guess is defined as above.
-def broken_game(guesses, target=7, max_attempts=3):
+        guess = parse_guess(text)
+        if guess is None:
+            messages.append('Invalid input')
+            continue
+        attempts += 1
+        message = compare_guess(guess, secret)
+        messages.append(message)
+        if message == 'Correct':
+            return messages, attempts, True
+    return messages, attempts, False`;
+const helpers = `${comparison}\n\n${validation}`;
+const engine = `${helpers}\n\n${game}`;
+const terminal = `def main():
+    # A fixed secret keeps the first version reproducible.
+    secret = 12
     attempts = 0
-    for guess in guesses:
-        attempts = attempts + 1
-        if attempts == max_attempts:
-            return "exhausted"
-        if evaluate_guess(guess, target) == "Correct":
-            return "won"
-    return "incomplete"
+    while attempts < 3:
+        try:
+            text = input('Guess an integer from 1 to 20: ')
+        except EOFError:
+            print('Input ended')
+            return
+        guess = parse_guess(text)
+        if guess is None:
+            print('Invalid input')
+            continue
+        attempts += 1
+        message = compare_guess(guess, secret)
+        print(message)
+        if message == 'Correct':
+            return
+    print('Out of attempts')`;
 
-print(broken_game([3, 9, 7]))  # exhausted (wrong)`,
-      expected:
-        "A focused correction accepts a correct final attempt without allowing a fourth guess.",
-      exercise: {
-        id: "project-debug-order",
-        source:
-          'attempts = 2\nguess = 7\nattempts = attempts + 1\nif attempts == 3:\n    result = "exhausted"\n# The guess has not been compared yet.',
-        prompt:
-          "Which correction addresses the cause under the original three-attempt rule?",
-        options: [
-          "Set max_attempts to 4",
-          "Skip evaluating any guess when attempts is 3",
-          "Check capacity before starting a guess, then evaluate success before the exhausted outcome",
+export const projects: GuidedProject[] = [
+  {
+    id: "number-guessing",
+    slug: "number-guessing",
+    title: "Python Number Guessing Game",
+    introduction: [
+      "Build a game whose rules you can explain and test. The secret is 12, guesses are integers from 1 to 20 inclusive, and the player has three valid attempts. Invalid entries produce feedback and do not consume an attempt. A correct guess ends the game immediately.",
+      "Work one component at a time: comparison, validation, a deterministic round, regression tests, and a terminal interface. Write your implementation in a local Python file before comparing it with the reference. Each stage opens after the preceding stage's check and checklist; hints reveal one step at a time.",
+      "The browser checks fixed reasoning questions and saves your checklist. It does not execute or grade your Python. Copy the assertions into your own Python 3 environment to test your implementation. Passing the questions and checking the boxes records guided-project completion, not independent coding mastery.",
+    ],
+    objectives: [
+      "Decompose a specification into small functions with clear contracts.",
+      "Validate text before comparisons and count only valid attempts.",
+      "Test boundaries and reproduce bugs with fixed inputs.",
+      "Connect a tested game engine to a terminal interaction.",
+    ],
+    prerequisites: [
+      "variables-data-types",
+      "operators-expressions",
+      "conditionals",
+      "loops",
+      "functions",
+      "debugging",
+    ],
+    milestones: [
+      {
+        id: "compare",
+        title: "Compare a guess with the secret",
+        goal: "Implement compare_guess(guess, secret) for integers. Keep input and printing outside this function.",
+        connections: [
+          {
+            topicId: "conditionals",
+            explanation:
+              "Mutually exclusive comparisons select exactly one message.",
+          },
+          {
+            topicId: "functions",
+            explanation:
+              "A returned string is testable without capturing printed output.",
+          },
         ],
-        correctIndex: 2,
-        explanation:
-          "The third guess is still allowed and must be compared. Check capacity before another attempt and success after comparison; only report exhaustion after no permitted success. A fourth attempt changes the rules. Skipping the third guess reproduces the bug rather than fixing it.",
-      },
-    },
-    {
-      id: "test",
-      title: "Test the program",
-      paragraphs: [
-        "Use the full reference in the next checkpoint, or your own implementation, and run the test script below after the function definitions. assert checks a condition and raises AssertionError if it is False; no assertion failure means these cases passed. The game's printed output appears before the final All cases passed message. This is local Python execution, separate from the browser choice check.",
-        "[7] verifies first-try success. Direct evaluate_guess checks isolate below, above, and equality behavior. [3, 9, 7] verifies repeated attempts and last-attempt success. [3, 9, 9, 7] verifies exhaustion and that an extra supplied correct guess cannot bypass the limit. Target 1 with guess 1 verifies the lower domain boundary. [] verifies early input exhaustion with no processed guesses.",
-        "A passing suite is evidence for these requirements, not proof for every input. Add tests whenever a new failure is found, then rerun the old suite after each change. Invalid strings, out-of-range guesses, and a nonpositive limit are outside this version's input contract. Define their intended behavior before extending the program to accept them.",
-      ],
-      source: `assert evaluate_guess(3, 7) == "Too low"
-assert evaluate_guess(9, 7) == "Too high"
-assert evaluate_guess(7, 7) == "Correct"
-assert play_game([7]) == "won"
-assert play_game([3, 9, 7]) == "won"
-assert play_game([3, 9, 9, 7]) == "exhausted"
-assert play_game([1], target=1) == "won"
-assert play_game([]) == "incomplete"
-print("All cases passed")`,
-      expected:
-        "All assertions pass, and no fourth attempt appears in the exhausted case.",
-      exercise: {
-        id: "project-boundary-test",
-        source: '# Existing test:\nassert play_game([7]) == "won"',
-        prompt:
-          "Which additional case most directly catches the last-attempt bug?",
-        options: [
-          "assert play_game([3, 9, 7]) == 'won'",
-          "assert play_game([7]) == 'won' again",
-          "Only test evaluate_guess(3, 7)",
+        starter:
+          "def compare_guess(guess, secret):\n    # TODO: return Too low, Too high, or Correct\n    pass",
+        expectedBehavior:
+          "For secret 12: 11 returns 'Too low', 12 returns 'Correct', and 13 returns 'Too high'.",
+        hints: [
+          "List the three relationships between two integers: less than, greater than, equal.",
+          "Return immediately for the two unequal cases. If neither applies, the values are equal.",
         ],
-        correctIndex: 0,
+        solution: comparison,
         explanation:
-          "[3, 9, 7] succeeds exactly at the limit, where the broken order fails. Repeating the first-try test never reaches that boundary. Testing the comparison alone cannot catch a defect in the game's control flow.",
+          "Each return ends the function. No branch changes the secret or the guess; the caller decides how to display the result.",
+        tests: [
+          {
+            label: "Below, equal, and above the secret",
+            code: "assert compare_guess(11, 12) == 'Too low'\nassert compare_guess(12, 12) == 'Correct'\nassert compare_guess(13, 12) == 'Too high'",
+          },
+        ],
+        question: {
+          id: "project-compare-check",
+          prompt:
+            "Which boundary set distinguishes all three comparison branches for secret 12?",
+          options: ["1, 2, 3", "11, 12, 13", "Only 12"],
+          correctIndex: 1,
+          explanation:
+            "11, 12, and 13 exercise below, equal, and above. Testing only the winning input leaves the direction messages unverified.",
+        },
+        checklist: [
+          {
+            id: "compare-written",
+            text: "I implemented and tested the three comparison outcomes locally.",
+          },
+        ],
       },
-    },
-    {
-      id: "review",
-      title: "Review and extend",
-      paragraphs: [
-        "Copy this entire reference into guessing_game.py and run python3 guessing_game.py. Expected output: Attempt 1 : Too low, Attempt 2 : Too high, Attempt 3 : Correct, and You won!, each on its own line. The returned status is won; the final call does not print that return value. Replace the supplied list to try another deterministic game.",
-        "Annotations: evaluate_guess owns the comparisons; play_game owns state and repetition. attempts = 0 resets state for each call. The capacity check prevents a fourth processed guess. Assignment captures the comparison's return value. The success return exits immediately; the post-loop branch distinguishes exhausted capacity from exhausted input. Print messages describe behavior, while return statuses make tests precise.",
-        "Review aloud: where is state initialized, where does it change, which branches end the game, and why is the final permitted guess still evaluated? After running your tests locally, mark this checkpoint complete. Checkpoint completion is your learning record, not automatic execution or verified mastery.",
-        "Optional extensions: prompt with input locally, convert text with int, and define how invalid input affects attempts before writing recovery code; make a random target but keep a way to provide a fixed target for tests; report guesses remaining; or separate output formatting from game rules. Recursion is optional exploration: a loop suits repeated guesses and avoids growing a call stack. Do not add recursion just to use every topic.",
-      ],
-      source: guessingGameSource,
-      expected:
-        "Explain the program's decisions and run the reference and deterministic tests locally. Then choose an extension and write its acceptance examples before coding.",
-    },
-  ],
-};
-export const projects = [numberGuessingProject];
+      {
+        id: "validate",
+        title: "Convert text and validate the range",
+        goal: "Implement parse_guess(text). Return an integer in 1..20 or None for invalid text or out-of-range values.",
+        connections: [
+          {
+            topicId: "variables-data-types",
+            explanation:
+              "input returns text; comparisons require explicit conversion to an integer.",
+          },
+          {
+            topicId: "debugging",
+            explanation:
+              "Catch the expected ValueError at the conversion boundary and test both range endpoints.",
+          },
+        ],
+        starter:
+          "def parse_guess(text):\n    # TODO: convert text, handle conversion failure, check range\n    return None",
+        expectedBehavior:
+          "'1' and '20' are valid. '0', '21', '', 'cat', and '3.5' return None. int accepts surrounding whitespace and an optional sign, so ' 12 ' and '+12' are valid. This contract accepts Python integer text rather than digits only.",
+        hints: [
+          "int(text) may raise ValueError. Put only the conversion in try and handle ValueError with return None.",
+          "Use 1 <= guess <= 20 after conversion. None is a sentinel; later check guess is None explicitly.",
+        ],
+        solution: validation,
+        explanation:
+          "try executes the conversion. except ValueError handles non-integer text; unrelated errors stay visible. The chained comparison includes both endpoints. None distinguishes invalid input from a legitimate integer.",
+        tests: [
+          {
+            label:
+              "Endpoints, invalid text, and neighboring out-of-range values",
+            code: "assert parse_guess('1') == 1\nassert parse_guess('20') == 20\nassert parse_guess(' 12 ') == 12\nassert parse_guess('+12') == 12\nfor text in ['0', '21', '', 'cat', '3.5']:\n    assert parse_guess(text) is None",
+          },
+        ],
+        question: {
+          id: "project-validate-check",
+          prompt:
+            "A player enters 'cat'. What should happen before any comparison with the secret?",
+          options: [
+            "Catch ValueError and return None",
+            "Convert it to zero and count an attempt",
+            "Compare 'cat' with 12",
+          ],
+          correctIndex: 0,
+          explanation:
+            "int('cat') raises ValueError. Returning None lets the game reject the entry without a comparison or an attempt. Zero would introduce a value outside the valid contract.",
+        },
+        checklist: [
+          {
+            id: "validation-tested",
+            text: "I tested empty text, nonnumeric text, both endpoints, and the neighboring invalid values.",
+          },
+        ],
+      },
+      {
+        id: "round",
+        title: "Build a bounded, deterministic round",
+        goal: "Implement play_round(entries, secret, max_attempts=3). entries is a finite list of strings. Return (messages, attempts, won). Assume secret is in 1..20 and max_attempts is a nonnegative integer.",
+        connections: [
+          {
+            topicId: "loops",
+            explanation:
+              "continue skips invalid attempts; break stops when the budget is already exhausted.",
+          },
+          {
+            topicId: "operators-expressions",
+            explanation:
+              "Increment the counter only after a valid conversion; compare the budget before consuming an entry.",
+          },
+        ],
+        starter: `${helpers}\n\ndef play_round(entries, secret, max_attempts=3):\n    attempts = 0\n    messages = []\n    # TODO: process entries, stop on a win or attempt limit\n    return messages, attempts, False`,
+        expectedBehavior:
+          "['cat', '8', '12', '19'] with secret 12 returns (['Invalid input', 'Too low', 'Correct'], 2, True). Ignore entries after a win or three valid attempts. Empty entries or a zero attempt budget returns ([], 0, False). Exhausted input can end an unfinished round before the budget runs out.",
+        hints: [
+          "A list stores messages in order; messages.append(text) adds one. A tuple such as (messages, attempts, False) returns three values together.",
+          "Check the attempt budget first. On invalid input append feedback and continue before incrementing attempts.",
+          "After a valid guess increment once, append compare_guess's message, and return immediately on Correct. Return False after the loop.",
+        ],
+        solution: engine,
+        explanation:
+          "The finite entries keep tests deterministic. Invalid entries use iterations but not valid attempts. The early return prevents a second outcome after a win. This engine accepts supplied strings so tests need no random numbers or keyboard input.",
+        tests: [
+          {
+            label: "Mixed input, a win, exhaustion, and zero work",
+            code: "assert play_round(['cat', '8', '12', '19'], 12) == (['Invalid input', 'Too low', 'Correct'], 2, True)\nassert play_round(['1', '2', '3', '12'], 12) == (['Too low', 'Too low', 'Too low'], 3, False)\nassert play_round([], 12) == ([], 0, False)\nassert play_round(['12'], 12, 0) == ([], 0, False)\nassert play_round(['bad'], 12) == (['Invalid input'], 0, False)",
+          },
+        ],
+        question: {
+          id: "project-round-check",
+          prompt:
+            "For entries ['cat', '8', '12', '19'] and secret 12, how many valid attempts are used?",
+          options: ["4", "3", "2"],
+          correctIndex: 2,
+          explanation:
+            "cat is invalid and does not increment attempts. 8 uses attempt 1, 12 uses attempt 2 and wins, and 19 is never processed.",
+        },
+        checklist: [
+          {
+            id: "round-tested",
+            text: "I checked that invalid input costs no attempt and that no entry is processed after a win or the limit.",
+          },
+        ],
+      },
+      {
+        id: "regression",
+        title: "Catch an off-by-one regression",
+        goal: "Design a test that fails if attempts >= max_attempts is mistakenly changed to attempts > max_attempts.",
+        connections: [
+          {
+            topicId: "debugging",
+            explanation:
+              "A smallest failing case isolates the boundary; rerunning it protects a focused repair.",
+          },
+          {
+            topicId: "loops",
+            explanation:
+              "Check state before starting another iteration, not after consuming the extra guess.",
+          },
+        ],
+        starter:
+          "# A bug allows a fourth valid guess.\n# TODO: choose entries where guess four would win.\n# Assert that the game stops after guess three.",
+        expectedBehavior:
+          "With secret 12 and budget 3, guesses 1, 2, 3, 12 must lose after three guesses; the final 12 must be ignored. With a budget of 1, ['1', '12'] is the smaller version of the same regression.",
+        hints: [
+          "If every guess is far below the secret, an extra iteration might be easy to miss. Put the winning guess just outside the budget.",
+          "Assert the full returned tuple, including messages, count, and won; then reduce max_attempts to 1 for a smaller failing example.",
+        ],
+        solution: `${engine}\n\nassert play_round(['1', '12'], 12, 1) == (['Too low'], 1, False)`,
+        explanation:
+          "With the bug, attempts == 1 does not stop the second entry, so 12 wins incorrectly. >= prevents that extra iteration. Retain this test alongside empty, invalid, and success cases.",
+        tests: [
+          {
+            label: "A win immediately outside the valid-attempt budget",
+            code: "assert play_round(['1', '12'], 12, 1) == (['Too low'], 1, False)\nassert play_round(['1', '2', '3', '12'], 12, 3) == (['Too low', 'Too low', 'Too low'], 3, False)",
+          },
+        ],
+        question: {
+          id: "project-regression-check",
+          prompt:
+            "Which test best exposes an extra valid attempt when the budget is 1?",
+          options: [
+            "['12'] should win",
+            "['1', '12'] must lose after the first guess",
+            "[] should produce no messages",
+          ],
+          correctIndex: 1,
+          explanation:
+            "A winning guess immediately beyond the budget distinguishes >= from >. A first-guess win and empty input both behave the same under those two conditions.",
+        },
+        checklist: [
+          {
+            id: "regression-kept",
+            text: "I tried the > mutation, observed the regression fail, restored >=, and reran the tests.",
+          },
+        ],
+      },
+      {
+        id: "terminal",
+        title: "Connect a terminal interface and reflect",
+        goal: "Create main() using the tested helpers. Request one guess at a time with input, show feedback, and stop on a win or three valid attempts.",
+        connections: [
+          {
+            topicId: "functions",
+            explanation:
+              "Reuse pure comparison and validation functions at an input/output boundary.",
+          },
+          {
+            topicId: "loops",
+            explanation:
+              "A while loop waits for human input; invalid entries do not advance the valid-attempt counter.",
+          },
+        ],
+        starter: `${helpers}\n\ndef main():\n    secret = 12\n    attempts = 0\n    # TODO: while budget remains, read, validate, count, compare\n\nif __name__ == '__main__':\n    main()`,
+        expectedBehavior:
+          "Typing cat, 8, then 12 prints Invalid input, Too low, Correct. Three incorrect valid guesses print Out of attempts after their direction messages. End-of-file prints Input ended and exits. The terminal can keep asking after invalid entries; unlike finite test entries, an interactive session depends on a person supplying input.",
+        hints: [
+          "input(prompt) returns a string. Use parse_guess before comparing and handle EOFError if input closes.",
+          "The same order applies: validate, count, compare, return on a win. Put Out of attempts after the while loop; early returns bypass it.",
+        ],
+        solution: `${engine}\n\n${terminal}`,
+        explanation:
+          "The terminal adapter reuses the same helpers and rules as the deterministic engine. It is intentionally simple; tests below substitute a known input function and collect prints without requiring a terminal. The __name__ guard in the final reference runs main only when the file is executed directly, so importing it for tests does not prompt.",
+        tests: [
+          {
+            label: "Script the terminal with fake input and capture messages",
+            code: "from unittest.mock import patch\nwith patch('builtins.input', side_effect=['cat', '8', '12']), patch('builtins.print') as display:\n    main()\n    assert [call.args[0] for call in display.call_args_list] == ['Invalid input', 'Too low', 'Correct']\nwith patch('builtins.input', side_effect=['1', '2', '3']), patch('builtins.print') as display:\n    main()\n    assert [call.args[0] for call in display.call_args_list] == ['Too low', 'Too low', 'Too low', 'Out of attempts']\nwith patch('builtins.input', side_effect=EOFError), patch('builtins.print') as display:\n    main()\n    display.assert_called_once_with('Input ended')",
+          },
+        ],
+        question: {
+          id: "project-terminal-check",
+          prompt:
+            "Where should Out of attempts be printed so that it does not appear after a win?",
+          options: [
+            "After the while loop, with an early return on Correct",
+            "Before reading every guess",
+            "Inside parse_guess",
+          ],
+          correctIndex: 0,
+          explanation:
+            "A winning guess returns from main before reaching the final print. Falling out of the while loop means the valid-attempt budget was used. Parsing should not decide game outcomes.",
+        },
+        checklist: [
+          {
+            id: "terminal-tested",
+            text: "I ran a win, a loss, invalid input, and end-of-file through the terminal adapter.",
+          },
+          {
+            id: "reflection-done",
+            text: "I answered the reflection questions and can explain the counter and boundary decisions.",
+          },
+        ],
+      },
+    ],
+    reference: `${engine}\n\n${terminal}\n\nif __name__ == '__main__':\n    main()`,
+    referenceExplanation:
+      "Save as guessing_game.py and run python3 guessing_game.py. The fixed secret 12 keeps behavior reproducible. The finite-input engine is testable independently; the terminal adapter requests input as needed. Random secrets and replay are extensions after these rules work, with the secret still supplied explicitly to tests.",
+    reflections: [
+      "Why does invalid input use an iteration without using an attempt?",
+      "Which boundary test would fail if >= became >?",
+      "Why return None for invalid text instead of zero?",
+      "Which functions can you test without keyboard input, and why?",
+      "What evidence would you collect if the terminal and finite-input engine disagreed?",
+    ],
+  },
+];
+export function getProject(slug: string) {
+  return projects.find((project) => project.slug === slug);
+}

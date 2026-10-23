@@ -161,9 +161,11 @@ describe("navigation and pages", () => {
       expect(
         screen.getByRole("heading", { name: "Key takeaways" }),
       ).toBeInTheDocument();
-      expect(screen.getAllByRole("group")).toHaveLength(
-        3 + (lessons[topic.id].exercises?.length ?? 0),
-      );
+      expect(
+        screen
+          .getAllByRole("group")
+          .filter((element) => element.tagName === "FIELDSET"),
+      ).toHaveLength(3 + (lessons[topic.id].exercises?.length ?? 0));
       expect(
         screen.getByRole("button", { name: /mark lesson complete/i }),
       ).toBeInTheDocument();

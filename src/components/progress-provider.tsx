@@ -14,6 +14,36 @@ import {
   serializeProgress,
   toggleCompletion,
 } from "@/lib/progress";
+import {
+  PRACTICE_KEY,
+  parsePractice,
+  serializePractice,
+  type PracticeEntry,
+  type PracticeProgress,
+} from "@/lib/practice-progress";
+import { cppExercises } from "@/content/cpp-exercises";
+
+const practiceEvent = "cs-practice-change";
+let practiceFallback: string | undefined;
+function practiceSnapshot() {
+  if (practiceFallback !== undefined) return practiceFallback;
+  try {
+    return window.localStorage.getItem(PRACTICE_KEY) ?? "";
+  } catch {
+    return "";
+  }
+}
+function subscribePractice(callback: () => void) {
+  const listener = (event: StorageEvent) => {
+    if (event.key === PRACTICE_KEY || event.key === null) callback();
+  };
+  window.addEventListener("storage", listener);
+  window.addEventListener(practiceEvent, callback);
+  return () => {
+    window.removeEventListener("storage", listener);
+    window.removeEventListener(practiceEvent, callback);
+  };
+}
 
 const CHANGE_EVENT = "cs-progress-change";
 let sessionValue = "";
@@ -43,12 +73,46 @@ type ProgressContextValue = ReturnType<typeof progressSummary> & {
   ready: boolean;
   storageError: boolean;
   toggle: (id: string) => void;
+  practice: PracticeProgress;
+  practiceReady: boolean;
+  practiceStorageError: boolean;
+  updatePractice: (
+    id: string,
+    change: (current: PracticeEntry | undefined) => PracticeEntry,
+  ) => void;
 };
 const ProgressContext = createContext<ProgressContextValue | null>(null);
 export function ProgressProvider({ children }: { children: React.ReactNode }) {
   const raw = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const completedIds = useMemo(() => parseProgress(raw), [raw]);
   const [storageError, setStorageError] = useState(false);
+  const practiceRaw = useSyncExternalStore(
+    subscribePractice,
+    practiceSnapshot,
+    getServerSnapshot,
+  );
+  const practice = useMemo(() => parsePractice(practiceRaw), [practiceRaw]);
+  const [practiceStorageError, setPracticeStorageError] = useState(false);
+  const updatePractice = useCallback(
+    (
+      id: string,
+      change: (current: PracticeEntry | undefined) => PracticeEntry,
+    ) => {
+      if (!cppExercises.some((exercise) => exercise.id === id)) return;
+      const current = parsePractice(practiceSnapshot());
+      const next = serializePractice({ ...current, [id]: change(current[id]) });
+      try {
+        window.localStorage.setItem(PRACTICE_KEY, next);
+        practiceFallback = undefined;
+        setPracticeStorageError(false);
+      } catch {
+        practiceFallback = next;
+        setPracticeStorageError(true);
+      }
+      window.dispatchEvent(new Event(practiceEvent));
+    },
+    [],
+  );
   const toggle = useCallback((id: string) => {
     sessionValue = serializeProgress(
       toggleCompletion(parseProgress(getSnapshot()), id),
@@ -71,6 +135,11 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
         ready: raw !== null,
         storageError,
         toggle,
+        practice,
+        practiceReady: practiceRaw !== null,
+        practiceStorageError:
+          practiceStorageError || practiceFallback !== undefined,
+        updatePractice,
       }}
     >
       {children}

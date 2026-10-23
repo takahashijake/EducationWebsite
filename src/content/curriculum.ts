@@ -140,7 +140,7 @@ export const topics: Topic[] = [
       "Reproduce bugs, inspect program state, and test a focused fix.",
     order: 7,
     status: "available",
-    prerequisites: ["conditionals", "loops", "functions"],
+    prerequisites: ["functions"],
   },
   {
     id: "propositional-logic",

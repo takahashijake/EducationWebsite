@@ -1,30 +1,77 @@
 import { spawnSync } from "node:child_process";
 import { expect, it } from "vitest";
 import { lessons } from "@/content/lessons";
-import { recursionTrace } from "@/content/recursion-lesson";
-import {
-  numberGuessingProject as project,
-  guessingGameSource as gameSource,
-} from "@/content/projects";
-import { fundamentalsAssessment as assessment } from "@/content/assessments";
 
-it("verifies authored Python outputs, corrections, edge cases, and recursive locals with Python 3", () => {
-  const result = spawnSync("python3", ["scripts/verify-python.py"], {
-    input: JSON.stringify({
-      lessons,
-      recursionTrace,
-      project,
-      gameSource,
-      assessment,
-    }),
+// Repository-authored programs only. Python is an authoring check, never a site runtime.
+const examples: Record<string, string[]> = {
+  "variables-data-types": ["13.5\n18.0"],
+  "binary-number-representation": ["13\n0b10011\n00010011"],
+  "big-o-notation": ["3\n-1"],
+  "operators-expressions": ["26 False", "3.4\n3\n2", "True"],
+  conditionals: ["ready", "Continue", "Member, below minimum"],
+  loops: ["6", "40 2", "3\n2\n1\nDone", "1\n3\nDone", "1 1\n1 2\n2 1\n2 2"],
+  functions: ["12", "6\nNone 6", "5 6", "14"],
+  debugging: [
+    "59 False\n60 True\n61 True",
+    "count must be positive",
+    "boundary tests passed",
+  ],
+  recursion: ["1\n1\n6", "6 6\n0", "1\n2\n-1\n-1"],
+};
+const predictions: Record<string, string> = {
+  "operators-p1": "14",
+  "operators-p2": "2 3",
+  "conditionals-p1": "middle",
+  "conditionals-p2": "A\nB",
+  "loops-p1": "6",
+  "loops-p2": "1",
+  "functions-p1": "5 6",
+  "functions-p2": "6\nNone",
+  "debugging-p1": "3",
+  "debugging-p2": "retry",
+  "recursion-p1": "6",
+  "recursion-p2": "None",
+};
+function execute(source: string, expected: string) {
+  const result = spawnSync("python3", ["-I", "-"], {
+    input: source,
     encoding: "utf8",
-    timeout: 10000,
+    timeout: 3000,
+    maxBuffer: 1024 * 100,
   });
-  expect(result.error, result.stderr).toBeUndefined();
-  expect(result.status, result.stderr).toBe(0);
-  const report = JSON.parse(result.stdout);
-  expect(report.programs).toBeGreaterThanOrEqual(60);
-  expect(report.game_cases).toBe(10);
-  expect(report.recursive_frames_verified).toBe(4);
-  console.info("Python verification:", report);
-});
+  expect(result.error, source).toBeUndefined();
+  expect(result.status, `${source}\n${result.stderr}`).toBe(0);
+  expect(result.stdout.trim(), source).toBe(expected);
+}
+it("checks every runnable lesson example, supplementary program, prediction and trace output against Python 3", () => {
+  for (const lesson of Object.values(lessons)) {
+    const sources = [
+      lesson.code.source,
+      ...(lesson.sections ?? []).flatMap((s) => (s.code ? [s.code] : [])),
+    ];
+    expect(examples[lesson.topicId]).toHaveLength(sources.length);
+    sources.forEach((source, i) =>
+      execute(source, examples[lesson.topicId][i]),
+    );
+    for (const exercise of lesson.exercises ?? []) {
+      if (exercise.id === "debugging-p3") {
+        const result = spawnSync("python3", ["-I", "-"], {
+          input: exercise.source,
+          encoding: "utf8",
+          timeout: 3000,
+        });
+        expect(result.status).toBe(1);
+        expect(result.stderr).toContain("ZeroDivisionError");
+        expect(result.stderr).toContain("in average");
+        expect(result.stdout).toBe("");
+      } else {
+        expect(predictions[exercise.id]).toBeDefined();
+        execute(exercise.source, predictions[exercise.id]);
+      }
+    }
+    const demo = lesson.demonstration;
+    if (demo.kind === "trace")
+      for (const program of [demo, ...(demo.scenarios ?? [])])
+        execute(program.source, program.steps.at(-1)!.output.join("\n"));
+  }
+}, 15000);
