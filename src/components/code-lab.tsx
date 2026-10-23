@@ -10,7 +10,7 @@ import {
   type ExecutionEngine,
   type ExecutionResult,
   type ExecutionState,
-} from "@/lib/execution/types";
+} from "@/lib/execution/python-types";
 import { useWorkspace } from "./use-workspace";
 
 const stateLabels: Record<ExecutionState, string> = {

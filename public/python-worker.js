@@ -28,7 +28,8 @@ function capture(channel, bytes) {
     self.postMessage({ type: "output-limit", id: currentId });
   }
   pending[channel] += kept;
-  if (pending[channel].length >= 1024) flush(channel);
+  // Deliver each flushed write before Stop or a deadline terminates the Worker.
+  flush(channel);
   return bytes.length;
 }
 self.onmessage = async ({ data }) => {

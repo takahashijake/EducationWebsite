@@ -1,6 +1,6 @@
 import type { CodingExercise } from "@/content/coding-types";
 import type { Topic } from "@/content/types";
-import { SOURCE_LIMIT } from "./execution/types";
+import { SOURCE_LIMIT } from "./execution/python-types";
 /** Authoring validation; Python assertions are separately executed by the authoring suite. */
 export function validateCodingExercises(
   exercises: CodingExercise[],

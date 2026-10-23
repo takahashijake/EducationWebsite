@@ -10,7 +10,7 @@ import {
   type ExecutionRequest,
   type ExecutionResult,
   type TestResult,
-} from "./types";
+} from "./python-types";
 export type WorkerPort = Pick<
   Worker,
   "postMessage" | "terminate" | "onmessage" | "onerror" | "onmessageerror"
@@ -136,12 +136,16 @@ export class PythonExecutor implements ExecutionEngine {
             deadline,
           );
           onEvent({ state: "running" });
-          worker.postMessage({
-            type: "execute",
-            id,
-            request,
-            outputLimit: OUTPUT_LIMIT,
-          });
+          try {
+            worker.postMessage({
+              type: "execute",
+              id,
+              request,
+              outputLimit: OUTPUT_LIMIT,
+            });
+          } catch (error) {
+            fail("worker-error", String(error));
+          }
         } else if (
           data.type === "output" &&
           (data.channel === "stdout" || data.channel === "stderr") &&

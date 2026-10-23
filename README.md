@@ -1,6 +1,10 @@
-# CS Fundamentals Roadmap · V0.4
+# CS Fundamentals Roadmap · Python and C++ Practice
 
 A guided introduction to computer science through explanations, worked Python examples, interactive execution traces, deliberate practice, and a staged project.
+
+**Integrated C++ practice:** open `/practice/cpp` or the C++ programming practice section in Variables, Operators, Conditionals, Loops, or Functions. Eight guided activities introduce C++ syntax, provide a CodeMirror editor, compile real C++17 to WebAssembly on the learner's device, evaluate public test cases, and save drafts and attempt history through the existing progress provider. Reading and project completion retain their existing behavior. No learner code runs on the application server.
+
+See [C++ architecture, security, authoring, and deployment](docs/cpp-playground.md) and [delivery verification](docs/cpp-review.md). The first execution downloads about 95 MB of self-hosted compiler assets. Programs have a 64 MiB linear-memory cap, a two-second deadline per input, bounded output, and WASI capabilities without host files, secrets, storage, or network access. Tests are visible client-side practice evidence, not hidden grading or certification. Python Code Labs also provide editable, executable practice in all seven programming lessons and all five project stages. Python uses a separate disposable Pyodide Worker with explicit deadlines, bounded output, saved drafts, and advisory public checks. See [Python architecture and verification](docs/v0.4-review.md).
 
 The roadmap contains **46 topics in eight sections: nine published lessons and 37 planned previews**. All seven Programming Fundamentals topics are published. The wider CS curriculum remains in development.
 
@@ -20,24 +24,22 @@ Every lesson begins with objectives, connects explanations to a demonstration an
 
 The shared **understanding summary** counts checks attempted and correct during the current lesson visit. Reading completion is a separate manual action. Correct fixed-choice answers and checked boxes do **not** establish mastery or independently verify coding skill. Lesson attempts reset on reload; project reasoning answers and checklists persist.
 
-The game fixes the secret at 12, accepts integers from 1 to 20, and allows three valid guesses. Invalid text and out-of-range values do not consume attempts. The finite-input engine accepts supplied strings for reproducible tests; the terminal adapter uses scripted input and end-of-file in the browser.
-
-**V0.4 adds a real Python Code Lab to all seven programming lessons and all five project stages.** Learners edit Python, run it in a disposable browser Worker, inspect stdout/stderr and tracebacks, execute authored test groups, follow concept-specific guidance, explain a correction, and restore saved drafts. Existing explanations, authored traces, predictions, quizzes, and completion behavior remain available. No learner Python executes on the Next.js server.
+The game fixes the secret at 12, accepts integers from 1 to 20, and allows three valid guesses. Invalid text and out-of-range values do not consume attempts. The finite-input engine accepts supplied strings for reproducible tests; the terminal interface requests input as needed. Students can write and run Python locally or in the browser Code Lab. The Python Code Lab can also run learner implementations in the browser; no learner code runs on the application server.
 
 ## Run locally
 
-Use Node.js **20.19 or newer** and npm for development. **Python 3** on PATH is needed for repository authoring tests, not for learners using the browser Code Lab.
+Use Node.js **20.19 or newer**, npm, and **Python 3** on PATH for authoring tests. Python is not an application runtime dependency.
 
 ```bash
-npm ci
+npm ci --include=dev
 npm run dev
 ```
 
-Open `http://localhost:3000`. Production: `npm run build`, then `npm start`. No credentials are required. `npm ci` prepares the pinned runtime assets through `postinstall`; `predev` and `prebuild` repeat the local copy. No runtime assets or external execution services are required on unrelated pages.
+Open `http://localhost:3000`. Production: `npm run build`, then `npm start`. No credentials or environment variables are required.
 
 ## Architecture
 
-Next.js App Router, TypeScript, React, and Tailwind CSS retain the existing architecture and dependencies. All 46 topic routes, the projects index, and catalog project routes are statically prerendered. Server components render lesson instruction; focused client components handle traces, practice, and browser storage. The project renderer also prerenders its initial content, then hydrates browser progress.
+Next.js App Router, TypeScript, React, and Tailwind CSS retain the existing architecture. All 46 topic routes, the projects index, and catalog project routes are statically prerendered. Server components render lesson instruction; focused client components handle traces, practice, and browser storage. The project renderer also prerenders its initial content, then hydrates browser progress.
 
 ```text
 src/app/lessons/[slug]/page.tsx    Stable topic routes, published lessons/planned previews
@@ -63,7 +65,7 @@ src/lib/quiz.ts                  Shared deterministic answer evaluation
 src/lib/progress.ts              Existing v1 lesson completion storage, unchanged
 ```
 
-The Code Lab uses a native textarea rather than a large editor framework. Pyodide 0.29.3 is the only new direct dependency; its core runtime is served as static assets rather than bundled into the UI. The shared renderer remains independent of project-specific exercise content. The unrelated `LLM-Town/` project, if present, is outside this application's scope.
+The guided project uses the original dependencies and generic renderer. C++ practice adds exact-pinned CodeMirror packages, browsercc, the WASI shim, and esbuild for asset preparation. Python practice adds exact-pinned Pyodide 0.29.3 assets; both runtime preparation scripts run during installation, development startup, and production builds. The unrelated `LLM-Town/` project, if present, is outside this application's scope.
 
 ## Authoring lessons and traces
 
@@ -97,7 +99,7 @@ Each `ProjectMilestone` defines:
 
 Stage one opens immediately. Each subsequent stage requires the previous stages' correct reasoning answers and checked local-work items. All stages and their status appear in the outline. Prerequisites are advisory and never block starting. A reasoning attempt, including an incorrect one, makes that stage's worked solution available in a closed disclosure. Hints reveal one at a time. The complete reference becomes available in a closed disclosure after all stages complete.
 
-Use finite supplied inputs and explicit contracts to keep test behavior deterministic. Never run learner-supplied Python on the server. Optional milestone `coding` content uses the same Code Lab contract as lessons. `project-coding.ts` enriches the existing Number Guessing Game content and reuses its assertions and explanations. Extend `validateProjects`, `validateCodingExercises`, and the Python test suite when adding content. Update schema versions deliberately if stored meaning or interpretation changes; do not reuse old checklist/question IDs for different tasks.
+Use finite supplied inputs and explicit contracts to keep test behavior deterministic. Never run learner-supplied Python on the server. Extend `validateProjects` checks and the Python test suite when adding content. Update schema versions deliberately if stored meaning or interpretation changes; do not reuse old checklist/question IDs for different tasks.
 
 ## Progress and compatibility
 
@@ -149,74 +151,18 @@ This container's Chromium requires extracted system libraries. Its environment-s
 LD_LIBRARY_PATH=/tmp/cs-roadmap-browser-libs/extracted/usr/lib/x86_64-linux-gnu npm run test:e2e
 ```
 
-This path is not an application dependency. See [the V0.4 review](docs/v0.4-review.md) for current delivery results and requirement-by-requirement review. The [V0.3 review](docs/v0.3-review.md), [V0.3 acceptance audit](docs/v0.3-acceptance-audit.md), and [V0.2 review](docs/v0.2-review.md) are historical records of their respective versions.
+This path is not an application dependency. See [the V0.3 review](docs/v0.3-review.md) for original delivery results, [the post-merge acceptance audit](docs/v0.3-acceptance-audit.md) for fresh verification against merged main, and [the previous review](docs/v0.2-review.md) for historical V0.2 results.
 
-## Code Lab runtime and controls
+## Limitations and recommended V0.4
 
-The learning loop is **Learn → Predict → Write → Run → Debug → Test → Explain → Improve**. The lesson's existing authored trace remains a trusted demonstration; the editor does not attempt to generate full execution traces for arbitrary learner code.
+- Nine published lessons and one project; 37 broader CS topics remain planned.
+- Existing Python traces/questions are authored demonstrations. C++ activities execute learner code and evaluate public I/O cases; client-side grading does not verify technique, all possible behavior, or mastery.
+- Lesson evidence lasts only for the current visit. Project evidence combines fixed questions and self-reported coding/checklists; revealing a solution does not establish independent skill.
+- Desktop/mobile Chromium coverage does not certify cross-browser, screen-reader, or educational effectiveness. Independent human accessibility and teaching review remain valuable.
+- No authentication, payments, external AI APIs, backend, CMS, credentials, or cloud sync.
 
-- **Run** executes the current source with `__name__ == '__main__'`. It captures stdout/stderr and shows classified syntax/runtime tracebacks. A successful run does not credit any tests.
-- **Run Tests** compiles the source and runs every authored group with a new globals dictionary, executing the learner source each time with `__name__ == '__learner__'`. It does not silently supply reference functions. Every expected result must be returned before a successful test summary is accepted. Failed groups show their label, expected behavior, traceback/assertion detail, authored guidance, and review links.
-- **Stop** terminates the Worker during initialization or execution. An execution deadline of 1, 3 (default), or 10 seconds begins after initialization; a separate 30-second initialization deadline handles missing assets. Timeout, cancellation, loading failure, syntax error, runtime error, and test failure have distinct results. Retry creates a new Worker.
-- **Reset Code** requires inline confirmation before replacing a draft. Focus moves to the safe “Keep my code” action. Project carry-forward also requires confirmation and copies the actual previous-stage saved code plus the current starter.
-- **Ctrl+Enter / ⌘+Enter** runs while the editor is focused. Tab retains normal browser navigation. The editor, output panes, and native controls have visible focus, labels, and scrolling/wrapping at narrow widths.
-- Scripted stdin accepts up to 4,000 characters; each line is input and exhaustion produces EOF. No terminal emulator or blocking input popup is used. The terminal milestone's original `unittest.mock` assertions run against the learner's `main()`.
+**Recommended V0.4:** add concept-tagged assessment evidence and transparent knowledge-gap diagnosis, with short delayed retrieval checks and targeted review links. Include an independently completed project variation with rubric-based self-assessment. Arrange human educational/accessibility review before expanding into data structures or building a larger adaptive system.
 
-`python-runtime.json` and the exact npm dependency pin **Pyodide 0.29.3 / CPython 3.13.2**. `scripts/prepare-python.mjs` copies only the core JS, WASM, standard-library ZIP, and lockfile from that package to ignored `public/python/0.29.3/`. All assets come from the app's origin; the browser needs no live CDN requests or dynamic package installation for these exercises. The core transfer is roughly 12 MB before compression and is lazy until Run or Run Tests. Browser HTTP caching can reuse files; the interpreter itself is recreated for **every independent request**, including successful runs. This costs startup time but prevents definitions, imported-module mutations, or files from leaking between requests.
+Python language references used during authoring: [Errors and Exceptions](https://docs.python.org/3/tutorial/errors.html), [Defining Functions](https://docs.python.org/3/tutorial/controlflow.html#defining-functions), and [RecursionError](https://docs.python.org/3/library/exceptions.html#RecursionError). Actual examples are checked with the local Python version recorded in the review.
 
-`src/lib/execution/types.ts` defines the small `ExecutionEngine` request/event/result interface. `PythonExecutor` owns deadlines, cancellation, result validation, output bounds, request IDs, and disposal. `public/python-worker.js` loads Pyodide and `public/python-harness.py` performs trusted orchestration. No Worker message is accepted after its job is replaced or disposed. Only one Code Lab per page runs at a time; starting another lab cancels the previous one. A future runtime can implement the interface while retaining the editor and feedback presentation; no C++ execution is included.
-
-Code and stdin are limited before constructing a Worker. stdout/stderr share a 20,000-character display limit, with bounded chunks; tracebacks/check details are separately bounded. Editing code or scripted input withdraws earlier test evidence. Cross-tab code updates also withdraw stale evidence and cancel an active request.
-
-## Authoring executable practice
-
-`Lesson.codingExercises?: CodingExercise[]` and `ProjectMilestone.coding?: CodingExercise` are backward-compatible optional fields. `src/content/coding-types.ts` defines stable exercise and test IDs, topic IDs, title/instructions, starter source, expected behavior, optional demonstration stdin, deterministic test groups, explanations/reflection, and explicit concept mappings. All seven lesson exercises live in `coding-exercises.ts` and are attached through the existing catalog; no topic-specific UI branches are needed.
-
-A minimal test group looks like:
-
-```ts
-{
-  id: "inclusive-sum-boundary",
-  label: "Smallest positive input",
-  code: "actual = inclusive_sum(1)\nassert actual == 1, f'Expected 1, observed {actual!r}'",
-  expectedBehavior: "The sum through 1 includes 1.",
-  guidance: "Inspect the exclusive stop of range and find the first missing iteration.",
-  conceptIds: ["loops", "debugging"],
-}
-```
-
-Use real assertion messages when observed values help. Test failures map to **authored test groups**, not regex guesses about the cause of an arbitrary exception. A traceback identifies an operation, not a learner's intent. `validateCodingExercises` checks IDs, completeness, published topic links, and source bounds. Add correct and incorrect solutions to the trusted authoring fixtures and run them through the actual harness; every shipped starter must require a meaningful change to pass.
-
-The seven exercises cover text-to-number conversion, boolean intervals, inclusive thresholds, empty/one-iteration loops, returned values, factorial base cases, and an empty-input runtime failure. Project groups additionally cover conversion failures, both valid endpoints, adjacent invalid values, zero permitted attempts, early wins, attempt-limit regressions, scripted terminal wins/losses, and EOF.
-
-The regression stage requires `test_attempt_limit(play)`. Its harness checks the learner's own engine, an explicitly disclosed correct fixture, and an explicitly disclosed extra-attempt fixture. It rejects a test with no assertions and one that always fails. Fixture engines evaluate test quality; they are not substitutes for missing learner functions.
-
-## Workspace persistence
-
-New editable code uses **`cs-fundamentals:workspace:v1:<workspaceId>`**. Stable identities are `lesson:<topicId>:<exerciseId>` and `project:<projectId>:<milestoneId>`. Each entry contains only:
-
-```json
-{
-  "version": 1,
-  "workspaceId": "lesson:loops:loops-inclusive-sum",
-  "source": "print(6)"
-}
-```
-
-The parser checks version, matching identity, source type, and bounded raw/source size. Empty source is valid. Each source is limited to 24,000 JavaScript string characters; the twelve shipped editors therefore have a bounded per-entry footprint rather than an unbounded output history. Unknown, foreign, unsupported, and oversized values fall back to the starter without a hydration write. User edits save immediately; quota/disabled-storage failures retain a session draft with a notice. Cross-tab storage events update the relevant workspace; simultaneous writes are last-write-wins. Different editors cannot overwrite one another's keys.
-
-Neither code nor its test results change the interpretation of the existing reading key **`cs-fundamentals:progress:v1`** or project key **`cs-fundamentals:project:v1:number-guessing`**. Existing completed stages remain open without new tests. Project progression still follows the existing reasoning answers and checklist; test results are additional evidence. Run results, stdin edits, and test evidence are temporary and are not stored with source. Clearing browser storage clears saved drafts and progress; there is no cloud sync.
-
-## Resource/security limits and recommended V0.5
-
-- Worker termination and bounds protect responsiveness against common accidental loops/output floods; they are **not a complete security or memory-isolation guarantee**. A large allocation can exhaust browser resources before a deadline is handled.
-- Python can access the Worker JavaScript environment. Same-origin Workers may use network/storage capabilities; neither fresh namespaces nor a fresh Worker make hostile code safe. Run trusted educational code. Before adding sensitive authenticated data, move execution to a separately controlled origin with restrictive messaging, storage/network policies, and a reviewed trust boundary. COOP/COEP alone would not provide that boundary.
-- Independent requests use fresh interpreters. Within a test request, groups have fresh globals and restored ordinary streams/builtins; imported modules/files are not security-isolated between groups. Client-side checks can be inspected or tampered with and are advisory, not authoritative grading or proof of mastery.
-- Startup requires downloading/caching the self-hosted WASM assets; repeated Workers have measurable startup and memory cost. This is not a general-purpose package installer or cloud compiler.
-- Nine lessons and one project are published; 37 topics remain planned. Lesson quiz evidence lasts for the visit. Native textarea editing has no autocomplete, syntax coloring, or custom Tab indentation.
-- Desktop/mobile Chromium coverage does not certify screen-reader support, cross-browser behavior, or learning effectiveness. Independent educational and accessibility review remains necessary.
-- No server-side learner execution, C++/Java runtime, authentication, payments, AI grading, database, public code hosting, or cloud synchronization.
-
-**Recommended V0.5 — Concept-Level Knowledge Diagnosis and Targeted Retrieval Practice:** connect authored question/test concept mappings to transparent local evidence, targeted review links, and delayed retrieval. Add an independently completed project variation with a rubric, and arrange human review before building a larger adaptive system.
-
-Runtime references: [Pyodide Workers](https://pyodide.org/en/0.29.3/usage/webworker.html), [standard streams](https://pyodide.org/en/0.29.3/usage/streams.html), and [JavaScript API](https://pyodide.org/en/0.29.3/usage/api/js-api.html). Python references: [Errors and Exceptions](https://docs.python.org/3/tutorial/errors.html), [Defining Functions](https://docs.python.org/3/tutorial/controlflow.html#defining-functions), and [RecursionError](https://docs.python.org/3/library/exceptions.html#RecursionError).
+Python and C++ retain separate typed execution contracts in `src/lib/execution/python-types.ts` and `types.ts`, sharing source/input/output limits. Their grading and workspace records are independent of reading and project completion. Python can access same-origin browser capabilities through its JavaScript bridge; its Worker/deadlines are not a hostile-code security or total-memory boundary. The application has no authenticated data or server execution endpoint. Run only trusted Python; adding sensitive data requires a separate reviewed execution origin.

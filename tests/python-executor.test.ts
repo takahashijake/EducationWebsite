@@ -8,7 +8,7 @@ import {
   OUTPUT_LIMIT,
   SOURCE_LIMIT,
   type ExecutionRequest,
-} from "@/lib/execution/types";
+} from "@/lib/execution/python-types";
 class FakeWorker {
   onmessage: WorkerPort["onmessage"] = null;
   onerror: WorkerPort["onerror"] = null;
@@ -209,4 +209,23 @@ describe("disposable Python execution adapter", () => {
     b.dispose();
     expect((await second).kind).toBe("cancelled");
   });
+});
+
+it("settles and terminates if dispatching execution to the Worker fails", async () => {
+  const worker = new FakeWorker();
+  const engine = new PythonExecutor(() => worker);
+  const done = engine.execute(request, vi.fn());
+  worker.postMessage = () => {
+    throw new Error("Worker port closed");
+  };
+  try {
+    expect(() => worker.emit({ type: "ready" })).not.toThrow();
+    expect(await done).toMatchObject({
+      kind: "worker-error",
+      error: "Error: Worker port closed",
+    });
+    expect(worker.terminate).toHaveBeenCalledOnce();
+  } finally {
+    engine.dispose();
+  }
 });

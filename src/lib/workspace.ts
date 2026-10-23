@@ -1,4 +1,4 @@
-import { SOURCE_LIMIT } from "./execution/types";
+import { SOURCE_LIMIT } from "./execution/python-types";
 export type Workspace = { version: 1; workspaceId: string; source: string };
 export const workspaceKey = (id: string) =>
   `cs-fundamentals:workspace:v1:${id}`;

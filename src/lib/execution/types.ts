@@ -1,57 +1,40 @@
-export type ExecutionState =
-  | "idle"
-  | "initializing"
-  | "ready"
-  | "running"
-  | "completed"
-  | "failed"
-  | "cancelled";
+export const SOURCE_LIMIT = 24000;
+export const INPUT_LIMIT = 4000;
+export const OUTPUT_LIMIT = 20000;
+export const COMPILE_DEADLINE_MS = 60000;
+export const RUN_DEADLINE_MS = 2000;
 export type ExecutionKind =
   | "success"
-  | "syntax-error"
+  | "compilation-error"
   | "runtime-error"
-  | "test-failure"
-  | "loading-error"
-  | "worker-error"
   | "timeout"
+  | "output-limit"
   | "cancelled"
-  | "source-limit";
-export type ExecutionCheck = { id: string; code: string };
-export type ExecutionRequest = {
-  language: "python";
-  source: string;
-  stdin?: string;
-  tests?: ExecutionCheck[];
-  deadlineMs?: number;
-};
-export type TestResult = {
-  id: string;
-  status: "passed" | "failed";
-  error?: string;
-};
-export type ExecutionResult = {
+  | "loading-error"
+  | "source-limit"
+  | "incorrect-output";
+export type ProgramResult = {
   kind: ExecutionKind;
   stdout: string;
   stderr: string;
+  diagnostics: string;
   error?: string;
-  tests: TestResult[];
-  truncated: boolean;
+  exitCode?: number;
+};
+export type ExecutionRequest = {
+  language: "cpp";
+  source: string;
+  inputs: string[];
 };
 export type ExecutionEvent = {
-  state: ExecutionState;
-  stdout?: string;
-  stderr?: string;
+  state: "compiling" | "running";
+  caseIndex?: number;
 };
 export interface ExecutionEngine {
   execute(
     request: ExecutionRequest,
     onEvent: (event: ExecutionEvent) => void,
-  ): Promise<ExecutionResult>;
+  ): Promise<ProgramResult[]>;
   cancel(): void;
   dispose(): void;
 }
-export const SOURCE_LIMIT = 24000;
-export const INPUT_LIMIT = 4000;
-export const OUTPUT_LIMIT = 20000;
-export const DEFAULT_DEADLINE_MS = 3000;
-export const INITIALIZATION_DEADLINE_MS = 30000;

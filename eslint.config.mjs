@@ -13,5 +13,7 @@ export default defineConfig([
     "test-results/**",
     "LLM-Town/**",
     "next-env.d.ts",
+    "public/cpp/runtime/**",
+    "public/cpp/wasi.js",
   ]),
 ]);

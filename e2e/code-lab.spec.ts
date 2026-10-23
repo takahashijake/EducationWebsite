@@ -101,10 +101,19 @@ test("actual Worker Python: lazy assets, keyboard execution, streams, exceptions
   await lab
     .getByLabel("Execution deadline · starts after Python is ready")
     .selectOption("1000");
-  await run(lab, "while True:\n    pass");
+  await run(
+    lab,
+    "import sys\nprint('before loop', flush=True)\nprint('diagnostic', file=sys.stderr, flush=True)\nwhile True:\n    pass",
+  );
   await expect(
     lab.getByRole("region", { name: "Execution result" }),
   ).toContainText("Execution deadline exceeded", { timeout: 40000 });
+  await expect(lab.getByLabel("Standard output", { exact: true })).toHaveText(
+    "before loop\n",
+  );
+  await expect(lab.getByLabel("Standard error", { exact: true })).toHaveText(
+    "diagnostic\n",
+  );
   await run(lab, "print('x' * 25000)");
   await success(lab);
   await expect(

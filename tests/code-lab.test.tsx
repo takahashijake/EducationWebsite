@@ -9,7 +9,7 @@ import type {
   ExecutionEvent,
   ExecutionRequest,
   ExecutionResult,
-} from "@/lib/execution/types";
+} from "@/lib/execution/python-types";
 const exercise = codingExercises.loops;
 const successful: ExecutionResult = {
   kind: "success",
