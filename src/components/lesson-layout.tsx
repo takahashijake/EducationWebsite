@@ -14,6 +14,8 @@ import { CompletionButton } from "./completion-button";
 import { ProgressIndicator } from "./progress-indicator";
 import { Icon } from "./icon";
 import { LearningPath } from "./learning-path";
+import { CppPractice } from "./cpp-practice";
+import { exercisesForTopic } from "@/content/cpp-exercises";
 const anchors = [
   ["objectives", "Learning objectives"],
   ["understanding", "The idea"],
@@ -56,6 +58,9 @@ export function LessonLayout({
             {lesson.exercises?.length ? (
               <a href="#practice">Prediction practice</a>
             ) : null}
+            {exercisesForTopic(topic.id).length > 0 && (
+              <a href="#cpp-practice">C++ programming practice</a>
+            )}
           </nav>
           <ProgressIndicator compact />
         </aside>
@@ -139,6 +144,7 @@ export function LessonLayout({
             <h2>See it in code</h2>
             <CodeExample code={lesson.code} />
           </section>
+          <CppPractice topicId={topic.id} />
           <section id="misconceptions">
             <h2>Common mistakes</h2>
             <div className="misconceptions">
