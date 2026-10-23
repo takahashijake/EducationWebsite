@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 import type { Lesson } from "@/content/types";
 import { PracticeExercise } from "./practice-exercise";
 import { KnowledgeCheck } from "./knowledge-check";
@@ -58,8 +59,14 @@ export function LessonPractice({ lesson }: { lesson: Lesson }) {
         </p>
         <p>
           These fixed questions provide limited evidence; they do not establish
-          mastery. Attempts reset on reload. Marking a lesson complete records
-          your reading progress separately.
+          mastery. Your submitted knowledge checks create local learning
+          evidence. Marking a lesson complete records your reading progress
+          separately.
+        </p>
+        <p>
+          <Link href="/learning">
+            View learning insights and targeted practice →
+          </Link>
         </p>
         {correct < total && (
           <a href="#understanding">Revisit the explanation and demonstration</a>

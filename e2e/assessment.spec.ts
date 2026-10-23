@@ -19,7 +19,13 @@ test("assessment links from the learning path, scores, retries, resets on reload
     },
     { readingKey, projectKey },
   );
-  const before = await page.evaluate(() => JSON.stringify({ ...localStorage }));
+  const before = await page.evaluate(
+    ({ readingKey, projectKey }) => [
+      localStorage.getItem(readingKey),
+      localStorage.getItem(projectKey),
+    ],
+    { readingKey, projectKey },
+  );
   await page
     .getByRole("link", { name: "Take the integrated fundamentals assessment" })
     .click();
@@ -48,9 +54,22 @@ test("assessment links from the learning path, scores, retries, resets on reload
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBe(true);
-  expect(await page.evaluate(() => JSON.stringify({ ...localStorage }))).toBe(
-    before,
-  );
+  expect(
+    await page.evaluate(
+      ({ readingKey, projectKey }) => [
+        localStorage.getItem(readingKey),
+        localStorage.getItem(projectKey),
+      ],
+      { readingKey, projectKey },
+    ),
+  ).toEqual(before);
+  expect(
+    JSON.parse(
+      (await page.evaluate(() =>
+        localStorage.getItem("cs-fundamentals:evidence:v1"),
+      )) ?? "{}",
+    ).records,
+  ).toHaveLength(12);
   await page.getByRole("button", { name: "Retry assessment" }).click();
   await expect(submit).toBeDisabled();
   await expect(page.locator(".knowledge-check input:checked")).toHaveCount(0);
@@ -62,6 +81,13 @@ test("assessment links from the learning path, scores, retries, resets on reload
       .check();
   await submit.click();
   await expect(page.getByRole("status")).toContainText("12 of 12 correct");
+  expect(
+    await page.evaluate(
+      () =>
+        JSON.parse(localStorage.getItem("cs-fundamentals:evidence:v1") ?? "{}")
+          .records.length,
+    ),
+  ).toBe(24);
   await page.reload();
   await expect(submit).toBeDisabled();
   await expect(page.getByRole("status")).toHaveCount(0);

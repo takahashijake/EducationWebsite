@@ -54,6 +54,11 @@ export function LearningPath({ currentId }: { currentId?: string }) {
         </Link>
       </p>
       <p>
+        <Link href="/learning">
+          View learning insights and recommendations →
+        </Link>
+      </p>
+      <p>
         <Link href="/assessments/programming-fundamentals">
           Take the integrated fundamentals assessment
         </Link>

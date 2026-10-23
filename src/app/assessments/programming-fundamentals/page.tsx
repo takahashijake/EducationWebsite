@@ -23,9 +23,9 @@ export default function AssessmentPage() {
       </p>
       <p>
         This is a practice assessment, not certification or verified mastery.
-        Results stay in this page session and disappear on reload. It does not
-        change manual lesson completion or project progress. The choices are
-        checked deterministically; Python is not executed here.
+        Results contribute bounded learning evidence stored in this browser.
+        They do not change manual lesson completion or project progress. The
+        choices are checked deterministically; Python is not executed here.
       </p>
       <KnowledgeCheck
         questions={assessment.questions}
@@ -36,6 +36,9 @@ export default function AssessmentPage() {
         retryLabel="Retry assessment"
       />
       <nav className="trace-controls" aria-label="After the assessment">
+        <Link className="button secondary" href="/learning">
+          Learning insights
+        </Link>
         <Link className="button secondary" href="/roadmap#programming">
           Return to the roadmap
         </Link>

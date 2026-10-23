@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import { CodeLab } from "@/components/code-lab";
 import { codingExercises } from "@/content/coding-exercises";
 import { workspaceKey, serializeWorkspace } from "@/lib/workspace";
+import { EVIDENCE_KEY } from "@/lib/learning-evidence";
 import type {
   ExecutionEngine,
   ExecutionEvent,
@@ -35,6 +36,110 @@ function engineWith(result: ExecutionResult) {
   } satisfies ExecutionEngine;
 }
 describe("instructional Code Lab", () => {
+  it.each([
+    ["ordinary run", false, successful, 0],
+    [
+      "complete public checks",
+      true,
+      {
+        ...successful,
+        tests: exercise.tests.map((test) => ({
+          id: test.id,
+          status: "passed" as const,
+        })),
+      },
+      1,
+    ],
+    [
+      "incomplete public checks",
+      true,
+      {
+        ...successful,
+        tests: [{ id: exercise.tests[0].id, status: "passed" as const }],
+      },
+      0,
+    ],
+    [
+      "inconsistent public check result",
+      true,
+      {
+        ...successful,
+        kind: "test-failure" as const,
+        tests: exercise.tests.map((test) => ({
+          id: test.id,
+          status: "passed" as const,
+        })),
+      },
+      0,
+    ],
+    [
+      "timed out public checks",
+      true,
+      { ...successful, kind: "timeout" as const },
+      0,
+    ],
+  ])(
+    "records evidence only for %s",
+    async (_label, tests, answer, expected) => {
+      localStorage.removeItem(EVIDENCE_KEY);
+      const user = userEvent.setup();
+      render(
+        <CodeLab
+          exercise={exercise}
+          workspaceId={`test:evidence:${_label}`}
+          createEngine={() => engineWith(answer)}
+        />,
+      );
+      await user.click(
+        screen.getByRole("button", { name: tests ? "Run Tests" : "Run" }),
+      );
+      expect(
+        JSON.parse(localStorage.getItem(EVIDENCE_KEY) ?? '{"records":[]}')
+          .records,
+      ).toHaveLength(expected);
+    },
+  );
+
+  it("ignores a successful response returned after cancellation", async () => {
+    localStorage.removeItem(EVIDENCE_KEY);
+    let finish!: (result: ExecutionResult) => void;
+    const engine = {
+      execute: vi.fn(
+        (
+          _request: ExecutionRequest,
+          events: (event: ExecutionEvent) => void,
+        ) => {
+          events({ state: "running" });
+          return new Promise<ExecutionResult>((resolve) => {
+            finish = resolve;
+          });
+        },
+      ),
+      cancel: vi.fn(),
+      dispose: vi.fn(),
+    };
+    const user = userEvent.setup();
+    render(
+      <CodeLab
+        exercise={exercise}
+        workspaceId="test:late-success"
+        createEngine={() => engine}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Run Tests" }));
+    await user.click(screen.getByRole("button", { name: "Stop" }));
+    await act(async () => {
+      finish({
+        ...successful,
+        tests: exercise.tests.map((test) => ({
+          id: test.id,
+          status: "passed",
+        })),
+      });
+    });
+    expect(localStorage.getItem(EVIDENCE_KEY)).toBeNull();
+    expect(screen.getByText("Execution cancelled")).toBeInTheDocument();
+  });
   it("runs by keyboard, preserves normal Tab behavior, and separates execution from tests", async () => {
     const user = userEvent.setup();
     const engine = engineWith(successful);

@@ -12,6 +12,9 @@ import {
   type ExecutionState,
 } from "@/lib/execution/python-types";
 import { useWorkspace } from "./use-workspace";
+import { activityById } from "@/content/learning-catalog";
+import { makeEvidence } from "@/lib/learning-evidence";
+import { useLearningEvidence } from "./use-learning-evidence";
 
 const stateLabels: Record<ExecutionState, string> = {
   idle: "Not initialized · Python loads when you run",
@@ -45,6 +48,7 @@ export function CodeLab({
   createEngine?: () => ExecutionEngine;
 }) {
   const id = useId();
+  const { record } = useLearningEvidence();
   const workspace = useWorkspace(workspaceId, exercise.starter);
   const previous = useWorkspace(carryFrom?.workspaceId, "");
   const [stdin, setStdin] = useState(exercise.demonstrationInput ?? "");
@@ -55,6 +59,7 @@ export function CodeLab({
   const result = runSource === workspace.source ? rawResult : undefined;
   const [streams, setStreams] = useState({ stdout: "", stderr: "" });
   const [tested, setTested] = useState(false);
+  const [revealedHints, setRevealedHints] = useState(0);
   const [confirm, setConfirm] = useState<"reset" | "carry">();
   const engine = useRef<ExecutionEngine | undefined>(undefined);
   const sequence = useRef(0);
@@ -75,6 +80,7 @@ export function CodeLab({
   // A cross-tab edit invalidates displayed execution evidence, without writing it back.
   useEffect(
     () => () => {
+      sequence.current++;
       engine.current?.cancel();
     },
     [workspace.source],
@@ -121,6 +127,21 @@ export function CodeLab({
     if (sequence.current === requestId) {
       setResult(answer);
       setStreams({ stdout: answer.stdout, stderr: answer.stderr });
+      const unique = new Map(answer.tests.map((row) => [row.id, row.status]));
+      const allPassed = exercise.tests.every(
+        (test) => unique.get(test.id) === "passed",
+      );
+      if (
+        tests &&
+        activityById[exercise.id] &&
+        (answer.kind === "success" || answer.kind === "test-failure") &&
+        (answer.kind === "success") === allPassed &&
+        answer.tests.length === exercise.tests.length &&
+        unique.size === exercise.tests.length &&
+        exercise.tests.every((test) => unique.has(test.id))
+      ) {
+        record([makeEvidence(exercise.id, allPassed, crypto.randomUUID())]);
+      }
     }
   };
   const rows = exercise.tests.map((test) => ({
@@ -141,6 +162,22 @@ export function CodeLab({
       {exercise.instructions.map((text) => (
         <p key={text}>{text}</p>
       ))}
+      {!!exercise.hints?.length && (
+        <div className="practice-hints">
+          <button
+            type="button"
+            disabled={revealedHints >= exercise.hints.length}
+            onClick={() => setRevealedHints((count) => count + 1)}
+          >
+            Reveal next hint
+          </button>
+          {exercise.hints.slice(0, revealedHints).map((hint, index) => (
+            <p key={hint}>
+              Hint {index + 1}: {hint}
+            </p>
+          ))}
+        </div>
+      )}
       <p>
         <strong>Expected behavior:</strong> {exercise.expectedBehavior}
       </p>
@@ -235,7 +272,18 @@ export function CodeLab({
           className="button secondary"
           type="button"
           disabled={!busy}
-          onClick={() => engine.current?.cancel()}
+          onClick={() => {
+            sequence.current++;
+            engine.current?.cancel();
+            setState("cancelled");
+            setResult({
+              kind: "cancelled",
+              stdout: streams.stdout,
+              stderr: streams.stderr,
+              tests: [],
+              truncated: false,
+            });
+          }}
         >
           Stop
         </button>

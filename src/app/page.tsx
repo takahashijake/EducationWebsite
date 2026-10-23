@@ -32,6 +32,9 @@ export default function Home() {
             <Link href="/roadmap" className="button">
               Start learning <Icon name="arrow" size={18} />
             </Link>
+            <Link href="/learning" className="text-link">
+              My learning insights <span aria-hidden="true">→</span>
+            </Link>
             <a href="#how-it-works" className="text-link">
               Take a look around <span aria-hidden="true">↓</span>
             </a>
