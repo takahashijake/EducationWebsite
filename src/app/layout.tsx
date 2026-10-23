@@ -31,7 +31,9 @@ export default function RootLayout({
               </Link>
               <p>
                 An open learning journey.
-                <span className="footer-version">V0.4 · Write, run, debug</span>
+                <span className="footer-version">
+                  V0.5 · Learn, practice, review
+                </span>
               </p>
               <Link href="/roadmap">
                 Explore the roadmap <span aria-hidden="true">↗</span>

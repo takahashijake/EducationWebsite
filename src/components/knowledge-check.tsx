@@ -5,6 +5,9 @@ import Link from "next/link";
 import { topics, topicHref } from "@/content/curriculum";
 import { evaluateAnswer, scoreQuestions } from "@/lib/quiz";
 import { Icon } from "./icon";
+import { activityById } from "@/content/learning-catalog";
+import { makeEvidence } from "@/lib/learning-evidence";
+import { useLearningEvidence } from "./use-learning-evidence";
 export function KnowledgeCheck({
   questions,
   onResult,
@@ -20,6 +23,7 @@ export function KnowledgeCheck({
 }) {
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [submitted, setSubmitted] = useState(false);
+  const { record } = useLearningEvidence();
   const allAnswered = questions.every(
     (question) => answers[question.id] !== undefined,
   );
@@ -38,6 +42,17 @@ export function KnowledgeCheck({
         event.preventDefault();
         if (allAnswered) {
           setSubmitted(true);
+          const attempt = crypto.randomUUID();
+          const observations = questions
+            .filter((question) => activityById[question.id])
+            .map((question) =>
+              makeEvidence(
+                question.id,
+                evaluateAnswer(question, answers[question.id]),
+                `${attempt}-${question.id}`,
+              ),
+            );
+          if (observations.length) record(observations);
           onResult?.(
             questions.map((question) =>
               evaluateAnswer(question, answers[question.id]),
@@ -132,6 +147,11 @@ export function KnowledgeCheck({
                 .
               </p>
             )}
+            <p>
+              <Link href="/learning">
+                View your learning insights and next practice →
+              </Link>
+            </p>
             <button
               type="button"
               className="button secondary"
