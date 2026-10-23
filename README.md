@@ -6,6 +6,8 @@ A guided introduction to computer science through explanations, worked Python ex
 
 See [C++ architecture, security, authoring, and deployment](docs/cpp-playground.md) and [delivery verification](docs/cpp-review.md). The first execution downloads about 95 MB of self-hosted compiler assets. Programs have a 64 MiB linear-memory cap, a two-second deadline per input, bounded output, and WASI capabilities without host files, secrets, storage, or network access. Tests are visible client-side practice evidence, not hidden grading or certification. Python Code Labs also provide editable, executable practice in all seven programming lessons and all five project stages. Python uses a separate disposable Pyodide Worker with explicit deadlines, bounded output, saved drafts, and advisory public checks. See [Python architecture and verification](docs/v0.4-review.md).
 
+The integrated [Programming Fundamentals assessment](/assessments/programming-fundamentals) combines 12 authored Python reasoning problems, deterministic scoring, missed-topic review links, and retry. It preserves lesson/project progress; attempts reset on reload and do not establish mastery.
+
 The roadmap contains **46 topics in eight sections: nine published lessons and 37 planned previews**. All seven Programming Fundamentals topics are published. The wider CS curriculum remains in development.
 
 Follow the advisory programming sequence:

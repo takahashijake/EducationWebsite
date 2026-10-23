@@ -2856,3 +2856,47 @@ textarea:focus-visible {
     letter-spacing: 0.5px;
   }
 }
+
+/* The assessment reuses lesson typography and contains long Python snippets. */
+.activity-shell {
+  max-width: 960px;
+  padding-top: 32px;
+  padding-bottom: 64px;
+}
+.activity-shell h1 {
+  font-size: clamp(28px, 5vw, 44px);
+  line-height: 1.2;
+}
+.activity-shell p {
+  line-height: 1.9;
+}
+.activity-shell fieldset {
+  min-width: 0;
+}
+.activity-shell pre,
+.knowledge-check pre {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.activity-shell legend,
+.activity-shell .quiz-option {
+  overflow-wrap: anywhere;
+}
+.review-link {
+  display: inline-block;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  margin-right: 12px;
+}
+@media (max-width: 600px) {
+  .activity-shell {
+    width: calc(100% - 32px);
+  }
+  .activity-shell .knowledge-check {
+    padding: 16px;
+  }
+  .activity-shell .button {
+    max-width: 100%;
+    white-space: normal;
+  }
+}
