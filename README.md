@@ -1,6 +1,10 @@
-# CS Fundamentals Roadmap · V0.3
+# CS Fundamentals Roadmap · Guided C++ Practice
 
 A guided introduction to computer science through explanations, worked Python examples, interactive execution traces, deliberate practice, and a staged project.
+
+**Integrated C++ practice:** open `/practice/cpp` or the C++ programming practice section in Variables, Operators, Conditionals, Loops, or Functions. Eight guided activities introduce C++ syntax, provide a CodeMirror editor, compile real C++17 to WebAssembly on the learner's device, evaluate public test cases, and save drafts and attempt history through the existing progress provider. Reading and project completion retain their existing behavior. No learner code runs on the application server.
+
+See [C++ architecture, security, authoring, and deployment](docs/cpp-playground.md) and [delivery verification](docs/cpp-review.md). The first execution downloads about 95 MB of self-hosted compiler assets. Programs have a 64 MiB linear-memory cap, a two-second deadline per input, bounded output, and WASI capabilities without host files, secrets, storage, or network access. Tests are visible client-side practice evidence, not hidden grading or certification. The separate, unmerged Python Code Lab branch is not part of this feature.
 
 The roadmap contains **46 topics in eight sections: nine published lessons and 37 planned previews**. All seven Programming Fundamentals topics are published. The wider CS curriculum remains in development.
 
@@ -27,7 +31,7 @@ The game fixes the secret at 12, accepts integers from 1 to 20, and allows three
 Use Node.js **20.19 or newer**, npm, and **Python 3** on PATH for authoring tests. Python is not an application runtime dependency.
 
 ```bash
-npm ci
+npm ci --include=dev
 npm run dev
 ```
 
@@ -35,7 +39,7 @@ Open `http://localhost:3000`. Production: `npm run build`, then `npm start`. No 
 
 ## Architecture
 
-Next.js App Router, TypeScript, React, and Tailwind CSS retain the existing architecture and dependencies. All 46 topic routes, the projects index, and catalog project routes are statically prerendered. Server components render lesson instruction; focused client components handle traces, practice, and browser storage. The project renderer also prerenders its initial content, then hydrates browser progress.
+Next.js App Router, TypeScript, React, and Tailwind CSS retain the existing architecture. All 46 topic routes, the projects index, and catalog project routes are statically prerendered. Server components render lesson instruction; focused client components handle traces, practice, and browser storage. The project renderer also prerenders its initial content, then hydrates browser progress.
 
 ```text
 src/app/lessons/[slug]/page.tsx    Stable topic routes, published lessons/planned previews
@@ -61,7 +65,7 @@ src/lib/quiz.ts                  Shared deterministic answer evaluation
 src/lib/progress.ts              Existing v1 lesson completion storage, unchanged
 ```
 
-No project-specific rendering branches or new dependencies were added. The unrelated `LLM-Town/` project, if present, is outside this application's scope.
+The guided project uses the original dependencies and generic renderer. C++ practice adds exact-pinned CodeMirror packages, browsercc, the WASI shim, and esbuild for asset preparation. The unrelated `LLM-Town/` project, if present, is outside this application's scope.
 
 ## Authoring lessons and traces
 
@@ -152,7 +156,7 @@ This path is not an application dependency. See [the V0.3 review](docs/v0.3-revi
 ## Limitations and recommended V0.4
 
 - Nine published lessons and one project; 37 broader CS topics remain planned.
-- Authored traces and fixed questions, without arbitrary input execution or open-ended grading. Structural validation alone cannot establish intermediate execution correctness.
+- Existing Python traces/questions are authored demonstrations. C++ activities execute learner code and evaluate public I/O cases; client-side grading does not verify technique, all possible behavior, or mastery.
 - Lesson evidence lasts only for the current visit. Project evidence combines fixed questions and self-reported coding/checklists; revealing a solution does not establish independent skill.
 - Desktop/mobile Chromium coverage does not certify cross-browser, screen-reader, or educational effectiveness. Independent human accessibility and teaching review remain valuable.
 - No authentication, payments, external AI APIs, backend, CMS, credentials, or cloud sync.
