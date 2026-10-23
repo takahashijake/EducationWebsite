@@ -67,27 +67,26 @@ self.onmessage = async ({ data }) => {
         }
       }
       let size = 0;
-      const pending = { stdout: "", stderr: "" };
       const decoders = { stdout: new TextDecoder(), stderr: new TextDecoder() };
-      function flush(channel, final = false) {
-        if (final) pending[channel] += decoders[channel].decode();
-        if (pending[channel]) {
+      function emit(channel, bytes, final = false) {
+        const text = decoders[channel].decode(bytes, { stream: !final });
+        if (text) {
           self.postMessage({
             id,
             type: "output",
             channel,
-            text: pending[channel],
+            text,
           });
-          pending[channel] = "";
         }
       }
       const output = (channel) =>
         new ConsoleStdout((bytes) => {
-          if (size + bytes.length > OUTPUT_LIMIT)
+          const accepted = bytes.subarray(0, OUTPUT_LIMIT - size);
+          size += accepted.length;
+          // Send flushed output before a timeout can terminate this Worker.
+          if (accepted.length) emit(channel, accepted);
+          if (accepted.length < bytes.length)
             throw new Error("Output size limit exceeded.");
-          size += bytes.length;
-          pending[channel] += decoders[channel].decode(bytes, { stream: true });
-          if (pending[channel].length >= 1024) flush(channel);
         });
       const wasi = new WASI(
         ["program"],
@@ -108,8 +107,8 @@ self.onmessage = async ({ data }) => {
       try {
         exitCode = wasi.start(instance);
       } finally {
-        flush("stdout", true);
-        flush("stderr", true);
+        emit("stdout", undefined, true);
+        emit("stderr", undefined, true);
       }
       self.postMessage({ id, type: "exit", exitCode });
     }

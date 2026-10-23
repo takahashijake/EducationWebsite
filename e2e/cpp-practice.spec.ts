@@ -196,10 +196,18 @@ test("real compiler diagnostics, stdin, stderr, timeout, memory, output, and cap
   await expect(
     panel.getByRole("heading", { name: "Standard error" }).locator(".."),
   ).toContainText("diagnostic");
-  await run("int main(){ volatile int n = 0; while (n == 0) {} }");
+  await run(
+    '#include <iostream>\nint main(){ std::cout << "before loop\\n" << std::flush; std::cerr << "check condition"; for(;;) {} }',
+  );
   await expect(panel.getByRole("status")).toContainText("Time limit exceeded", {
     timeout: 90000,
   });
+  await expect(
+    panel.getByRole("heading", { name: "Standard output" }).locator(".."),
+  ).toContainText("before loop");
+  await expect(
+    panel.getByRole("heading", { name: "Standard error" }).locator(".."),
+  ).toContainText("check condition");
   await run(
     "#include <cstdio>\nint main(){for(int i=0;i<30000;++i) putchar(65); }",
   );
@@ -207,6 +215,15 @@ test("real compiler diagnostics, stdin, stderr, timeout, memory, output, and cap
     "Output limit exceeded",
     { timeout: 90000 },
   );
+  expect(
+    (
+      await panel
+        .getByRole("heading", { name: "Standard output" })
+        .locator("..")
+        .locator("pre")
+        .textContent()
+    )?.length,
+  ).toBe(20000);
   await run(
     '#include <cstdio>\n#include <cstdlib>\nint main(){void *p=std::malloc(100*1024*1024); std::printf("%d %d %d\\n", p==nullptr, std::getenv("APP_SECRET")==nullptr, std::fopen("/etc/passwd", "r")==nullptr); std::free(p); }',
   );

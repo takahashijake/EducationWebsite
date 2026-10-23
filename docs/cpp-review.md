@@ -20,13 +20,21 @@ Practice persistence extends the existing `ProgressProvider`; versioned records 
 - `npm run typecheck`: passed.
 - `npm test`: 111 tests passed across 12 files, including the full existing suite, native C++ solution/starter checks, worker orchestration, deterministic grading, reset/draft state, and malformed/denied/cross-tab progress handling.
 - `npm run build`: passed; 54 statically generated pages, including all original topic/project routes and the C++ collection.
-- Final production browser suite: all 34 tests passed in one run (17 desktop Chromium, 17 mobile Chromium viewport), in 5.7 minutes. This includes every existing browser regression plus the new C++ flows.
+- Final production browser suite: all 34 tests passed in one run (17 desktop Chromium, 17 mobile Chromium viewport), in 5.8 minutes. This includes every existing browser regression plus the new C++ flows.
 - `npm audit --omit=dev`: zero vulnerabilities. Full audit reports five high-severity findings in the existing ESLint dependency chain (`braces`, `micromatch`, `fast-glob`, `@next/eslint-plugin-next`, `eslint-config-next`). Their lockfile entries are unchanged; no unrelated forced downgrade/upgrade was applied.
 - `git diff --check`: passed.
 
 Browser execution uses the existing container-only Chromium library path from README. Manual viewport checks at 320, 360, 390, 600, 800, 1050, and 1440 pixels found no page-level horizontal overflow with the editor open. Earlier exploratory runs identified the need to scope broad group selectors to quiz fieldsets/knowledge-check containers after adding native exercise disclosures. One resource-check run overlapped local asset regeneration and received a temporary loading error; a stable-asset rerun passed. Final verification runs against fixed generated runtime assets and a fresh production build.
 
 The browser tests cover a complete lesson/practice/correction/completion/pathway flow; every example/public case for all eight real WASM solutions; compiler diagnostics; stdin and stderr; nonzero exits; traps; infinite loops; output overflow; allocation failure above the memory cap; unavailable host filesystem/environment; rejection of a custom JavaScript import bridge; no learner-code POST requests; static-endpoint method restrictions; and every existing learning journey. Native fixtures reject every shipped starter and check all correct solutions, including empty/zero/unit/endpoint and whitespace-sensitive cases. Simulated workers test orchestration only; they are not presented as evidence of C++ compilation or runtime behavior.
+
+## Pre-merge QA
+
+The follow-up review reproduced a feedback bug: flushed stdout/stderr smaller than the Worker's batching threshold disappeared when an infinite loop caused termination. The Worker now emits decoded output immediately, ignores empty writes, and retains the bounded prefix of an overflowing write. The real-browser resource test now requires both streams to survive a timeout and verifies the complete 20,000-byte output prefix. The regression failed on the original implementation before the fix.
+
+The external Rubber Duck check reported three high-severity findings on the original head. Manual review found all three to be false positives: `public/cpp/worker.js` used `TextDecoder.decode()` for UTF-8 console bytes, not JWT verification; `tests/cpp-content.test.ts` wrote a fixed `main.cpp` filename inside its own `mkdtempSync()` directory, with no user-controlled path. The app contains no JWT authentication, and the fixture writer is not application/server code. No scanner suppressions, check-status overrides, or branch-protection changes were introduced.
+
+Fresh validation of the corrected implementation passed lint, type checking, all 111 unit/content tests, the production build, and all 34 desktop/mobile browser tests in one full run. The production dependency audit reported zero vulnerabilities.
 
 ## Limits and recommended next work
 
