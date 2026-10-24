@@ -1,4 +1,4 @@
-# CS Fundamentals Roadmap · Python and C++ Practice
+# CS Fundamentals Roadmap · Interactive DSA, Python and C++ Practice
 
 A guided introduction to computer science through explanations, worked Python examples, interactive execution traces, deliberate practice, and a staged project.
 
@@ -8,13 +8,17 @@ See [C++ architecture, security, authoring, and deployment](docs/cpp-playground.
 
 The integrated [Programming Fundamentals assessment](/assessments/programming-fundamentals) combines 12 authored Python reasoning problems, deterministic scoring, missed-topic review links, and retry. It preserves lesson/project progress; attempts reset on reload and do not establish mastery.
 
-The roadmap contains **46 topics in eight sections: nine published lessons and 37 planned previews**. All seven Programming Fundamentals topics are published. The wider CS curriculum remains in development.
+The roadmap contains **46 topics in eight sections: eleven published lessons and 35 planned previews**. All seven Programming Fundamentals topics are published. Arrays and Strings and Searching add the first connected Data Structures and Algorithms path. The wider CS curriculum remains in development.
 
 Follow the advisory programming sequence:
 
 **Variables and Data Types → Operators and Expressions → Conditionals → Loops → Functions → Recursion → Basic Debugging → [Python Number Guessing Game](/projects/number-guessing)**
 
 The project is also available from the Projects navigation and the roadmap path panel. **Binary Number Representation** and **Introduction to Big O Notation** remain published in their own sections. Existing topic IDs and URLs are unchanged.
+
+Continue with **Arrays and Strings → Introduction to Big O Notation → Searching**. These are advisory foundations, not locked assessments. Arrays and Strings covers zero-based boundaries, traversal, Python list mutation versus immutable strings, and operation costs. Searching compares linear scans with binary search on correctly sorted input. The array visualizers expose each decision, actual comparison count, candidate bounds, duplicate behavior, and empty cases; their predefined scenarios never run learner code. Seven new Python labs use the existing disposable Worker and saved drafts to practice traversal, indexed results, empty input, off-by-one repair, and both searches. Public tests provide feedback rather than secure grading.
+
+Learning Insights now groups evidence by subject and includes eight DSA skills with two independently authored retrieval questions each. The existing `cs-fundamentals:evidence:v1` records, reading completion, and workspace keys remain valid. Skill states remain cautious: reading completion and a passing public test do not establish mastery.
 
 ## Delivered learning experience
 
@@ -52,6 +56,11 @@ src/content/lessons.ts           Combined lesson catalog
 src/content/programming-*.ts     Existing programming lessons and traces
 src/content/advanced-lessons.ts  Debugging and Recursion content
 src/content/advanced-traces.ts   Finite factorial and boundary-case trace families
+src/content/dsa-lessons.ts       Arrays and Strings and Searching lessons
+src/content/dsa-coding-exercises.ts Seven Python DSA challenges
+src/content/dsa-catalog.ts       Focused retrieval and activity mappings
+src/lib/algorithm-steps.ts       Pure traversal and search trace generation
+src/components/algorithm-visualizer.tsx Accessible stepper and scenario controls
 src/content/project-types.ts     Reusable project/milestone contracts
 src/content/projects.ts          Number guessing curriculum and Python references
 src/components/lesson-layout.tsx Shared instructional renderer and navigation

@@ -127,7 +127,7 @@ test("original progress survives expansion, completion and undo synchronize acro
   await page.goto("/roadmap");
   await expect(page.getByRole("progressbar")).toHaveAttribute(
     "aria-valuenow",
-    "33",
+    "27",
   );
   expect(await page.evaluate((key) => localStorage.getItem(key), key)).toBe(
     oldProgress,
@@ -137,12 +137,12 @@ test("original progress survives expansion, completion and undo synchronize acro
   await other.getByRole("button", { name: "Mark lesson complete" }).click();
   await expect(page.getByRole("progressbar")).toHaveAttribute(
     "aria-valuenow",
-    "44",
+    "36",
   );
   await other.getByRole("button", { name: "Completed · Undo" }).click();
   await expect(page.getByRole("progressbar")).toHaveAttribute(
     "aria-valuenow",
-    "33",
+    "27",
   );
   await page.reload();
   expect(await page.evaluate((key) => localStorage.getItem(key), key)).toBe(

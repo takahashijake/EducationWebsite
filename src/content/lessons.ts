@@ -1,11 +1,14 @@
 import { codingExercises } from "./coding-exercises";
 import { advancedLessons } from "./advanced-lessons";
 import { programmingLessons } from "./programming-lessons";
+import { dsaLessons } from "./dsa-lessons";
+import { dsaCodingExercises } from "./dsa-coding-exercises";
 import type { Lesson } from "./types";
 
 const authoredLessons: Record<string, Lesson> = {
   ...programmingLessons,
   ...advancedLessons,
+  ...dsaLessons,
   "variables-data-types": {
     topicId: "variables-data-types",
     minutes: 12,
@@ -299,7 +302,13 @@ export const lessons: Record<string, Lesson> = Object.fromEntries(
       ...lesson,
       ...(codingExercises[id]
         ? { codingExercises: [codingExercises[id]] }
-        : {}),
+        : dsaCodingExercises.some((exercise) => exercise.topicId === id)
+          ? {
+              codingExercises: dsaCodingExercises.filter(
+                (exercise) => exercise.topicId === id,
+              ),
+            }
+          : {}),
     },
   ]),
 );

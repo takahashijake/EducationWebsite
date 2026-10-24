@@ -39,6 +39,7 @@ export type Lesson = {
   introduction: string[];
   concept: { title: string; paragraphs: string[] };
   demonstration: Demonstration;
+  demonstrations?: Demonstration[];
   sections?: { title: string; paragraphs: string[]; code?: string }[];
   exercises?: PracticeExercise[];
   codingExercises?: CodingExercise[];
@@ -86,7 +87,13 @@ export type CodeTrace = TraceProgram & {
   scenarios?: (TraceProgram & { id: string; label: string })[];
 };
 export type Demonstration =
-  { kind: "types" | "binary" | "complexity"; caption: string } | CodeTrace;
+  | { kind: "types" | "binary" | "complexity"; caption: string }
+  | CodeTrace
+  | {
+      kind: "algorithm";
+      algorithm: "traversal" | "linear" | "binary-search";
+      caption: string;
+    };
 export type PracticeExercise = Question & { source: string };
 
 export type AssessmentQuestion = PracticeExercise & { topicIds: string[] };

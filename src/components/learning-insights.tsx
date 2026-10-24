@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { activityById, skills } from "@/content/learning-catalog";
-import { topics } from "@/content/curriculum";
+import { topics, sections } from "@/content/curriculum";
 import { diagnose, recommend } from "@/lib/learning-evidence";
 import { useProgress } from "./progress-provider";
 import { useLearningEvidence } from "./use-learning-evidence";
@@ -35,19 +35,32 @@ export function LearningInsights() {
   const due = summaries.filter(
     (entry) => entry.dueAt && Date.parse(entry.dueAt) <= now,
   );
+  const studiedTopics = topics.filter((topic) =>
+    skills.some((skill) => skill.topicId === topic.id),
+  );
   return (
     <div className="insights-grid">
       <section className="insight-panel">
         <h2>What have I studied?</h2>
-        <p>
-          {
-            completedIds.filter((id) =>
-              skills.some((skill) => skill.topicId === id),
-            ).length
-          }{" "}
-          of 7 Programming Fundamentals lessons marked read. Reading completion
-          is separate from assessed understanding.
-        </p>
+        <p>Reading completion is separate from assessed understanding.</p>
+        {sections
+          .filter((section) =>
+            studiedTopics.some((topic) => topic.sectionId === section.id),
+          )
+          .map((section) => {
+            const members = studiedTopics.filter(
+              (topic) => topic.sectionId === section.id,
+            );
+            return (
+              <p key={section.id}>
+                {
+                  members.filter((topic) => completedIds.includes(topic.id))
+                    .length
+                }{" "}
+                of {members.length} {section.title} lessons marked read
+              </p>
+            );
+          })}
         <ul>
           {topics
             .filter((topic) =>
@@ -98,34 +111,61 @@ export function LearningInsights() {
             ))}
         </ol>
         <h3>Skill summaries</h3>
-        <ul>
-          {summaries.map((entry) => {
-            const skill = skills.find((item) => item.id === entry.skillId)!;
-            return (
-              <li key={entry.skillId}>
-                <strong>
-                  {skill.title}: {entry.state}
-                </strong>
-                <p>{entry.reason}</p>
-                <small>
-                  {entry.directCorrect} focused correct ·{" "}
-                  {entry.directIncorrect} focused incorrect ·{" "}
-                  {entry.partialCorrect} combined correct ·{" "}
-                  {entry.partialIncorrect} combined incorrect
-                </small>
-                {entry.lastReviewedAt && (
-                  <p>
-                    Delayed retrieval completed{" "}
-                    <time dateTime={entry.lastReviewedAt}>
-                      {new Date(entry.lastReviewedAt).toLocaleDateString()}
-                    </time>
-                    .
-                  </p>
-                )}
-              </li>
-            );
-          })}
-        </ul>
+        {sections
+          .filter((section) =>
+            skills.some(
+              (skill) =>
+                topics.find((topic) => topic.id === skill.topicId)
+                  ?.sectionId === section.id,
+            ),
+          )
+          .map((section) => (
+            <div key={section.id}>
+              <h4>{section.title}</h4>
+              <ul>
+                {summaries
+                  .filter(
+                    (entry) =>
+                      topics.find(
+                        (topic) =>
+                          topic.id ===
+                          skills.find((skill) => skill.id === entry.skillId)
+                            ?.topicId,
+                      )?.sectionId === section.id,
+                  )
+                  .map((entry) => {
+                    const skill = skills.find(
+                      (item) => item.id === entry.skillId,
+                    )!;
+                    return (
+                      <li key={entry.skillId}>
+                        <strong>
+                          {skill.title}: {entry.state}
+                        </strong>
+                        <p>{entry.reason}</p>
+                        <small>
+                          {entry.directCorrect} focused correct ·{" "}
+                          {entry.directIncorrect} focused incorrect ·{" "}
+                          {entry.partialCorrect} combined correct ·{" "}
+                          {entry.partialIncorrect} combined incorrect
+                        </small>
+                        {entry.lastReviewedAt && (
+                          <p>
+                            Delayed retrieval completed{" "}
+                            <time dateTime={entry.lastReviewedAt}>
+                              {new Date(
+                                entry.lastReviewedAt,
+                              ).toLocaleDateString()}
+                            </time>
+                            .
+                          </p>
+                        )}
+                      </li>
+                    );
+                  })}
+              </ul>
+            </div>
+          ))}
       </section>
       <section className="insight-panel">
         <h2>Where am I struggling?</h2>

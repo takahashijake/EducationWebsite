@@ -29,8 +29,8 @@ if (trace.kind !== "trace") throw new Error("Missing loop trace");
 describe("authored content integrity", () => {
   it("validates the published catalog and globally unique assessment IDs", () => {
     expect(validateContent(topics, lessons, programmingPath)).toEqual([]);
-    expect(availableTopics).toHaveLength(9);
-    expect(topics.filter((t) => t.status === "planned")).toHaveLength(37);
+    expect(availableTopics).toHaveLength(11);
+    expect(topics.filter((t) => t.status === "planned")).toHaveLength(35);
   });
   it("rejects missing references, cycles, duplicate slugs, incomplete content and bad path order", () => {
     const cyclic = topics.map((t) =>
@@ -91,7 +91,7 @@ describe("authored content integrity", () => {
   });
   it("validates all authored predictions deterministically, including invalid answers", () => {
     const exercises = Object.values(lessons).flatMap((l) => l.exercises ?? []);
-    expect(exercises).toHaveLength(13);
+    expect(exercises).toHaveLength(15);
     for (const e of exercises) {
       e.options.forEach((_, index) =>
         expect(evaluateAnswer(e, index)).toBe(index === e.correctIndex),
@@ -126,7 +126,7 @@ describe("authored content integrity", () => {
     });
     expect(
       lessonNeighbors(topics.find((t) => t.id === "big-o-notation")!).next,
-    ).toBeUndefined();
+    ).toHaveProperty("id", "searching");
   });
   it("keeps original v1 completions and separates global and core counts", () => {
     const ids = parseProgress(
@@ -135,8 +135,8 @@ describe("authored content integrity", () => {
     expect(ids).toHaveLength(3);
     expect(progressSummary(ids)).toEqual({
       completed: 3,
-      available: 9,
-      percentage: 33,
+      available: 11,
+      percentage: 27,
     });
     expect(pathProgress([...ids, ids[0], "propositional-logic"])).toEqual({
       completed: 1,

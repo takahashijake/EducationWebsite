@@ -1,5 +1,6 @@
 import { CodeTrace } from "./code-trace";
 import type { Lesson } from "@/content/types";
+import { AlgorithmVisualizer } from "./algorithm-visualizer";
 export function LessonDemonstration({
   demonstration,
 }: {
@@ -7,6 +8,13 @@ export function LessonDemonstration({
 }) {
   if (demonstration.kind === "trace")
     return <CodeTrace key={demonstration.source} trace={demonstration} />;
+  if (demonstration.kind === "algorithm")
+    return (
+      <AlgorithmVisualizer
+        algorithm={demonstration.algorithm}
+        caption={demonstration.caption}
+      />
+    );
   return (
     <figure className={`concept-demo ${demonstration.kind}`}>
       {demonstration.kind === "types" && (

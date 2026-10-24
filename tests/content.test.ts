@@ -20,6 +20,7 @@ describe("curriculum contracts", () => {
     expect(new Set(topics.map((topic) => topic.id)).size).toBe(topics.length);
     expect(new Set(topics.map((topic) => topic.slug)).size).toBe(topics.length);
     expect(availableTopics.map((topic) => topic.id).sort()).toEqual([
+      "arrays-strings",
       "big-o-notation",
       "binary-number-representation",
       "conditionals",
@@ -28,6 +29,7 @@ describe("curriculum contracts", () => {
       "loops",
       "operators-expressions",
       "recursion",
+      "searching",
       "variables-data-types",
     ]);
   });
