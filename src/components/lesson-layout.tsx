@@ -121,6 +121,9 @@ export function LessonLayout({
               <p key={text}>{text}</p>
             ))}
             <LessonDemonstration demonstration={lesson.demonstration} />
+            {lesson.demonstrations?.map((demonstration, index) => (
+              <LessonDemonstration key={index} demonstration={demonstration} />
+            ))}
           </section>
           {lesson.sections?.map((section) => (
             <section key={section.title}>
@@ -175,13 +178,15 @@ export function LessonLayout({
           <LessonPractice key={topic.id} lesson={lesson} />
           {!!lesson.codingExercises?.length && (
             <div id="coding-practice">
-              {lesson.codingExercises.map((exercise) => (
-                <CodeLab
-                  key={exercise.id}
-                  exercise={exercise}
-                  workspaceId={lessonWorkspaceId(topic.id, exercise.id)}
-                />
-              ))}
+              <div id="code-lab">
+                {lesson.codingExercises.map((exercise) => (
+                  <CodeLab
+                    key={exercise.id}
+                    exercise={exercise}
+                    workspaceId={lessonWorkspaceId(topic.id, exercise.id)}
+                  />
+                ))}
+              </div>
             </div>
           )}
           <div className="lesson-finish">

@@ -1,6 +1,12 @@
 import { topics, topicHref } from "./curriculum";
 import { fundamentalsAssessment } from "./assessments";
 import type { Question } from "./types";
+import {
+  dsaLessonMap,
+  dsaPythonMap,
+  dsaRetrievalQuestions,
+} from "./dsa-catalog";
+import { dsaCodingExercises } from "./dsa-coding-exercises";
 
 export type Skill = {
   id: string;
@@ -128,6 +134,62 @@ export const skills: Skill[] = [
     "debugging",
     ["loop-boundaries"],
   ),
+  define(
+    "array-indexing",
+    "Array indexing",
+    "Read and replace a value at a zero-based position.",
+    "arrays-strings",
+    ["assignment"],
+  ),
+  define(
+    "sequence-boundaries",
+    "Sequence boundaries",
+    "Handle empty, singleton, and final-index cases.",
+    "arrays-strings",
+    ["loop-boundaries", "array-indexing"],
+  ),
+  define(
+    "sequence-traversal",
+    "Sequence traversal",
+    "Visit every element without crossing its boundary.",
+    "arrays-strings",
+    ["loop-termination", "sequence-boundaries"],
+  ),
+  define(
+    "sequence-operation-cost",
+    "Mutation and operation cost",
+    "Distinguish list access, shifting, and immutable-string rebuilding.",
+    "arrays-strings",
+    ["array-indexing"],
+  ),
+  define(
+    "linear-search",
+    "Linear search",
+    "Scan in order and handle matches and absence.",
+    "searching",
+    ["sequence-traversal"],
+  ),
+  define(
+    "binary-invariants",
+    "Binary search invariants",
+    "Maintain inclusive candidate bounds while halving.",
+    "searching",
+    ["sequence-boundaries", "comparisons"],
+  ),
+  define(
+    "sorted-precondition",
+    "Sorted-input precondition",
+    "Know when midpoint elimination is justified.",
+    "searching",
+    ["binary-invariants"],
+  ),
+  define(
+    "search-complexity",
+    "Search complexity",
+    "Explain linear and logarithmic worst-case comparison growth.",
+    "searching",
+    ["linear-search", "binary-invariants"],
+  ),
 ];
 export type Activity = {
   id: string;
@@ -152,6 +214,7 @@ const assessmentMap: Record<string, string[]> = {
   "fundamentals-game": ["debug-boundaries", "branches"],
 };
 const lessonMap: Record<string, string[]> = {
+  ...dsaLessonMap,
   "variables-q1": ["types"],
   "variables-q2": ["assignment"],
   "variables-q3": ["types"],
@@ -184,6 +247,8 @@ export const assessmentActivities: Activity[] =
     title: q.prompt,
   }));
 const lessonTopics: Record<string, string> = {
+  arrays: "arrays-strings",
+  searching: "searching",
   variables: "variables-data-types",
   operators: "operators-expressions",
   conditionals: "conditionals",
@@ -490,6 +555,7 @@ export const retrievalQuestions: RetrievalQuestion[] = [
     0,
     "Check the empty boundary and choose behavior consistent with the function contract.",
   ),
+  ...dsaRetrievalQuestions,
 ];
 export const retrievalActivities: Activity[] = retrievalQuestions.map(
   (question) => ({
@@ -560,6 +626,16 @@ export const pythonActivities: Activity[] = pythonMetadata.map((exercise) => ({
   href: `/lessons/${exercise.topicId}#code-lab`,
   title: exercise.title,
 }));
+export const dsaPythonActivities: Activity[] = dsaCodingExercises.map(
+  (exercise) => ({
+    id: exercise.id,
+    source: "python",
+    skillIds: dsaPythonMap[exercise.id] ?? [],
+    revision: exercise.revision ?? 1,
+    href: `/lessons/${exercise.topicId}#code-lab`,
+    title: exercise.title,
+  }),
+);
 export const transferActivity: Activity = {
   id: "python-expense-summary",
   source: "python",
@@ -580,6 +656,7 @@ export const activities = [
   ...lessonActivities,
   ...retrievalActivities,
   ...pythonActivities,
+  ...dsaPythonActivities,
   transferActivity,
 ];
 export const activityById = Object.fromEntries(

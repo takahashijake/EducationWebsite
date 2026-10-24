@@ -209,7 +209,8 @@ export const topics: Topic[] = [
     description:
       "Access indexed sequences and understand common traversal operations.",
     order: 1,
-    status: "planned",
+    status: "available",
+    prerequisites: ["loops"],
   },
   {
     id: "linked-lists",
@@ -277,8 +278,8 @@ export const topics: Topic[] = [
     title: "Searching",
     description: "Compare linear search with binary search on sorted data.",
     order: 2,
-    status: "planned",
-    prerequisites: ["big-o-notation"],
+    status: "available",
+    prerequisites: ["arrays-strings", "big-o-notation"],
   },
   {
     id: "sorting",

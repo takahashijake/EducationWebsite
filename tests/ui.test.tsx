@@ -73,7 +73,7 @@ describe("progress interface", () => {
     );
     expect(screen.getByRole("progressbar")).toHaveAttribute(
       "aria-valuenow",
-      "11",
+      "9",
     );
     expect(
       screen.getByRole("link", { name: /completed/i }),
@@ -100,7 +100,7 @@ describe("progress interface", () => {
     fireEvent(window, new StorageEvent("storage", { key: PROGRESS_KEY }));
     expect(screen.getByRole("progressbar")).toHaveAttribute(
       "aria-valuenow",
-      "11",
+      "9",
     );
   });
 });
@@ -122,7 +122,9 @@ describe("navigation and pages", () => {
     expect(
       screen.getByRole("link", { name: /^Start learning$/ }),
     ).toHaveAttribute("href", "/roadmap");
-    expect(screen.getAllByRole("link", { name: /available/i })).toHaveLength(9);
+    expect(screen.getAllByRole("link", { name: /available/i })).toHaveLength(
+      11,
+    );
   });
   it("renders every roadmap section and topic link with truthful status", () => {
     localStorage.setItem(
@@ -139,7 +141,7 @@ describe("navigation and pages", () => {
       .getAllByRole("link")
       .filter((link) => link.classList.contains("topic-card"));
     expect(topicLinks).toHaveLength(46);
-    expect(screen.getAllByText("Planned", { exact: true })).toHaveLength(38); // 37 topics plus legend
+    expect(screen.getAllByText("Planned", { exact: true })).toHaveLength(36); // 35 topics plus legend
     expect(screen.getByRole("progressbar")).toHaveAttribute(
       "aria-valuenow",
       "0",

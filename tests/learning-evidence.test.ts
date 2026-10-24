@@ -25,10 +25,11 @@ const entry = (id: string, correct: boolean, attempt: number, days: number) =>
     at(days),
   );
 describe("learning catalog", () => {
-  it("has valid available destinations, stable unique activities and seven-topic retrieval coverage", () => {
+  it("has valid available destinations, stable unique activities and nine-topic retrieval coverage", () => {
     expect(validateLearningCatalog()).toEqual([]);
+    expect(retrievalQuestions[0].id).toBe("retrieve-assignment-a");
     expect(new Set(activities.map((a) => a.id)).size).toBe(activities.length);
-    expect(new Set(retrievalQuestions.map((q) => q.topicId)).size).toBe(7);
+    expect(new Set(retrievalQuestions.map((q) => q.topicId)).size).toBe(9);
     expect(
       skills.every(
         (skill) =>

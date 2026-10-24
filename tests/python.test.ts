@@ -7,6 +7,8 @@ const examples: Record<string, string[]> = {
   "variables-data-types": ["13.5\n18.0"],
   "binary-number-representation": ["13\n0b10011\n00010011"],
   "big-o-notation": ["3\n-1"],
+  "arrays-strings": ["6\n0", "0 5\n1 8\n2 1", "[6, 4, 9, 2] cat bat"],
+  searching: ["3\n-1", ""],
   "operators-expressions": ["26 False", "3.4\n3\n2", "True"],
   conditionals: ["ready", "Continue", "Member, below minimum"],
   loops: ["6", "40 2", "3\n2\n1\nDone", "1\n3\nDone", "1 1\n1 2\n2 1\n2 2"],
@@ -31,6 +33,7 @@ const predictions: Record<string, string> = {
   "debugging-p2": "retry",
   "recursion-p1": "6",
   "recursion-p2": "None",
+  "searching-p1": "",
 };
 function execute(source: string, expected: string) {
   const result = spawnSync("python3", ["-I", "-"], {
@@ -54,16 +57,21 @@ it("checks every runnable lesson example, supplementary program, prediction and 
       execute(source, examples[lesson.topicId][i]),
     );
     for (const exercise of lesson.exercises ?? []) {
-      if (exercise.id === "debugging-p3") {
+      if (exercise.id === "debugging-p3" || exercise.id === "arrays-p1") {
         const result = spawnSync("python3", ["-I", "-"], {
           input: exercise.source,
           encoding: "utf8",
           timeout: 3000,
         });
         expect(result.status).toBe(1);
-        expect(result.stderr).toContain("ZeroDivisionError");
-        expect(result.stderr).toContain("in average");
-        expect(result.stdout).toBe("");
+        if (exercise.id === "debugging-p3") {
+          expect(result.stderr).toContain("ZeroDivisionError");
+          expect(result.stderr).toContain("in average");
+          expect(result.stdout).toBe("");
+        } else {
+          expect(result.stderr).toContain("IndexError");
+          expect(result.stdout).toContain("10");
+        }
       } else {
         expect(predictions[exercise.id]).toBeDefined();
         execute(exercise.source, predictions[exercise.id]);

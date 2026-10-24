@@ -2929,3 +2929,94 @@ textarea:focus-visible {
   padding: 0.65rem;
   margin: 0.6rem 0 1rem;
 }
+
+.algorithm-visualizer {
+  margin: 2rem 0;
+  padding: 1.25rem;
+  border: 1px solid var(--border, #cbd5e1);
+  border-radius: 1rem;
+  background: var(--surface, #fff);
+  max-width: 100%;
+  min-width: 0;
+}
+.algorithm-visualizer figcaption strong {
+  font-size: 1.15rem;
+}
+.algorithm-visualizer select {
+  max-width: 100%;
+  padding: 0.45rem;
+  border: 1px solid #64748b;
+  border-radius: 0.4rem;
+}
+.algorithm-array {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+}
+.algorithm-array li {
+  min-width: 4.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.5rem;
+  border: 2px solid #94a3b8;
+  border-radius: 0.55rem;
+  background: #f8fafc;
+  color: #0f172a;
+}
+.algorithm-array li.candidate {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+.algorithm-array li.inspected {
+  border-color: #b45309;
+  background: #fffbeb;
+}
+.algorithm-array li strong {
+  font-size: 1.4rem;
+}
+.algorithm-array li span,
+.algorithm-array li small {
+  font-size: 0.75rem;
+}
+.algorithm-step {
+  border-left: 3px solid #2563eb;
+  padding: 0.25rem 1rem;
+  min-height: 9rem;
+}
+.algorithm-controls {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 1rem 0;
+}
+.algorithm-controls button {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #475569;
+  border-radius: 0.4rem;
+  cursor: pointer;
+}
+.algorithm-controls button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.algorithm-controls button:focus-visible,
+.algorithm-visualizer select:focus-visible {
+  outline: 3px solid #f59e0b;
+  outline-offset: 2px;
+}
+.algorithm-note {
+  font-size: 0.85rem;
+}
+@media (max-width: 480px) {
+  .algorithm-visualizer {
+    padding: 0.75rem;
+  }
+  .algorithm-array li {
+    min-width: 3.6rem;
+  }
+}

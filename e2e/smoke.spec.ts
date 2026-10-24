@@ -47,7 +47,7 @@ test("learn, check answers, persist completion, and explore a planned topic", as
   await page.goto("/roadmap");
   await expect(page.getByRole("progressbar")).toHaveAttribute(
     "aria-valuenow",
-    "11",
+    "9",
   );
   await expect(page.locator(".topic-card.completed")).toContainText(
     "Variables and Data Types",

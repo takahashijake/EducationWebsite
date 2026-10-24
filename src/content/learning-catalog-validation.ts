@@ -2,6 +2,7 @@ import { topics, topicHref } from "./curriculum";
 import { lessons } from "./lessons";
 import { fundamentalsAssessment } from "./assessments";
 import { codingExercises } from "./coding-exercises";
+import { dsaCodingExercises } from "./dsa-coding-exercises";
 import {
   activities,
   retrievalQuestions,
@@ -81,7 +82,10 @@ export function validateLearningCatalog(
       )
         errors.push(`Incorrect lesson destination ${question.id}`);
     }
-  for (const exercise of Object.values(codingExercises)) {
+  for (const exercise of [
+    ...Object.values(codingExercises),
+    ...dsaCodingExercises,
+  ]) {
     if (!activityIds.has(exercise.id))
       errors.push(`Unmapped Python lab ${exercise.id}`);
     const activity = catalog.find((item) => item.id === exercise.id);
@@ -95,6 +99,14 @@ export function validateLearningCatalog(
       errors.push(`Incorrect Python metadata ${exercise.id}`);
   }
   for (const question of retrievalQuestions) {
+    const activity = catalog.find((item) => item.id === question.id);
+    if (
+      !activity ||
+      activity.source !== "retrieval" ||
+      activity.revision !== question.revision ||
+      activity.skillIds.join() !== question.skillIds.join()
+    )
+      errors.push(`Incorrect retrieval mapping ${question.id}`);
     if (
       question.options.length < 2 ||
       question.correctIndex < 0 ||
@@ -109,6 +121,17 @@ export function validateLearningCatalog(
       )
     )
       errors.push(`Unavailable retrieval topic ${question.topicId}`);
+  }
+  for (const skill of registry.filter((item) =>
+    ["arrays-strings", "searching"].includes(item.topicId),
+  )) {
+    if (
+      retrievalQuestions.filter(
+        (question) =>
+          question.skillIds.length === 1 && question.skillIds[0] === skill.id,
+      ).length < 2
+    )
+      errors.push(`Insufficient focused retrieval ${skill.id}`);
   }
   return errors;
 }
