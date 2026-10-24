@@ -18,4 +18,7 @@ export type CodingExercise = {
   explanation: string;
   reflection: string;
   conceptIds: string[];
+  /** Bump when authored checks change meaning; conceptIds remain topic-level IDs. */
+  revision?: number;
+  hints?: string[];
 };
