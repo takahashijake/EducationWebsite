@@ -153,7 +153,7 @@ export const dsaLessons: Record<string, Lesson> = {
         "Linear search examines index 0, then 1, and so on. Return as soon as an element equals the target; otherwise return -1 after the loop. An empty list performs zero comparisons. With duplicates it returns the leftmost match because earlier indices are checked first. Its worst case is n comparisons: O(n) time.",
         "For binary search, maintain inclusive bounds low = 0 and high = len(values) - 1. The loop invariant is: if the target is present, at least one matching index lies inside [low, high]. Compute mid = low + (high - low) // 2. If values[mid] is smaller than the target, discard indices through mid by setting low = mid + 1. If larger, set high = mid - 1. Equality returns mid. When low > high, the interval is empty and -1 is correct.",
         "The order must support the comparison: ascending numeric values here. If input is unsorted, discarding half is unjustified and a match can be lost. With duplicates, this implementation returns the first matching midpoint encountered, not necessarily the leftmost matching index. That contract is different from linear search and should be tested explicitly.",
-        "Each unsuccessful binary comparison removes roughly half the remaining candidates. After k comparisons, at most about n / 2^k remain; reaching one candidate takes roughly log₂ n halvings. Thus worst-case comparisons grow O(log n), including a final failure check. Empty input takes zero comparisons. This bound assumes indexed access is O(1); it would not transfer unchanged to a linked list.",
+        "Each unsuccessful midpoint probe removes roughly half the remaining candidates. After k probes, at most about n / 2^k remain; reaching one candidate takes roughly log₂ n halvings. A probe makes one equality comparison and, on a mismatch, one ordering comparison. Thus worst-case comparisons still grow O(log n). Empty input takes zero comparisons. This bound assumes indexed access is O(1); it would not transfer unchanged to a linked list.",
       ],
     },
     demonstration: {
@@ -191,7 +191,7 @@ export const dsaLessons: Record<string, Lesson> = {
       steps: [
         "Start low = 0, high = 4. Midpoint 2 contains 5. Since 5 < 6, indices 0 through 2 cannot contain 6; set low = 3.",
         "Now [3, 4] remains. Midpoint 3 contains 7. Since 7 > 6, discard 3 and 4 by setting high = 2.",
-        "low = 3 is greater than high = 2. The interval is empty, so return -1 after two element comparisons.",
+        "low = 3 is greater than high = 2. The interval is empty, so return -1 after two midpoint probes: two equality and two ordering comparisons under this lesson's cost model.",
         "For an unsorted input, either discard could lose 6. Check the precondition before using this reasoning.",
       ],
     },

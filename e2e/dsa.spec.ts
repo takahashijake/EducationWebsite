@@ -90,6 +90,12 @@ test("roadmap to DSA, stepper, knowledge evidence, Python repair, insight, and p
   await expect(
     page.getByText("0 of 1 Data Structures lessons marked read"),
   ).toBeVisible();
+  await expect(
+    page.getByText("0 of 2 Algorithms lessons marked read"),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Introduction to Big O Notation" }),
+  ).toBeVisible();
   await page.reload();
   await expect(
     page.getByText("Sorted-input precondition: Needs review"),
@@ -122,4 +128,20 @@ test("reduced motion keeps keyboard stepping available without playback", async 
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBe(true);
+});
+
+test("playback stops at the end and a scenario change cancels pending steps", async ({
+  page,
+}) => {
+  await page.goto("/lessons/arrays-strings");
+  const traversal = page.locator(".algorithm-visualizer");
+  await traversal.getByRole("button", { name: "Play" }).click();
+  await traversal.getByLabel("Choose input scenario").selectOption("singleton");
+  await page.waitForTimeout(1100);
+  await expect(traversal).toContainText("Step 1 of 3");
+  await traversal.getByRole("button", { name: "Play" }).click();
+  await expect(traversal).toContainText("Step 3 of 3", { timeout: 4000 });
+  await expect(traversal.getByRole("button", { name: "Play" })).toBeDisabled();
+  await traversal.getByRole("button", { name: "Reset" }).click();
+  await expect(traversal).toContainText("Step 1 of 3");
 });

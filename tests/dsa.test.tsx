@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process";
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { AlgorithmVisualizer } from "@/components/algorithm-visualizer";
 import {
   generateAlgorithmSteps,
@@ -46,6 +46,67 @@ describe("array algorithm traces", () => {
         (step) => step.inspected,
       ),
     ).toEqual([null, 0, null]);
+  });
+  it("visits exact zero-based indices and keeps the input unchanged", () => {
+    const scenario = { id: "order", label: "Order", values: [8, 3, 9, 2] };
+    const steps = generateAlgorithmSteps("traversal", scenario);
+    expect(steps.map((step) => step.inspected)).toEqual([
+      null,
+      0,
+      1,
+      2,
+      3,
+      null,
+    ]);
+    expect(steps.map((step) => step.comparisons)).toEqual([0, 0, 0, 0, 0, 0]);
+    expect(steps.every((step) => step.values.join() === "8,3,9,2")).toBe(true);
+    expect(scenario.values).toEqual([8, 3, 9, 2]);
+  });
+  it("follows inclusive binary intervals and the reference comparison count", () => {
+    const found = generateAlgorithmSteps(
+      "binary-search",
+      scenarios["binary-search"][0],
+    );
+    expect(
+      found
+        .filter((step) => step.inspected !== null)
+        .map((step) => [step.inspected, step.low, step.high, step.comparisons]),
+    ).toEqual([
+      [2, 0, 5, 2],
+      [4, 3, 5, 4],
+      [5, 5, 5, 5],
+    ]);
+    expect(found.at(-1)?.outcome).toBe("Found at index 5");
+    const missing = generateAlgorithmSteps(
+      "binary-search",
+      scenarios["binary-search"][2],
+    );
+    expect(
+      missing
+        .filter((step) => step.inspected !== null)
+        .map((step) => step.inspected),
+    ).toEqual([2, 3]);
+    expect(missing.at(-1)).toMatchObject({
+      low: null,
+      high: null,
+      comparisons: 4,
+      outcome: "Not found (-1)",
+    });
+    const singleton = generateAlgorithmSteps("binary-search", {
+      id: "one-miss",
+      label: "One miss",
+      values: [7],
+      target: 8,
+    });
+    expect(
+      singleton
+        .filter((step) => step.inspected !== null)
+        .map((step) => step.inspected),
+    ).toEqual([0]);
+    expect(singleton.at(-1)).toMatchObject({
+      comparisons: 2,
+      outcome: "Not found (-1)",
+    });
   });
   for (const algorithm of ["linear", "binary-search"] as const) {
     it(`${algorithm} agrees with Python's search result contract across scenarios`, () => {
@@ -110,11 +171,20 @@ describe("array algorithm traces", () => {
         target: 1,
       }),
     ).toThrow(/sorted/);
+    expect(() =>
+      generateAlgorithmSteps("binary-search", {
+        id: "unordered",
+        label: "Unordered",
+        values: [1, Number.NaN],
+        target: 1,
+      }),
+    ).toThrow(/finite/);
   });
   it("clamps navigation and reset", () => {
     expect(moveStep(0, 3, "previous")).toBe(0);
     expect(moveStep(2, 3, "next")).toBe(2);
     expect(moveStep(2, 3, "reset")).toBe(0);
+    expect(moveStep(0, 0, "next")).toBe(0);
   });
   it("steps, changes scenario, and resets in the rendered player", () => {
     render(
@@ -133,6 +203,30 @@ describe("array algorithm traces", () => {
     fireEvent.click(screen.getByRole("button", { name: "Reset" }));
     expect(screen.getByText(/Step 1 of/)).toBeInTheDocument();
   });
+  it("stops playback at the final step and cancels it when the scenario changes", () => {
+    vi.useFakeTimers();
+    try {
+      const view = render(
+        <AlgorithmVisualizer algorithm="traversal" caption="Practice" />,
+      );
+      fireEvent.click(screen.getByRole("button", { name: "Play" }));
+      fireEvent.change(screen.getByLabelText("Choose input scenario"), {
+        target: { value: "singleton" },
+      });
+      act(() => vi.advanceTimersByTime(1000));
+      expect(screen.getByText(/Step 1 of/)).toBeInTheDocument();
+      fireEvent.click(screen.getByRole("button", { name: "Play" }));
+      act(() => vi.advanceTimersByTime(900));
+      expect(screen.getByText(/Step 2 of/)).toBeInTheDocument();
+      act(() => vi.advanceTimersByTime(900));
+      expect(screen.getByText(/Step 3 of/)).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Play" })).toBeDisabled();
+      view.unmount();
+      expect(vi.getTimerCount()).toBe(0);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });
 describe("DSA practice and evidence", () => {
   it("runs every reference against every authored Python check", () => {
@@ -145,9 +239,31 @@ describe("DSA practice and evidence", () => {
         );
       }
   });
+  it("matches the Python references on every predefined search scenario", () => {
+    for (const [algorithm, exerciseId, functionName] of [
+      ["linear", "search-linear", "linear_search"],
+      ["binary-search", "search-binary", "binary_search"],
+    ] as const) {
+      for (const scenario of scenarios[algorithm]) {
+        const trace = generateAlgorithmSteps(algorithm, scenario);
+        const outcome = trace.at(-1)!.outcome!;
+        const index = outcome.startsWith("Found at index ")
+          ? Number(outcome.slice("Found at index ".length))
+          : -1;
+        const result = python(
+          solutions[exerciseId],
+          `print(${functionName}(${JSON.stringify(scenario.values)}, ${scenario.target}))`,
+        );
+        expect(result.error).toBeUndefined();
+        expect(result.status, result.stderr).toBe(0);
+        expect(Number(result.stdout.trim())).toBe(index);
+      }
+    }
+  });
   it("rejects key incorrect boundaries and missing results", () => {
     for (const id of [
       "arrays-safe-traverse",
+      "arrays-indexed-sum",
       "arrays-empty-first",
       "arrays-repair-boundary",
       "search-linear",
@@ -164,9 +280,8 @@ describe("DSA practice and evidence", () => {
     const broken = dsaCodingExercises.find(
       (item) => item.id === "search-boundary-debug",
     )!;
-    expect(
-      python(broken.starter, broken.tests[0].code, 200).error,
-    ).toBeDefined();
+    const result = python(broken.starter, broken.tests[0].code, 200);
+    expect((result.error as NodeJS.ErrnoException)?.code).toBe("ETIMEDOUT");
   });
   it("maps two focused authored retrievals per new skill and preserves old evidence", () => {
     const newSkills = skills.filter((skill) =>

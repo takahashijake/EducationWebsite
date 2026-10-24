@@ -630,7 +630,7 @@ export const dsaPythonActivities: Activity[] = dsaCodingExercises.map(
   (exercise) => ({
     id: exercise.id,
     source: "python",
-    skillIds: dsaPythonMap[exercise.id],
+    skillIds: dsaPythonMap[exercise.id] ?? [],
     revision: exercise.revision ?? 1,
     href: `/lessons/${exercise.topicId}#code-lab`,
     title: exercise.title,

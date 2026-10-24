@@ -6,9 +6,9 @@ A guided introduction to computer science through explanations, worked Python ex
 
 See [C++ architecture, security, authoring, and deployment](docs/cpp-playground.md) and [delivery verification](docs/cpp-review.md). The first execution downloads about 95 MB of self-hosted compiler assets. Programs have a 64 MiB linear-memory cap, a two-second deadline per input, bounded output, and WASI capabilities without host files, secrets, storage, or network access. Tests are visible client-side practice evidence, not hidden grading or certification. Python Code Labs also provide editable, executable practice in all seven programming lessons and all five project stages. Python uses a separate disposable Pyodide Worker with explicit deadlines, bounded output, saved drafts, and advisory public checks. See [Python architecture and verification](docs/v0.4-review.md).
 
-The integrated [Programming Fundamentals assessment](/assessments/programming-fundamentals) combines 12 authored Python reasoning problems, deterministic scoring, missed-topic review links, and retry. It preserves lesson/project progress; attempts reset on reload and do not establish mastery.
+The integrated [Programming Fundamentals assessment](/assessments/programming-fundamentals) combines 12 authored Python reasoning problems, deterministic scoring, missed-topic review links, and retry. Its answer form resets on reload; V0.5 concept evidence from submitted answers persists separately from lesson and project progress. Neither a single attempt nor reading completion establishes mastery.
 
-The roadmap contains **46 topics in eight sections: eleven published lessons and 35 planned previews**. All seven Programming Fundamentals topics are published. Arrays and Strings and Searching add the first connected Data Structures and Algorithms path. The wider CS curriculum remains in development.
+The roadmap contains **46 topics in eight sections: 11 published lessons and 35 planned previews**. All seven Programming Fundamentals topics are published. Arrays and Strings and Searching add the first connected Data Structures and Algorithms path. The wider CS curriculum remains in development.
 
 Follow the advisory programming sequence:
 
@@ -28,7 +28,7 @@ Every lesson begins with objectives, connects explanations to a demonstration an
 - **Recursion:** recursive definitions, base and recursive cases, decreasing measures, call creation and unwinding, local bindings, termination, missing returns, and recursion-depth limits. The factorial trace offers 3, 0, 1, and 4 as inputs. Additional programs cover recursive versus iterative summation and a recursive sequence search, including empty and missing cases.
 - **Guided project:** five stages build comparison, integer conversion/range validation, a bounded game round, an off-by-one regression test, and a terminal adapter. Each includes objectives or goals, prerequisite connections, starter code, expected behavior, incremental hints, a worked solution, deterministic Python assertions, a reasoning check, and a local-work checklist. Reflection questions and a final reference complete the experience.
 
-The shared **understanding summary** counts checks attempted and correct during the current lesson visit. Reading completion is a separate manual action. Correct fixed-choice answers and checked boxes do **not** establish mastery or independently verify coding skill. Lesson attempts reset on reload; project reasoning answers and checklists persist.
+The shared **understanding summary** counts checks attempted and correct during the current lesson visit. Reading completion is a separate manual action. Submitted knowledge checks also add concept observations to Learning Insights; the quiz form itself resets on reload. Correct fixed-choice answers and checked boxes do **not** establish mastery or independently verify coding skill. Project reasoning answers and checklists persist separately.
 
 The game fixes the secret at 12, accepts integers from 1 to 20, and allows three valid guesses. Invalid text and out-of-range values do not consume attempts. The finite-input engine accepts supplied strings for reproducible tests; the terminal interface requests input as needed. Students can write and run Python locally or in the browser Code Lab. The Python Code Lab can also run learner implementations in the browser; no learner code runs on the application server.
 
@@ -122,7 +122,7 @@ The unchanged **`cs-fundamentals:progress:v1`** key retains its format:
 
 No migration or write occurs on load. Existing valid V1 completion data survives. Unknown IDs, still-planned IDs, invalid values, and duplicates do not inflate progress. Completing/undoing a lesson uses its existing permanent ID. Publishing more lessons changes the denominator without deleting earned completions.
 
-Global reading progress is completed published lessons / **9**; the programming path separately counts its **7** members. The original three completions yield 3/9 globally (33%) and 1/7 on the programming path (14%). Projects do not change either denominator. The existing `ProgressProvider` retains its deterministic server snapshot, cross-tab events, and session fallback on denied writes.
+Global reading progress is completed published lessons / **11**; the programming path separately counts its **7** members. The original three completions yield 3/11 globally (27%) and 1/7 on the programming path (14%). Projects do not change either denominator. The existing `ProgressProvider` retains its deterministic server snapshot, cross-tab events, and session fallback on denied writes.
 
 Projects use a separate, explicitly versioned key per project:
 
@@ -154,25 +154,25 @@ npx playwright install --with-deps chromium # once per environment
 npm run test:e2e
 ```
 
-Build before the production browser suite. Coverage includes all nine lessons, all 46 topic routes, project routes, unknown/planned routes, prerequisite/content integrity, answer feedback and retry, trace boundaries and nested calls, Python examples and recursion boundaries, every project milestone's reference/tests, an intentionally broken off-by-one mutation, reveal behavior, lesson/project progress isolation, malformed/denied storage, reloads, and real cross-tab changes. Desktop Chromium and a mobile viewport run the same browser flows, including keyboard interactions and horizontal containment checks.
+Build before the production browser suite. Coverage includes all 11 published lessons, all 46 topic routes, project routes, unknown/planned routes, prerequisite/content integrity, answer feedback and retry, trace boundaries and nested calls, array and search visualizations, Python examples and recursion boundaries, every project milestone's reference/tests, an intentionally broken off-by-one mutation, reveal behavior, lesson/project progress isolation, malformed/denied storage, reloads, and real cross-tab changes. Desktop Chromium and a mobile viewport run the same browser flows, including keyboard interactions and horizontal containment checks.
 
 This container's Chromium requires extracted system libraries. Its environment-specific invocation is:
 
 ```bash
-LD_LIBRARY_PATH=/tmp/cs-roadmap-browser-libs/extracted/usr/lib/x86_64-linux-gnu npm run test:e2e
+LD_LIBRARY_PATH=/tmp/education-apt/libs/usr/lib/x86_64-linux-gnu npm run test:e2e
 ```
 
 This path is not an application dependency. See [the V0.3 review](docs/v0.3-review.md) for original delivery results, [the post-merge acceptance audit](docs/v0.3-acceptance-audit.md) for fresh verification against merged main, and [the previous review](docs/v0.2-review.md) for historical V0.2 results.
 
-## Limitations and recommended V0.4
+## Current limitations and next direction
 
-- Nine published lessons and one project; 37 broader CS topics remain planned.
+- 11 published lessons and one project; 35 broader CS topics remain planned.
 - Existing Python traces/questions are authored demonstrations. C++ activities execute learner code and evaluate public I/O cases; client-side grading does not verify technique, all possible behavior, or mastery.
-- Lesson evidence lasts only for the current visit. Project evidence combines fixed questions and self-reported coding/checklists; revealing a solution does not establish independent skill.
+- The visit-level understanding summary resets on reload, while V0.5 concept evidence persists in the browser. Project evidence combines fixed questions and self-reported coding/checklists; revealing a solution does not establish independent skill.
 - Desktop/mobile Chromium coverage does not certify cross-browser, screen-reader, or educational effectiveness. Independent human accessibility and teaching review remain valuable.
 - No authentication, payments, external AI APIs, backend, CMS, credentials, or cloud sync.
 
-**Recommended V0.4:** add concept-tagged assessment evidence and transparent knowledge-gap diagnosis, with short delayed retrieval checks and targeted review links. Include an independently completed project variation with rubric-based self-assessment. Arrange human educational/accessibility review before expanding into data structures or building a larger adaptive system.
+**Recommended next direction:** reuse the array-step contract for a Sorting lesson, and arrange human educational and accessibility review before making stronger learning-effectiveness claims. See [the V0.6 review](docs/v0.6-review.md) for the current scope and risks.
 
 Python language references used during authoring: [Errors and Exceptions](https://docs.python.org/3/tutorial/errors.html), [Defining Functions](https://docs.python.org/3/tutorial/controlflow.html#defining-functions), and [RecursionError](https://docs.python.org/3/library/exceptions.html#RecursionError). Actual examples are checked with the local Python version recorded in the review.
 

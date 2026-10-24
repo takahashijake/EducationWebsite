@@ -84,6 +84,8 @@ export function generateAlgorithmSteps(
   scenario: AlgorithmScenario,
 ): AlgorithmStep[] {
   const { values, target } = scenario;
+  if (values.some((value) => !Number.isFinite(value)))
+    throw new Error("Visualization requires finite numeric values");
   if (
     algorithm === "binary-search" &&
     values.some((value, i) => i > 0 && value < values[i - 1])
@@ -147,7 +149,8 @@ export function generateAlgorithmSteps(
     );
     return steps;
   }
-  if (target === undefined) throw new Error("Search target is required");
+  if (target === undefined || !Number.isFinite(target))
+    throw new Error("Search target must be a finite number");
   if (algorithm === "linear") {
     for (let index = 0; index < values.length; index++) {
       comparisons++;
@@ -219,7 +222,7 @@ export function moveStep(
   count: number,
   action: "next" | "previous" | "reset",
 ) {
-  if (action === "reset") return 0;
+  if (action === "reset" || count <= 0) return 0;
   return Math.max(
     0,
     Math.min(count - 1, position + (action === "next" ? 1 : -1)),

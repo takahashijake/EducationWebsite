@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { activityById, skills } from "@/content/learning-catalog";
-import { topics, sections } from "@/content/curriculum";
+import { availableTopics, topics, sections } from "@/content/curriculum";
 import { diagnose, recommend } from "@/lib/learning-evidence";
 import { useProgress } from "./progress-provider";
 import { useLearningEvidence } from "./use-learning-evidence";
@@ -35,9 +35,7 @@ export function LearningInsights() {
   const due = summaries.filter(
     (entry) => entry.dueAt && Date.parse(entry.dueAt) <= now,
   );
-  const studiedTopics = topics.filter((topic) =>
-    skills.some((skill) => skill.topicId === topic.id),
-  );
+  const publishedTopics = availableTopics;
   return (
     <div className="insights-grid">
       <section className="insight-panel">
@@ -45,10 +43,10 @@ export function LearningInsights() {
         <p>Reading completion is separate from assessed understanding.</p>
         {sections
           .filter((section) =>
-            studiedTopics.some((topic) => topic.sectionId === section.id),
+            publishedTopics.some((topic) => topic.sectionId === section.id),
           )
           .map((section) => {
-            const members = studiedTopics.filter(
+            const members = publishedTopics.filter(
               (topic) => topic.sectionId === section.id,
             );
             return (
@@ -62,18 +60,14 @@ export function LearningInsights() {
             );
           })}
         <ul>
-          {topics
-            .filter((topic) =>
-              skills.some((skill) => skill.topicId === topic.id),
-            )
-            .map((topic) => (
-              <li key={topic.id}>
-                <Link href={`/lessons/${topic.slug}`}>{topic.title}</Link>:{" "}
-                {completedIds.includes(topic.id)
-                  ? "marked read"
-                  : "available to read"}
-              </li>
-            ))}
+          {publishedTopics.map((topic) => (
+            <li key={topic.id}>
+              <Link href={`/lessons/${topic.slug}`}>{topic.title}</Link>:{" "}
+              {completedIds.includes(topic.id)
+                ? "marked read"
+                : "available to read"}
+            </li>
+          ))}
         </ul>
       </section>
       <section className="insight-panel">

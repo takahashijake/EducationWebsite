@@ -39,10 +39,10 @@ export function AlgorithmVisualizer({
   }, []);
   useEffect(() => {
     if (!playing || position >= steps.length - 1) return;
-    const timer = window.setTimeout(
-      () => setPosition((current) => moveStep(current, steps.length, "next")),
-      900,
-    );
+    const timer = window.setTimeout(() => {
+      setPosition((current) => moveStep(current, steps.length, "next"));
+      if (position + 1 >= steps.length - 1) setPlaying(false);
+    }, 900);
     return () => window.clearTimeout(timer);
   }, [playing, position, steps.length]);
   const navigate = (action: "next" | "previous" | "reset") => {
@@ -133,7 +133,8 @@ export function AlgorithmVisualizer({
         </p>
         <p>{step.explanation}</p>
         <p>
-          Active index: {step.activeIndex ?? "none"} · Search bounds:{" "}
+          Active index: {step.activeIndex ?? "none"} ·{" "}
+          {algorithm === "traversal" ? "Remaining indices" : "Search bounds"}:{" "}
           {step.low === null ? "empty" : `${step.low} through ${step.high}`} ·
           Comparisons: {step.comparisons}
         </p>
