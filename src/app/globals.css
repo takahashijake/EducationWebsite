@@ -3012,6 +3012,39 @@ textarea:focus-visible {
 .algorithm-note {
   font-size: 0.85rem;
 }
+.adaptive-practice {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+.adaptive-practice .insight-panel {
+  min-width: 0;
+}
+.adaptive-practice select,
+.adaptive-practice pre {
+  max-width: 100%;
+}
+.adaptive-practice select {
+  display: block;
+  padding: 0.65rem;
+  margin: 0.5rem 0 1rem;
+}
+.adaptive-practice pre {
+  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.adaptive-feedback,
+.adaptive-hint {
+  border-left: 3px solid #2563eb;
+  padding: 0.6rem 1rem;
+  margin: 1rem 0;
+  background: #eff6ff;
+}
+.adaptive-feedback:focus {
+  outline: 3px solid #f59e0b;
+  outline-offset: 3px;
+}
 @media (max-width: 480px) {
   .algorithm-visualizer {
     padding: 0.75rem;

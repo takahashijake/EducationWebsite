@@ -41,11 +41,11 @@ export function Navigation() {
             How it works
           </Link>
           <Link
-            href="/practice/cpp"
+            href="/practice/adaptive"
             className={
               path.startsWith("/practice") ? "nav-link active" : "nav-link"
             }
-            aria-current={path === "/practice/cpp" ? "page" : undefined}
+            aria-current={path === "/practice/adaptive" ? "page" : undefined}
           >
             Practice
           </Link>
