@@ -18,6 +18,7 @@ import {
   presentAdaptiveInstance,
   recordAdaptiveOutcome,
   restartAdaptiveSession,
+  validAdaptiveInstanceId,
 } from "@/lib/adaptive-session";
 
 const now = Date.parse("2026-10-24T12:00:00.000Z");
@@ -348,6 +349,16 @@ print(json.dumps(out))`;
 });
 
 describe("adaptive selection and persistence", () => {
+  it("accepts only authored instance IDs and rejects command-like storage input", () => {
+    const id = instance("linear-first-match", 7).id;
+    expect(validAdaptiveInstanceId(id)).toBe(true);
+    for (const malformed of [
+      `${id}; touch /tmp/unwanted`,
+      `${id}$(echo unsafe)`,
+      `adaptive-../linear-first-match:r1:s7`,
+      `adaptive-linear-first-match:r1:s7\nextra`,
+    ]) expect(validAdaptiveInstanceId(malformed)).toBe(false);
+  });
   it("starts without history, follows focused misses, and holds a coherent current skill", () => {
     const start = selectAdaptiveProblem({ records: [], now, seed: 0 })!;
     expect(start.skillId).toBe("comparisons");

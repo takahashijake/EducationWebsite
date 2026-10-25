@@ -38,7 +38,7 @@ export const emptyAdaptiveSession = (): AdaptiveSessionStore => ({
 });
 export function validAdaptiveInstanceId(id: unknown): id is string {
   if (typeof id !== "string" || id.length > 100) return false;
-  const match = /^adaptive-([a-z-]+):r([1-9]\d*):s(0|[1-9]\d*)$/.exec(id);
+  const match = id.match(/^adaptive-([a-z-]+):r([1-9]\d*):s(0|[1-9]\d*)$/);
   if (!match) return false;
   const family = adaptiveFamilyById[match[1]];
   const seed = Number(match[3]);
