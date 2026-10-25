@@ -7,6 +7,7 @@ import {
   dsaRetrievalQuestions,
 } from "./dsa-catalog";
 import { dsaCodingExercises } from "./dsa-coding-exercises";
+import { adaptiveFamilies } from "./adaptive-families";
 
 export type Skill = {
   id: string;
@@ -651,6 +652,14 @@ export const transferActivity: Activity = {
   href: "/practice/transfer",
   title: "Expense summary transfer challenge",
 };
+export const adaptiveActivities: Activity[] = adaptiveFamilies.map((item) => ({
+  id: `adaptive-${item.id}`,
+  source: "retrieval",
+  skillIds: [item.skillId],
+  revision: item.revision,
+  href: `/practice/adaptive?skill=${item.skillId}`,
+  title: `${item.id.replaceAll("-", " ")} practice`,
+}));
 export const activities = [
   ...assessmentActivities,
   ...lessonActivities,
@@ -658,6 +667,7 @@ export const activities = [
   ...pythonActivities,
   ...dsaPythonActivities,
   transferActivity,
+  ...adaptiveActivities,
 ];
 export const activityById = Object.fromEntries(
   activities.map((activity) => [activity.id, activity]),

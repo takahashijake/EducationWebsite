@@ -6,6 +6,7 @@ import { availableTopics, topics, sections } from "@/content/curriculum";
 import { diagnose, recommend } from "@/lib/learning-evidence";
 import { useProgress } from "./progress-provider";
 import { useLearningEvidence } from "./use-learning-evidence";
+import { adaptiveSkillIds } from "@/content/adaptive-skills";
 export function LearningInsights() {
   const { completedIds, ready: progressReady } = useProgress();
   const { evidence, ready, storageError, clear } = useLearningEvidence();
@@ -216,6 +217,17 @@ export function LearningInsights() {
             <Link className="button" href={next.href}>
               Start recommended practice →
             </Link>
+            {adaptiveSkillIds.includes(next.skillId) && (
+              <p>
+                <Link href={`/practice/adaptive?skill=${next.skillId}`}>
+                  Try a fresh{" "}
+                  {skills
+                    .find((skill) => skill.id === next.skillId)
+                    ?.title.toLowerCase()}{" "}
+                  variation →
+                </Link>
+              </p>
+            )}
           </div>
         )}
         <h3>Due for review</h3>
@@ -241,6 +253,7 @@ export function LearningInsights() {
           </p>
         )}
         <p>
+          <Link href="/practice/adaptive">Start adaptive practice</Link> ·{" "}
           <Link href="/practice/retrieval">Browse retrieval questions</Link> ·{" "}
           <Link href="/practice/transfer">
             Try the Python transfer challenge

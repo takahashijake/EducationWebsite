@@ -1,4 +1,4 @@
-# CS Fundamentals Roadmap · Interactive DSA, Python and C++ Practice
+# CS Fundamentals Roadmap · Adaptive Practice, Interactive DSA, Python and C++
 
 A guided introduction to computer science through explanations, worked Python examples, interactive execution traces, deliberate practice, and a staged project.
 
@@ -19,6 +19,8 @@ The project is also available from the Projects navigation and the roadmap path 
 Continue with **Arrays and Strings → Introduction to Big O Notation → Searching**. These are advisory foundations, not locked assessments. Arrays and Strings covers zero-based boundaries, traversal, Python list mutation versus immutable strings, and operation costs. Searching compares linear scans with binary search on correctly sorted input. The array visualizers expose each decision, actual comparison count, candidate bounds, duplicate behavior, and empty cases; their predefined scenarios never run learner code. Seven new Python labs use the existing disposable Worker and saved drafts to practice traversal, indexed results, empty input, off-by-one repair, and both searches. Public tests provide feedback rather than secure grading.
 
 Learning Insights now groups evidence by subject and includes eight DSA skills with two independently authored retrieval questions each. The existing `cs-fundamentals:evidence:v1` records, reading completion, and workspace keys remain valid. Skill states remain cautious: reading completion and a passing public test do not establish mastery.
+
+[Adaptive practice](/practice/adaptive) adds a five-question, browser-local session alongside the fixed [retrieval questions](/practice/retrieval). Thirteen authored question families generate deterministic variations for comparisons, loop and sequence boundaries, traversal, linear search, binary-search invariants, and sorted-input checks. The next problem reflects focused mistakes, due reviews, relevant prerequisites, and a learner's manual concept choice. Wrong choices receive an authored explanation, progressive hints, lesson links, and a related variation. A correct first answer after using a hint is counted as assisted session practice, not independent positive concept evidence. These bounded templates are not LLM tutoring, secure grading, or proof of mastery.
 
 ## Delivered learning experience
 
@@ -59,6 +61,10 @@ src/content/advanced-traces.ts   Finite factorial and boundary-case trace famili
 src/content/dsa-lessons.ts       Arrays and Strings and Searching lessons
 src/content/dsa-coding-exercises.ts Seven Python DSA challenges
 src/content/dsa-catalog.ts       Focused retrieval and activity mappings
+src/content/adaptive-families.ts  Authored deterministic question families and answer evaluation
+src/lib/adaptive-selection.ts     Pure evidence-aware next-problem policy
+src/lib/adaptive-session.ts       Bounded local session and recent-instance parsing
+src/components/adaptive-practice.tsx Guided five-question interface
 src/lib/algorithm-steps.ts       Pure traversal and search trace generation
 src/components/algorithm-visualizer.tsx Accessible stepper and scenario controls
 src/content/project-types.ts     Reusable project/milestone contracts
@@ -154,7 +160,7 @@ npx playwright install --with-deps chromium # once per environment
 npm run test:e2e
 ```
 
-Build before the production browser suite. Coverage includes all 11 published lessons, all 46 topic routes, project routes, unknown/planned routes, prerequisite/content integrity, answer feedback and retry, trace boundaries and nested calls, array and search visualizations, Python examples and recursion boundaries, every project milestone's reference/tests, an intentionally broken off-by-one mutation, reveal behavior, lesson/project progress isolation, malformed/denied storage, reloads, and real cross-tab changes. Desktop Chromium and a mobile viewport run the same browser flows, including keyboard interactions and horizontal containment checks.
+Build before the production browser suite. Coverage includes adaptive sessions and remediation, all 11 published lessons, all 46 topic routes, project routes, unknown/planned routes, prerequisite/content integrity, answer feedback and retry, trace boundaries and nested calls, array and search visualizations, Python examples and recursion boundaries, every project milestone's reference/tests, an intentionally broken off-by-one mutation, reveal behavior, lesson/project progress isolation, malformed/denied storage, reloads, and real cross-tab changes. Desktop Chromium and a mobile viewport run the same browser flows, including keyboard interactions and horizontal containment checks.
 
 This container's Chromium requires extracted system libraries. Its environment-specific invocation is:
 
@@ -172,7 +178,7 @@ This path is not an application dependency. See [the V0.3 review](docs/v0.3-revi
 - Desktop/mobile Chromium coverage does not certify cross-browser, screen-reader, or educational effectiveness. Independent human accessibility and teaching review remain valuable.
 - No authentication, payments, external AI APIs, backend, CMS, credentials, or cloud sync.
 
-**Recommended next direction:** reuse the array-step contract for a Sorting lesson, and arrange human educational and accessibility review before making stronger learning-effectiveness claims. See [the V0.6 review](docs/v0.6-review.md) for the current scope and risks.
+**Recommended next direction:** reuse the array-step contract for a Sorting lesson, and arrange human educational and accessibility review before making stronger learning-effectiveness claims. See [the V0.7 review](docs/v0.7-review.md) for the current scope and risks.
 
 Python language references used during authoring: [Errors and Exceptions](https://docs.python.org/3/tutorial/errors.html), [Defining Functions](https://docs.python.org/3/tutorial/controlflow.html#defining-functions), and [RecursionError](https://docs.python.org/3/library/exceptions.html#RecursionError). Actual examples are checked with the local Python version recorded in the review.
 
@@ -180,6 +186,6 @@ Python and C++ retain separate typed execution contracts in `src/lib/execution/p
 
 ## V0.5 learning insights and retrieval practice
 
-`/learning` keeps reading completion separate from answers to authored checks. Complete a lesson knowledge check, the `/assessments/programming-fundamentals`, a `/practice/retrieval`, or the `/practice/transfer` to add local learning evidence. The dashboard explains each skill state, shows recent observations and due reviews, and links to the next activity. Evidence is stored only in this browser and can be cleared independently of reading progress and code drafts.
+`/learning` keeps reading completion separate from answers to authored checks. Complete a lesson knowledge check, the `/assessments/programming-fundamentals`, `/practice/retrieval`, `/practice/adaptive`, or `/practice/transfer` to add local learning evidence. The dashboard explains each skill state, shows recent observations and due reviews, and links to the next activity. Evidence is stored only in this browser and can be cleared independently of reading progress and code drafts.
 
 The schedule is deliberately simple: a focused successful practice attempt schedules review after one day; successful delayed retrieval extends the interval to three, seven, then fourteen days. A focused mistake makes review due now and restarts the short interval after a correct recovery. Combined questions are clues, not definitive skill judgments. Repeated correct work, including a later retrieval attempt on a different day, is required for the strongest status. Public code checks give practice feedback on their stated cases, not proof of general correctness. See [the V0.5 review](docs/v0.5-review.md) for the data contracts, authoring rules, limits, and verification.

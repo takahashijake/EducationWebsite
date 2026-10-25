@@ -3,6 +3,8 @@ import { lessons } from "./lessons";
 import { fundamentalsAssessment } from "./assessments";
 import { codingExercises } from "./coding-exercises";
 import { dsaCodingExercises } from "./dsa-coding-exercises";
+import { adaptiveFamilies } from "./adaptive-families";
+import { adaptiveSkillIds } from "./adaptive-skills";
 import {
   activities,
   retrievalQuestions,
@@ -133,5 +135,54 @@ export function validateLearningCatalog(
     )
       errors.push(`Insufficient focused retrieval ${skill.id}`);
   }
+  const familyIds = new Set<string>();
+  for (const family of adaptiveFamilies) {
+    if (familyIds.has(family.id))
+      errors.push(`Duplicate adaptive family ${family.id}`);
+    familyIds.add(family.id);
+    const skill = registry.find((item) => item.id === family.skillId);
+    const topic = topics.find((item) => item.id === family.topicId);
+    if (
+      !skill ||
+      skill.topicId !== family.topicId ||
+      topic?.status !== "available"
+    )
+      errors.push(`Invalid adaptive skill or topic ${family.id}`);
+    if (topic && family.reviewHref !== topicHref(topic))
+      errors.push(`Invalid adaptive review destination ${family.id}`);
+    const activity = catalog.find(
+      (item) => item.id === `adaptive-${family.id}`,
+    );
+    if (
+      !activity ||
+      activity.source !== "retrieval" ||
+      activity.revision !== family.revision ||
+      activity.skillIds.join() !== family.skillId ||
+      activity.href !== `/practice/adaptive?skill=${family.skillId}`
+    )
+      errors.push(`Invalid adaptive activity ${family.id}`);
+  }
+  if (
+    new Set(adaptiveSkillIds).size !== adaptiveSkillIds.length ||
+    adaptiveSkillIds.some(
+      (id) => !adaptiveFamilies.some((family) => family.skillId === id),
+    ) ||
+    adaptiveFamilies.some(
+      (family) => !adaptiveSkillIds.includes(family.skillId),
+    )
+  )
+    errors.push("Adaptive skill navigation does not match authored families");
+  for (const skillId of [
+    "comparisons",
+    "loop-boundaries",
+    "sequence-boundaries",
+    "sequence-traversal",
+    "linear-search",
+    "binary-invariants",
+  ])
+    if (
+      adaptiveFamilies.filter((family) => family.skillId === skillId).length < 2
+    )
+      errors.push(`Insufficient adaptive families ${skillId}`);
   return errors;
 }
