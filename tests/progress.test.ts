@@ -51,27 +51,27 @@ describe("browser progress", () => {
   it("uses only available lessons as its denominator", () => {
     expect(progressSummary([])).toEqual({
       completed: 0,
-      available: 11,
+      available: availableTopics.length,
       percentage: 0,
     });
     expect(progressSummary([id, id, "propositional-logic", "fake"])).toEqual({
       completed: 1,
-      available: 11,
-      percentage: 9,
+      available: availableTopics.length,
+      percentage: Math.round((1 / availableTopics.length) * 100),
     });
     expect(progressSummary([id, "big-o-notation"])).toEqual({
       completed: 2,
-      available: 11,
-      percentage: 18,
+      available: availableTopics.length,
+      percentage: Math.round((2 / availableTopics.length) * 100),
     });
     expect(
       progressSummary([id, "big-o-notation", "binary-number-representation"]),
-    ).toEqual({ completed: 3, available: 11, percentage: 27 });
+    ).toEqual({ completed: 3, available: availableTopics.length, percentage: Math.round((3 / availableTopics.length) * 100) });
   });
-  it("counts full completion across all eleven available lessons", () => {
+  it("counts full completion across all available lessons", () => {
     expect(progressSummary(availableTopics.map((topic) => topic.id))).toEqual({
-      completed: 11,
-      available: 11,
+      completed: availableTopics.length,
+      available: availableTopics.length,
       percentage: 100,
     });
   });

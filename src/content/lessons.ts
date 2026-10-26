@@ -3,12 +3,15 @@ import { advancedLessons } from "./advanced-lessons";
 import { programmingLessons } from "./programming-lessons";
 import { dsaLessons } from "./dsa-lessons";
 import { dsaCodingExercises } from "./dsa-coding-exercises";
+import { sortingCodingExercises } from "./sorting-coding-exercises";
+import { sortingLesson } from "./sorting-lesson";
 import type { Lesson } from "./types";
 
 const authoredLessons: Record<string, Lesson> = {
   ...programmingLessons,
   ...advancedLessons,
   ...dsaLessons,
+  sorting: sortingLesson,
   "variables-data-types": {
     topicId: "variables-data-types",
     minutes: 12,
@@ -302,9 +305,9 @@ export const lessons: Record<string, Lesson> = Object.fromEntries(
       ...lesson,
       ...(codingExercises[id]
         ? { codingExercises: [codingExercises[id]] }
-        : dsaCodingExercises.some((exercise) => exercise.topicId === id)
+        : [...dsaCodingExercises, ...sortingCodingExercises].some((exercise) => exercise.topicId === id)
           ? {
-              codingExercises: dsaCodingExercises.filter(
+              codingExercises: [...dsaCodingExercises, ...sortingCodingExercises].filter(
                 (exercise) => exercise.topicId === id,
               ),
             }

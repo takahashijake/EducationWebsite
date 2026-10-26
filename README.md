@@ -8,7 +8,7 @@ See [C++ architecture, security, authoring, and deployment](docs/cpp-playground.
 
 The integrated [Programming Fundamentals assessment](/assessments/programming-fundamentals) combines 12 authored Python reasoning problems, deterministic scoring, missed-topic review links, and retry. Its answer form resets on reload; V0.5 concept evidence from submitted answers persists separately from lesson and project progress. Neither a single attempt nor reading completion establishes mastery.
 
-The roadmap contains **46 topics in eight sections: 11 published lessons and 35 planned previews**. All seven Programming Fundamentals topics are published. Arrays and Strings and Searching add the first connected Data Structures and Algorithms path. The wider CS curriculum remains in development.
+The roadmap contains **46 topics in eight sections: 12 published lessons and 34 planned previews**. All seven Programming Fundamentals topics are published. Arrays and Strings, Searching, and Sorting form the first connected data-structure and algorithm path. The wider CS curriculum remains in development.
 
 Follow the advisory programming sequence:
 
@@ -16,11 +16,13 @@ Follow the advisory programming sequence:
 
 The project is also available from the Projects navigation and the roadmap path panel. **Binary Number Representation** and **Introduction to Big O Notation** remain published in their own sections. Existing topic IDs and URLs are unchanged.
 
-Continue with **Arrays and Strings → Introduction to Big O Notation → Searching**. These are advisory foundations, not locked assessments. Arrays and Strings covers zero-based boundaries, traversal, Python list mutation versus immutable strings, and operation costs. Searching compares linear scans with binary search on correctly sorted input. The array visualizers expose each decision, actual comparison count, candidate bounds, duplicate behavior, and empty cases; their predefined scenarios never run learner code. Seven new Python labs use the existing disposable Worker and saved drafts to practice traversal, indexed results, empty input, off-by-one repair, and both searches. Public tests provide feedback rather than secure grading.
+Continue with **Arrays and Strings → Introduction to Big O Notation → Searching → [Sorting](/lessons/sorting)**. These are advisory foundations, not locked assessments. Arrays and Strings covers boundaries and traversal; Searching compares linear scans with binary search on sorted input. Sorting teaches bubble, selection, and insertion sort with shared step-by-step players, a same-input comparison, exact value-comparison/swap/write counts, and five in-place Python Code Labs. The players trace authored algorithms on small predefined inputs; they do not trace learner-submitted Python. Public tests provide feedback rather than secure grading.
 
 Learning Insights now groups evidence by subject and includes eight DSA skills with two independently authored retrieval questions each. The existing `cs-fundamentals:evidence:v1` records, reading completion, and workspace keys remain valid. Skill states remain cautious: reading completion and a passing public test do not establish mastery.
 
-[Adaptive practice](/practice/adaptive) adds a five-question, browser-local session alongside the fixed [retrieval questions](/practice/retrieval). Thirteen authored question families generate deterministic variations for comparisons, loop and sequence boundaries, traversal, linear search, binary-search invariants, and sorted-input checks. The next problem reflects focused mistakes, due reviews, relevant prerequisites, and a learner's manual concept choice. Wrong choices receive an authored explanation, progressive hints, lesson links, and a related variation. A correct first answer after using a hint is counted as assisted session practice, not independent positive concept evidence. These bounded templates are not LLM tutoring, secure grading, or proof of mastery.
+[Adaptive practice](/practice/adaptive) adds a five-question, browser-local session alongside the fixed [retrieval questions](/practice/retrieval). Twenty-three authored question families, including ten Sorting families, generate deterministic variations for boundaries, searching, sorting operations, costs, and stability. The next problem reflects focused mistakes, due reviews, relevant prerequisites, and a learner's manual concept choice. Wrong choices receive an authored explanation, progressive hints, lesson links, and a related variation. A correct first answer after using a hint is counted as assisted session practice, not independent positive concept evidence. These bounded templates are not LLM tutoring, secure grading, or proof of mastery.
+
+Sorting adds six focused skills and twelve independent retrieval questions to [Learning Insights](/learning). Its three in-place Python references are stable bubble and insertion sort and conventional swap-based selection sort; the five labs include two boundary or stability repairs. The comparison panel derives every count from the same pure step generators as the players. It counts value-ordering comparisons, two indexed writes per non-self swap, and one write per shift or key insertion; counts are not elapsed-time measurements. For ordinary Python programs, use `sorted()` or `.sort()` rather than these educational quadratic sorts. See [the V0.8 review](docs/v0.8-review.md) for contracts and limits.
 
 ## Delivered learning experience
 
@@ -61,12 +63,17 @@ src/content/advanced-traces.ts   Finite factorial and boundary-case trace famili
 src/content/dsa-lessons.ts       Arrays and Strings and Searching lessons
 src/content/dsa-coding-exercises.ts Seven Python DSA challenges
 src/content/dsa-catalog.ts       Focused retrieval and activity mappings
+src/content/sorting-lesson.ts    Bubble, selection, insertion, and comparison lesson
+src/content/sorting-coding-exercises.ts Five Python sorting labs
+src/content/sorting-catalog.ts   Focused Sorting retrieval and activity mappings
 src/content/adaptive-families.ts  Authored deterministic question families and answer evaluation
+src/content/sorting-adaptive-families.ts Parameterized Sorting question families
 src/lib/adaptive-selection.ts     Pure evidence-aware next-problem policy
 src/lib/adaptive-session.ts       Bounded local session and recent-instance parsing
 src/components/adaptive-practice.tsx Guided five-question interface
-src/lib/algorithm-steps.ts       Pure traversal and search trace generation
+src/lib/algorithm-steps.ts       Pure traversal, search, and sorting step generation
 src/components/algorithm-visualizer.tsx Accessible stepper and scenario controls
+src/components/sorting-comparison.tsx Same-input operation comparison
 src/content/project-types.ts     Reusable project/milestone contracts
 src/content/projects.ts          Number guessing curriculum and Python references
 src/components/lesson-layout.tsx Shared instructional renderer and navigation
@@ -128,7 +135,7 @@ The unchanged **`cs-fundamentals:progress:v1`** key retains its format:
 
 No migration or write occurs on load. Existing valid V1 completion data survives. Unknown IDs, still-planned IDs, invalid values, and duplicates do not inflate progress. Completing/undoing a lesson uses its existing permanent ID. Publishing more lessons changes the denominator without deleting earned completions.
 
-Global reading progress is completed published lessons / **11**; the programming path separately counts its **7** members. The original three completions yield 3/11 globally (27%) and 1/7 on the programming path (14%). Projects do not change either denominator. The existing `ProgressProvider` retains its deterministic server snapshot, cross-tab events, and session fallback on denied writes.
+Global reading progress is completed published lessons / **12**; the programming path separately counts its **7** members. The original three completions yield 3/12 globally (25%) and 1/7 on the programming path (14%). Projects do not change either denominator. The existing `ProgressProvider` retains its deterministic server snapshot, cross-tab events, and session fallback on denied writes.
 
 Projects use a separate, explicitly versioned key per project:
 
@@ -160,7 +167,7 @@ npx playwright install --with-deps chromium # once per environment
 npm run test:e2e
 ```
 
-Build before the production browser suite. Coverage includes adaptive sessions and remediation, all 11 published lessons, all 46 topic routes, project routes, unknown/planned routes, prerequisite/content integrity, answer feedback and retry, trace boundaries and nested calls, array and search visualizations, Python examples and recursion boundaries, every project milestone's reference/tests, an intentionally broken off-by-one mutation, reveal behavior, lesson/project progress isolation, malformed/denied storage, reloads, and real cross-tab changes. Desktop Chromium and a mobile viewport run the same browser flows, including keyboard interactions and horizontal containment checks.
+Build before the production browser suite. Coverage includes adaptive sessions and remediation, all 12 published lessons, all 46 topic routes, project routes, unknown/planned routes, prerequisite/content integrity, answer feedback and retry, trace boundaries and nested calls, array, search, and sorting visualizations, Python examples and recursion boundaries, every project milestone's reference/tests, sorting Python labs, reveal behavior, lesson/project progress isolation, malformed/denied storage, reloads, and real cross-tab changes. Desktop Chromium and a mobile viewport run the same browser flows, including keyboard interactions and horizontal containment checks.
 
 This container's Chromium requires extracted system libraries. Its environment-specific invocation is:
 
@@ -172,13 +179,13 @@ This path is not an application dependency. See [the V0.3 review](docs/v0.3-revi
 
 ## Current limitations and next direction
 
-- 11 published lessons and one project; 35 broader CS topics remain planned.
+- 12 published lessons and one project; 34 broader CS topics remain planned.
 - Existing Python traces/questions are authored demonstrations. C++ activities execute learner code and evaluate public I/O cases; client-side grading does not verify technique, all possible behavior, or mastery.
 - The visit-level understanding summary resets on reload, while V0.5 concept evidence persists in the browser. Project evidence combines fixed questions and self-reported coding/checklists; revealing a solution does not establish independent skill.
 - Desktop/mobile Chromium coverage does not certify cross-browser, screen-reader, or educational effectiveness. Independent human accessibility and teaching review remain valuable.
 - No authentication, payments, external AI APIs, backend, CMS, credentials, or cloud sync.
 
-**Recommended next direction:** reuse the array-step contract for a Sorting lesson, and arrange human educational and accessibility review before making stronger learning-effectiveness claims. See [the V0.7 review](docs/v0.7-review.md) for the current scope and risks.
+**Recommended next direction:** add transfer tasks that compare sorting choices on larger and differently structured data, and arrange human educational and accessibility review before making stronger learning-effectiveness claims. See [the V0.8 review](docs/v0.8-review.md) for the current scope and risks.
 
 Python language references used during authoring: [Errors and Exceptions](https://docs.python.org/3/tutorial/errors.html), [Defining Functions](https://docs.python.org/3/tutorial/controlflow.html#defining-functions), and [RecursionError](https://docs.python.org/3/library/exceptions.html#RecursionError). Actual examples are checked with the local Python version recorded in the review.
 

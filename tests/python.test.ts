@@ -9,6 +9,7 @@ const examples: Record<string, string[]> = {
   "big-o-notation": ["3\n-1"],
   "arrays-strings": ["6\n0", "0 5\n1 8\n2 1", "[6, 4, 9, 2] cat bat"],
   searching: ["3\n-1", ""],
+  sorting: ["[1, 2, 4, 4] True", "", "", ""],
   "operators-expressions": ["26 False", "3.4\n3\n2", "True"],
   conditionals: ["ready", "Continue", "Member, below minimum"],
   loops: ["6", "40 2", "3\n2\n1\nDone", "1\n3\nDone", "1 1\n1 2\n2 1\n2 2"],

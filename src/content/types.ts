@@ -89,9 +89,10 @@ export type CodeTrace = TraceProgram & {
 export type Demonstration =
   | { kind: "types" | "binary" | "complexity"; caption: string }
   | CodeTrace
+  | { kind: "sorting-comparison"; caption: string }
   | {
       kind: "algorithm";
-      algorithm: "traversal" | "linear" | "binary-search";
+      algorithm: "traversal" | "linear" | "binary-search" | "bubble-sort" | "selection-sort" | "insertion-sort";
       caption: string;
     };
 export type PracticeExercise = Question & { source: string };

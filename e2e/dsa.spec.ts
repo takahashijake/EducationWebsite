@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { availableTopics } from "../src/content/curriculum";
 const evidenceKey = "cs-fundamentals:evidence:v1";
 const progressKey = "cs-fundamentals:progress:v1";
 test("roadmap to DSA, stepper, knowledge evidence, Python repair, insight, and persistence", async ({
@@ -91,7 +92,7 @@ test("roadmap to DSA, stepper, knowledge evidence, Python repair, insight, and p
     page.getByText("0 of 1 Data Structures lessons marked read"),
   ).toBeVisible();
   await expect(
-    page.getByText("0 of 2 Algorithms lessons marked read"),
+    page.getByText(`0 of ${availableTopics.filter((topic) => topic.sectionId === "algorithms").length} Algorithms lessons marked read`),
   ).toBeVisible();
   await expect(
     page.getByRole("link", { name: "Introduction to Big O Notation" }),
