@@ -220,7 +220,8 @@ export const topics: Topic[] = [
     description:
       "Connect nodes with references and compare insertion with indexed access.",
     order: 2,
-    status: "planned",
+    status: "available",
+    prerequisites: ["arrays-strings", "big-o-notation"],
   },
   {
     id: "stacks-queues",

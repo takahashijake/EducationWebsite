@@ -8,7 +8,17 @@ import {
 } from "./dsa-catalog";
 import { dsaCodingExercises } from "./dsa-coding-exercises";
 import { sortingCodingExercises } from "./sorting-coding-exercises";
-import { sortingLessonMap, sortingPythonMap, sortingRetrievalQuestions } from "./sorting-catalog";
+import {
+  sortingLessonMap,
+  sortingPythonMap,
+  sortingRetrievalQuestions,
+} from "./sorting-catalog";
+import {
+  linkedListLessonMap,
+  linkedListPythonMap,
+  linkedListRetrievalQuestions,
+} from "./linked-list-catalog";
+import { linkedListCodingExercises } from "./linked-list-coding-exercises";
 import { adaptiveFamilies } from "./adaptive-families";
 
 export type Skill = {
@@ -193,12 +203,90 @@ export const skills: Skill[] = [
     "searching",
     ["linear-search", "binary-invariants"],
   ),
-  define("sorting-order", "Sorting order and contracts", "Recognize ascending order, retained items, and in-place mutation.", "sorting", ["sequence-traversal"]),
-  define("bubble-invariant", "Bubble sorted suffix", "Trace adjacent comparisons, swaps, and early termination.", "sorting", ["sorting-order", "loop-boundaries"]),
-  define("selection-invariant", "Selection sorted prefix", "Track the minimum candidate and place it after a complete suffix scan.", "sorting", ["sorting-order"]),
-  define("insertion-invariant", "Insertion sorted prefix", "Trace the saved key and rightward shifts of larger values.", "sorting", ["sorting-order"]),
-  define("sorting-complexity", "Sorting operation costs", "Separate comparisons, swaps, writes, and asymptotic growth.", "sorting", ["sorting-order", "sequence-operation-cost"]),
-  define("sorting-stability", "Equal-key stability", "Track record identities through strict comparisons and selection swaps.", "sorting", ["sorting-order", "insertion-invariant"]),
+  define(
+    "sorting-order",
+    "Sorting order and contracts",
+    "Recognize ascending order, retained items, and in-place mutation.",
+    "sorting",
+    ["sequence-traversal"],
+  ),
+  define(
+    "bubble-invariant",
+    "Bubble sorted suffix",
+    "Trace adjacent comparisons, swaps, and early termination.",
+    "sorting",
+    ["sorting-order", "loop-boundaries"],
+  ),
+  define(
+    "selection-invariant",
+    "Selection sorted prefix",
+    "Track the minimum candidate and place it after a complete suffix scan.",
+    "sorting",
+    ["sorting-order"],
+  ),
+  define(
+    "insertion-invariant",
+    "Insertion sorted prefix",
+    "Trace the saved key and rightward shifts of larger values.",
+    "sorting",
+    ["sorting-order"],
+  ),
+  define(
+    "sorting-complexity",
+    "Sorting operation costs",
+    "Separate comparisons, swaps, writes, and asymptotic growth.",
+    "sorting",
+    ["sorting-order", "sequence-operation-cost"],
+  ),
+  define(
+    "sorting-stability",
+    "Equal-key stability",
+    "Track record identities through strict comparisons and selection swaps.",
+    "sorting",
+    ["sorting-order", "insertion-invariant"],
+  ),
+  define(
+    "linked-node-identity",
+    "Node identity and values",
+    "Distinguish a node object from its stored value and a list position.",
+    "linked-lists",
+    ["assignment"],
+  ),
+  define(
+    "linked-traversal",
+    "Reference traversal",
+    "Follow next references through the reachable chain until null.",
+    "linked-lists",
+    ["linked-node-identity", "loop-termination"],
+  ),
+  define(
+    "linked-head-insertion",
+    "Head insertion",
+    "Link a new node to the old head before moving head.",
+    "linked-lists",
+    ["linked-node-identity"],
+  ),
+  define(
+    "linked-deletion",
+    "Reference rewiring and deletion",
+    "Bypass the first matched node without losing unaffected nodes.",
+    "linked-lists",
+    ["linked-traversal", "linked-head-insertion"],
+  ),
+  define(
+    "linked-complexity",
+    "Linked-list operation costs",
+    "Separate finding a node from changing a known link.",
+    "linked-lists",
+    ["linked-traversal", "sequence-operation-cost"],
+  ),
+  define(
+    "linked-aliasing",
+    "Reference aliasing and preservation",
+    "Predict how shared node references affect the reachable structure.",
+    "linked-lists",
+    ["linked-node-identity", "linked-head-insertion"],
+  ),
 ];
 export type Activity = {
   id: string;
@@ -225,6 +313,7 @@ const assessmentMap: Record<string, string[]> = {
 const lessonMap: Record<string, string[]> = {
   ...dsaLessonMap,
   ...sortingLessonMap,
+  ...linkedListLessonMap,
   "variables-q1": ["types"],
   "variables-q2": ["assignment"],
   "variables-q3": ["types"],
@@ -260,6 +349,7 @@ const lessonTopics: Record<string, string> = {
   arrays: "arrays-strings",
   searching: "searching",
   sorting: "sorting",
+  linked: "linked-lists",
   variables: "variables-data-types",
   operators: "operators-expressions",
   conditionals: "conditionals",
@@ -568,6 +658,7 @@ export const retrievalQuestions: RetrievalQuestion[] = [
   ),
   ...dsaRetrievalQuestions,
   ...sortingRetrievalQuestions,
+  ...linkedListRetrievalQuestions,
 ];
 export const retrievalActivities: Activity[] = retrievalQuestions.map(
   (question) => ({
@@ -648,14 +739,25 @@ export const dsaPythonActivities: Activity[] = dsaCodingExercises.map(
     title: exercise.title,
   }),
 );
-export const sortingPythonActivities: Activity[] = sortingCodingExercises.map((exercise) => ({
-  id: exercise.id,
-  source: "python",
-  skillIds: sortingPythonMap[exercise.id] ?? [],
-  revision: exercise.revision ?? 1,
-  href: `/lessons/${exercise.topicId}#code-lab`,
-  title: exercise.title,
-}));
+export const sortingPythonActivities: Activity[] = sortingCodingExercises.map(
+  (exercise) => ({
+    id: exercise.id,
+    source: "python",
+    skillIds: sortingPythonMap[exercise.id] ?? [],
+    revision: exercise.revision ?? 1,
+    href: `/lessons/${exercise.topicId}#code-lab`,
+    title: exercise.title,
+  }),
+);
+export const linkedListPythonActivities: Activity[] =
+  linkedListCodingExercises.map((exercise) => ({
+    id: exercise.id,
+    source: "python",
+    skillIds: linkedListPythonMap[exercise.id] ?? [],
+    revision: exercise.revision ?? 1,
+    href: `/lessons/${exercise.topicId}#code-lab`,
+    title: exercise.title,
+  }));
 export const transferActivity: Activity = {
   id: "python-expense-summary",
   source: "python",
@@ -686,6 +788,7 @@ export const activities = [
   ...pythonActivities,
   ...dsaPythonActivities,
   ...sortingPythonActivities,
+  ...linkedListPythonActivities,
   transferActivity,
   ...adaptiveActivities,
 ];

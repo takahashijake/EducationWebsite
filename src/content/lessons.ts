@@ -5,6 +5,8 @@ import { dsaLessons } from "./dsa-lessons";
 import { dsaCodingExercises } from "./dsa-coding-exercises";
 import { sortingCodingExercises } from "./sorting-coding-exercises";
 import { sortingLesson } from "./sorting-lesson";
+import { linkedListLesson } from "./linked-list-lesson";
+import { linkedListCodingExercises } from "./linked-list-coding-exercises";
 import type { Lesson } from "./types";
 
 const authoredLessons: Record<string, Lesson> = {
@@ -12,6 +14,7 @@ const authoredLessons: Record<string, Lesson> = {
   ...advancedLessons,
   ...dsaLessons,
   sorting: sortingLesson,
+  "linked-lists": linkedListLesson,
   "variables-data-types": {
     topicId: "variables-data-types",
     minutes: 12,
@@ -305,11 +308,17 @@ export const lessons: Record<string, Lesson> = Object.fromEntries(
       ...lesson,
       ...(codingExercises[id]
         ? { codingExercises: [codingExercises[id]] }
-        : [...dsaCodingExercises, ...sortingCodingExercises].some((exercise) => exercise.topicId === id)
+        : [
+              ...dsaCodingExercises,
+              ...sortingCodingExercises,
+              ...linkedListCodingExercises,
+            ].some((exercise) => exercise.topicId === id)
           ? {
-              codingExercises: [...dsaCodingExercises, ...sortingCodingExercises].filter(
-                (exercise) => exercise.topicId === id,
-              ),
+              codingExercises: [
+                ...dsaCodingExercises,
+                ...sortingCodingExercises,
+                ...linkedListCodingExercises,
+              ].filter((exercise) => exercise.topicId === id),
             }
           : {}),
     },

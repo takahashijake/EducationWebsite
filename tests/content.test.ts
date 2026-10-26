@@ -26,6 +26,7 @@ describe("curriculum contracts", () => {
       "conditionals",
       "debugging",
       "functions",
+      "linked-lists",
       "loops",
       "operators-expressions",
       "recursion",

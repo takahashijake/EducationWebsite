@@ -249,7 +249,10 @@ test("transfer challenge runs actual Python public checks", async ({
       (r: { activityId: string; correct: boolean }) =>
         r.activityId === "python-expense-summary" && r.correct,
     ),
-  ).toBe(true);
+  ).toBe(false); // A revealed hint makes the passing check assisted practice.
+  await expect(lab).toContainText(
+    "not recorded as independent positive concept evidence",
+  );
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,

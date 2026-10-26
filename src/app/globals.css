@@ -3078,3 +3078,20 @@ textarea:focus-visible {
     min-width: 3.6rem;
   }
 }
+
+.linked-visualizer { border: 1px solid var(--border, #697586); border-radius: 1rem; padding: clamp(1rem, 3vw, 1.5rem); margin: 2rem 0; max-width: 100%; }
+.linked-visualizer select { display: block; max-width: 100%; margin: .5rem 0 1rem; padding: .55rem; }
+.linked-note { font-size: .92rem; }
+.linked-pointers { font-family: monospace; overflow-wrap: anywhere; }
+.linked-nodes { display: flex; flex-wrap: wrap; gap: .75rem; padding: 0; list-style: none; }
+.linked-nodes li { display: flex; flex-direction: column; gap: .35rem; min-width: 8rem; max-width: 100%; border: 2px solid currentColor; border-radius: .65rem; padding: .7rem; overflow-wrap: anywhere; }
+.linked-nodes li.detached { border-style: dashed; }
+.linked-node-label { display: flex; gap: .55rem; }
+.linked-edge { font-family: monospace; }
+.linked-flags { font-size: .8rem; }
+.linked-operation { min-height: 4rem; }
+.linked-controls { display: flex; flex-wrap: wrap; gap: .5rem; }
+.linked-controls button { padding: .55rem .8rem; border: 1px solid currentColor; border-radius: .4rem; cursor: pointer; }
+.linked-controls button:disabled { cursor: default; opacity: .55; }
+.linked-controls button:focus-visible, .linked-visualizer select:focus-visible { outline: 3px solid #ff9d00; outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .linked-visualizer * { scroll-behavior: auto; animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }

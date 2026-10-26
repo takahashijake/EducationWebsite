@@ -89,10 +89,14 @@ test("roadmap to DSA, stepper, knowledge evidence, Python repair, insight, and p
     page.getByText("1 of 7 Programming Fundamentals lessons marked read"),
   ).toBeVisible();
   await expect(
-    page.getByText("0 of 1 Data Structures lessons marked read"),
+    page.getByText(
+      `0 of ${availableTopics.filter((topic) => topic.sectionId === "data-structures").length} Data Structures lessons marked read`,
+    ),
   ).toBeVisible();
   await expect(
-    page.getByText(`0 of ${availableTopics.filter((topic) => topic.sectionId === "algorithms").length} Algorithms lessons marked read`),
+    page.getByText(
+      `0 of ${availableTopics.filter((topic) => topic.sectionId === "algorithms").length} Algorithms lessons marked read`,
+    ),
   ).toBeVisible();
   await expect(
     page.getByRole("link", { name: "Introduction to Big O Notation" }),

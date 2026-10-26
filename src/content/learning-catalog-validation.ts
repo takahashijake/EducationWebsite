@@ -4,6 +4,7 @@ import { fundamentalsAssessment } from "./assessments";
 import { codingExercises } from "./coding-exercises";
 import { dsaCodingExercises } from "./dsa-coding-exercises";
 import { sortingCodingExercises } from "./sorting-coding-exercises";
+import { linkedListCodingExercises } from "./linked-list-coding-exercises";
 import { adaptiveFamilies } from "./adaptive-families";
 import { adaptiveSkillIds } from "./adaptive-skills";
 import {
@@ -89,6 +90,7 @@ export function validateLearningCatalog(
     ...Object.values(codingExercises),
     ...dsaCodingExercises,
     ...sortingCodingExercises,
+    ...linkedListCodingExercises,
   ]) {
     if (!activityIds.has(exercise.id))
       errors.push(`Unmapped Python lab ${exercise.id}`);
@@ -127,7 +129,9 @@ export function validateLearningCatalog(
       errors.push(`Unavailable retrieval topic ${question.topicId}`);
   }
   for (const skill of registry.filter((item) =>
-    ["arrays-strings", "searching", "sorting"].includes(item.topicId),
+    ["arrays-strings", "searching", "sorting", "linked-lists"].includes(
+      item.topicId,
+    ),
   )) {
     if (
       retrievalQuestions.filter(
@@ -186,10 +190,23 @@ export function validateLearningCatalog(
       adaptiveFamilies.filter((family) => family.skillId === skillId).length < 2
     )
       errors.push(`Insufficient adaptive families ${skillId}`);
-  const sortingFamilies = adaptiveFamilies.filter((family) => family.topicId === "sorting");
-  if (sortingFamilies.length < 8) errors.push("Insufficient adaptive sorting families");
+  const sortingFamilies = adaptiveFamilies.filter(
+    (family) => family.topicId === "sorting",
+  );
+  if (sortingFamilies.length < 8)
+    errors.push("Insufficient adaptive sorting families");
   for (const skill of registry.filter((item) => item.topicId === "sorting"))
     if (!sortingFamilies.some((family) => family.skillId === skill.id))
       errors.push(`Missing adaptive sorting coverage ${skill.id}`);
+  const linkedFamilies = adaptiveFamilies.filter(
+    (family) => family.topicId === "linked-lists",
+  );
+  if (linkedFamilies.length < 8)
+    errors.push("Insufficient adaptive linked-list families");
+  for (const skill of registry.filter(
+    (item) => item.topicId === "linked-lists",
+  ))
+    if (!linkedFamilies.some((family) => family.skillId === skill.id))
+      errors.push(`Missing adaptive linked-list coverage ${skill.id}`);
   return errors;
 }
