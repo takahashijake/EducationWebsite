@@ -7,4 +7,10 @@ export const adaptiveSkillIds: readonly string[] = [
   "linear-search",
   "binary-invariants",
   "sorted-precondition",
+  "sorting-order",
+  "bubble-invariant",
+  "selection-invariant",
+  "insertion-invariant",
+  "sorting-complexity",
+  "sorting-stability",
 ] as const;

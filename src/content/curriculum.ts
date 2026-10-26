@@ -289,7 +289,8 @@ export const topics: Topic[] = [
     description:
       "Arrange data and compare the tradeoffs of common sorting algorithms.",
     order: 3,
-    status: "planned",
+    status: "available",
+    prerequisites: ["arrays-strings", "big-o-notation"],
   },
   {
     id: "divide-conquer",

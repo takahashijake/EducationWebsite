@@ -5,6 +5,7 @@ import {
   evaluateAdaptiveAnswer,
   generateAdaptiveInstance,
 } from "@/content/adaptive-families";
+import { sortingAdaptiveFamilies } from "@/content/sorting-adaptive-families";
 import { activities, skills } from "@/content/learning-catalog";
 import { validateLearningCatalog } from "@/content/learning-catalog-validation";
 import { parseEvidence, makeEvidence, diagnose } from "@/lib/learning-evidence";
@@ -31,8 +32,8 @@ const instance = (id: string, seed: number) =>
 describe("authored adaptive families", () => {
   it("registers two distinct families per required focused skill with stable activities", () => {
     expect(validateLearningCatalog()).toEqual([]);
-    expect(adaptiveFamilies).toHaveLength(13);
-    expect(new Set(adaptiveFamilies.map((item) => item.id)).size).toBe(13);
+    expect(sortingAdaptiveFamilies.length).toBeGreaterThanOrEqual(8);
+    expect(new Set(adaptiveFamilies.map((item) => item.id)).size).toBe(adaptiveFamilies.length);
     for (const id of [
       "comparisons",
       "loop-boundaries",

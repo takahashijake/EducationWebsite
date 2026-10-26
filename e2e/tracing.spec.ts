@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { lessons } from "../src/content/lessons";
+import { availableTopics } from "../src/content/curriculum";
 const key = "cs-fundamentals:progress:v1";
 const oldProgress = JSON.stringify({
   version: 1,
@@ -127,7 +128,7 @@ test("original progress survives expansion, completion and undo synchronize acro
   await page.goto("/roadmap");
   await expect(page.getByRole("progressbar")).toHaveAttribute(
     "aria-valuenow",
-    "27",
+    String(Math.round((100 * 3) / availableTopics.length)),
   );
   expect(await page.evaluate((key) => localStorage.getItem(key), key)).toBe(
     oldProgress,
@@ -137,12 +138,12 @@ test("original progress survives expansion, completion and undo synchronize acro
   await other.getByRole("button", { name: "Mark lesson complete" }).click();
   await expect(page.getByRole("progressbar")).toHaveAttribute(
     "aria-valuenow",
-    "36",
+    String(Math.round((100 * 4) / availableTopics.length)),
   );
   await other.getByRole("button", { name: "Completed · Undo" }).click();
   await expect(page.getByRole("progressbar")).toHaveAttribute(
     "aria-valuenow",
-    "27",
+    String(Math.round((100 * 3) / availableTopics.length)),
   );
   await page.reload();
   expect(await page.evaluate((key) => localStorage.getItem(key), key)).toBe(

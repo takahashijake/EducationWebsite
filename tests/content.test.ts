@@ -30,6 +30,7 @@ describe("curriculum contracts", () => {
       "operators-expressions",
       "recursion",
       "searching",
+      "sorting",
       "variables-data-types",
     ]);
   });

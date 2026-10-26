@@ -12,7 +12,7 @@ test("learn, check answers, persist completion, and explore a planned topic", as
   );
   await page.getByRole("link", { name: /^Start learning$/ }).click();
   await expect(page).toHaveURL("/roadmap");
-  await expect(page.locator(".topic-card")).toHaveCount(46);
+  await expect(page.locator(".topic-card")).toHaveCount(topics.length);
   await expect(page.getByRole("progressbar")).toHaveAttribute(
     "aria-valuenow",
     "0",
@@ -47,7 +47,7 @@ test("learn, check answers, persist completion, and explore a planned topic", as
   await page.goto("/roadmap");
   await expect(page.getByRole("progressbar")).toHaveAttribute(
     "aria-valuenow",
-    "9",
+    String(Math.round(100 / availableTopics.length)),
   );
   await expect(page.locator(".topic-card.completed")).toContainText(
     "Variables and Data Types",

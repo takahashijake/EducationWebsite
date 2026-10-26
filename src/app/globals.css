@@ -2976,6 +2976,31 @@ textarea:focus-visible {
   border-color: #b45309;
   background: #fffbeb;
 }
+.algorithm-array li.sorted {
+  border-color: #15803d;
+  background: #f0fdf4;
+}
+.sorting-comparison {
+  margin: 1.5rem 0;
+  padding: 1.25rem;
+  border: 1px solid var(--border, #cbd5e1);
+  border-radius: 1rem;
+}
+.sorting-comparison select {
+  max-width: 100%;
+  padding: 0.45rem;
+}
+.sorting-comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+.sorting-comparison-grid > div {
+  padding: 0.75rem;
+  border: 1px solid var(--border, #cbd5e1);
+  border-radius: 0.6rem;
+}
 .algorithm-array li strong {
   font-size: 1.4rem;
 }

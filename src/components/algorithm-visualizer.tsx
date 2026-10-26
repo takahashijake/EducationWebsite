@@ -4,6 +4,7 @@ import {
   generateAlgorithmSteps,
   moveStep,
   scenarios,
+  sortingAlgorithms,
   type Algorithm,
 } from "@/lib/algorithm-steps";
 export function AlgorithmVisualizer({
@@ -26,6 +27,9 @@ export function AlgorithmVisualizer({
     [algorithm, scenario],
   );
   const step = steps[position] ?? steps[0];
+  const isSorting = sortingAlgorithms.includes(
+    algorithm as (typeof sortingAlgorithms)[number],
+  );
   useEffect(() => {
     if (!window.matchMedia) return;
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -57,7 +61,13 @@ export function AlgorithmVisualizer({
             ? "Array traversal"
             : algorithm === "linear"
               ? "Linear search"
-              : "Binary search"}
+              : algorithm === "binary-search"
+                ? "Binary search"
+                : algorithm === "bubble-sort"
+                  ? "Bubble sort"
+                  : algorithm === "selection-sort"
+                    ? "Selection sort"
+                    : "Insertion sort"}
         </strong>
         <p>{caption}</p>
       </figcaption>
@@ -66,6 +76,13 @@ export function AlgorithmVisualizer({
           <strong>Precondition:</strong> values must be sorted in ascending
           order. This example returns the first matching midpoint it encounters;
           it does not promise the leftmost duplicate.
+        </p>
+      )}
+      {isSorting && (
+        <p>
+          <strong>Authored trace:</strong> These steps follow the named
+          algorithm on a predefined input. The Python lab runs your code
+          separately; this player does not trace submitted code.
         </p>
       )}
       <label htmlFor={`${id}-scenario`}>Choose input scenario</label>{" "}
@@ -95,12 +112,16 @@ export function AlgorithmVisualizer({
             className={
               step.highlightedIndices.includes(index)
                 ? "inspected"
-                : step.low !== null &&
-                    step.high !== null &&
-                    index >= step.low &&
-                    index <= step.high
-                  ? "candidate"
-                  : ""
+                : step.sorting?.sortedRange &&
+                    index >= step.sorting.sortedRange[0] &&
+                    index <= step.sorting.sortedRange[1]
+                  ? "sorted"
+                  : step.low !== null &&
+                      step.high !== null &&
+                      index >= step.low &&
+                      index <= step.high
+                    ? "candidate"
+                    : ""
             }
           >
             <span>Index {index}</span>
@@ -108,19 +129,28 @@ export function AlgorithmVisualizer({
             <small>
               {step.highlightedIndices.includes(index)
                 ? step.highlightLabel
-                : step.activeIndex === index
-                  ? "Active"
-                  : step.low !== null &&
-                      step.high !== null &&
-                      index === step.low &&
-                      index === step.high
-                    ? "Low and high"
-                    : index === step.low
-                      ? "Low"
-                      : index === step.high
-                        ? "High"
-                        : " "}
+                : step.sorting?.minimumIndex === index
+                  ? "Minimum candidate"
+                  : step.sorting?.sortedRange &&
+                      index >= step.sorting.sortedRange[0] &&
+                      index <= step.sorting.sortedRange[1]
+                    ? "Sorted region"
+                    : step.activeIndex === index
+                      ? "Active"
+                      : step.low !== null &&
+                          step.high !== null &&
+                          index === step.low &&
+                          index === step.high
+                        ? "Low and high"
+                        : index === step.low
+                          ? "Low"
+                          : index === step.high
+                            ? "High"
+                            : " "}
             </small>
+            {step.sorting && (
+              <small>Originally {step.sorting.originalIndices[index]}</small>
+            )}
           </li>
         ))}
       </ol>
@@ -132,12 +162,29 @@ export function AlgorithmVisualizer({
           </strong>
         </p>
         <p>{step.explanation}</p>
-        <p>
-          Active index: {step.activeIndex ?? "none"} ·{" "}
-          {algorithm === "traversal" ? "Remaining indices" : "Search bounds"}:{" "}
-          {step.low === null ? "empty" : `${step.low} through ${step.high}`} ·
-          Comparisons: {step.comparisons}
-        </p>
+        {step.sorting ? (
+          <p>
+            Outer iteration: {step.sorting.iteration} · Sorted region:{" "}
+            {step.sorting.sortedRange
+              ? `${step.sorting.sortedRange[0]} through ${step.sorting.sortedRange[1]}`
+              : "none yet"}
+            {step.sorting.minimumIndex !== null
+              ? ` · Minimum candidate: ${step.sorting.minimumIndex}`
+              : ""}
+            {step.sorting.key !== null
+              ? ` · Insertion key: ${step.sorting.key}`
+              : ""}
+            {" · "}Comparisons: {step.comparisons} · Swaps: {step.sorting.swaps}
+            {" · "}Array writes: {step.sorting.writes}
+          </p>
+        ) : (
+          <p>
+            Active index: {step.activeIndex ?? "none"} ·{" "}
+            {algorithm === "traversal" ? "Remaining indices" : "Search bounds"}:{" "}
+            {step.low === null ? "empty" : `${step.low} through ${step.high}`} ·
+            Comparisons: {step.comparisons}
+          </p>
+        )}
         {step.outcome && (
           <p>
             <strong>Outcome: {step.outcome}</strong>
@@ -184,9 +231,10 @@ export function AlgorithmVisualizer({
         </button>
       </div>
       <p className="algorithm-note">
-        Comparisons count the equality check and, after a binary-search
-        mismatch, its ordering check. They are not timing measurements. Playback
-        pauses when you change scenarios or step manually.
+        {isSorting
+          ? "One value-ordering test counts as a comparison. A swap exchanges two positions and counts as two array writes; a shift or insertion counts as one write. Temporary variables do not count. These are not timing measurements."
+          : "Comparisons count the equality check and, after a binary-search mismatch, its ordering check. They are not timing measurements."}{" "}
+        Playback pauses when you change scenarios or step manually.
       </p>
     </figure>
   );
