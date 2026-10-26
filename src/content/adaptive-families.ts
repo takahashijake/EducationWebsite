@@ -1,6 +1,7 @@
 /** Authored templates only. Generation never evaluates source text as code. */
 export { adaptiveSkillIds } from "./adaptive-skills";
 import { sortingAdaptiveFamilies } from "./sorting-adaptive-families";
+import { linkedListAdaptiveFamilies } from "./linked-list-adaptive-families";
 export type AdaptiveDifficulty = "foundation" | "application";
 export type AdaptiveOption = { text: string; misconception?: string };
 export type AdaptiveInstance = {
@@ -69,6 +70,7 @@ const family = (
 
 export const adaptiveFamilies: AdaptiveFamily[] = [
   ...sortingAdaptiveFamilies,
+  ...linkedListAdaptiveFamilies,
   family(
     "comparison-branch",
     "comparisons",

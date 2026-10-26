@@ -13,6 +13,8 @@ export type CodingExercise = {
   instructions: string[];
   starter: string;
   expectedBehavior: string;
+  /** Authored reference, shown after the learner runs public checks. */
+  referenceSolution?: string;
   demonstrationInput?: string;
   tests: CodingTest[];
   explanation: string;

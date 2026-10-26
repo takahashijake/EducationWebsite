@@ -60,6 +60,7 @@ export function CodeLab({
   const [streams, setStreams] = useState({ stdout: "", stderr: "" });
   const [tested, setTested] = useState(false);
   const [revealedHints, setRevealedHints] = useState(0);
+  const [referenceViewed, setReferenceViewed] = useState(false);
   const [confirm, setConfirm] = useState<"reset" | "carry">();
   const engine = useRef<ExecutionEngine | undefined>(undefined);
   const sequence = useRef(0);
@@ -138,7 +139,8 @@ export function CodeLab({
         (answer.kind === "success") === allPassed &&
         answer.tests.length === exercise.tests.length &&
         unique.size === exercise.tests.length &&
-        exercise.tests.every((test) => unique.has(test.id))
+        exercise.tests.every((test) => unique.has(test.id)) &&
+        (!allPassed || (revealedHints === 0 && !referenceViewed))
       ) {
         record([makeEvidence(exercise.id, allPassed, crypto.randomUUID())]);
       }
@@ -166,7 +168,7 @@ export function CodeLab({
         <div className="practice-hints">
           <button
             type="button"
-            disabled={revealedHints >= exercise.hints.length}
+            disabled={busy || revealedHints >= exercise.hints.length}
             onClick={() => setRevealedHints((count) => count + 1)}
           >
             Reveal next hint
@@ -458,6 +460,22 @@ export function CodeLab({
             <ConceptLinks ids={exercise.conceptIds} />
           </>
         )}
+        {tested && result && exercise.referenceSolution && (
+          <details
+            onToggle={(event) => {
+              if (event.currentTarget.open) setReferenceViewed(true);
+            }}
+          >
+            <summary>Compare with the authored reference</summary>
+            <pre tabIndex={0}>
+              <code>{exercise.referenceSolution}</code>
+            </pre>
+            <p>
+              Use this to explain the link changes; passing public checks alone
+              does not establish a general solution.
+            </p>
+          </details>
+        )}
         <p>
           <strong>Explain before improving:</strong> {exercise.reflection}
         </p>
@@ -466,6 +484,12 @@ export function CodeLab({
           understanding or authoritative grading. It never changes reading or
           project completion.
         </p>
+        {(revealedHints > 0 || referenceViewed) && (
+          <p>
+            Hint or reference assisted work is practice; a passing test in this
+            visit is not recorded as independent positive concept evidence.
+          </p>
+        )}
       </section>
       <p className="lab-limit-note">
         Python runs in a disposable browser Worker. Stop and deadlines terminate

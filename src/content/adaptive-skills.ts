@@ -13,4 +13,10 @@ export const adaptiveSkillIds: readonly string[] = [
   "insertion-invariant",
   "sorting-complexity",
   "sorting-stability",
+  "linked-node-identity",
+  "linked-traversal",
+  "linked-head-insertion",
+  "linked-deletion",
+  "linked-complexity",
+  "linked-aliasing",
 ] as const;

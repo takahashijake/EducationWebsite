@@ -2,6 +2,7 @@ import { CodeTrace } from "./code-trace";
 import type { Lesson } from "@/content/types";
 import { AlgorithmVisualizer } from "./algorithm-visualizer";
 import { SortingComparison } from "./sorting-comparison";
+import { LinkedListVisualizer } from "./linked-list-visualizer";
 export function LessonDemonstration({
   demonstration,
 }: {
@@ -16,8 +17,9 @@ export function LessonDemonstration({
         caption={demonstration.caption}
       />
     );
-  if (demonstration.kind === "sorting-comparison")
-    return <SortingComparison />;
+  if (demonstration.kind === "sorting-comparison") return <SortingComparison />;
+  if (demonstration.kind === "linked-list")
+    return <LinkedListVisualizer caption={demonstration.caption} />;
   return (
     <figure className={`concept-demo ${demonstration.kind}`}>
       {demonstration.kind === "types" && (

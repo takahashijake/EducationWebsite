@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { CodeLab } from "@/components/code-lab";
 import { codingExercises } from "@/content/coding-exercises";
+import { linkedListCodingExercises } from "@/content/linked-list-coding-exercises";
 import { workspaceKey, serializeWorkspace } from "@/lib/workspace";
 import { EVIDENCE_KEY } from "@/lib/learning-evidence";
 import type {
@@ -36,6 +37,28 @@ function engineWith(result: ExecutionResult) {
   } satisfies ExecutionEngine;
 }
 describe("instructional Code Lab", () => {
+  it("keeps hint-assisted linked-list success out of positive evidence", async () => {
+    localStorage.removeItem(EVIDENCE_KEY);
+    const linked = linkedListCodingExercises[0];
+    const engine = engineWith({
+      ...successful,
+      tests: linked.tests.map((test) => ({ id: test.id, status: "passed" })),
+    });
+    const user = userEvent.setup();
+    render(
+      <CodeLab
+        exercise={linked}
+        workspaceId="test:linked-assisted"
+        createEngine={() => engine}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Reveal next hint" }));
+    await user.click(screen.getByRole("button", { name: "Run Tests" }));
+    expect(localStorage.getItem(EVIDENCE_KEY)).toBeNull();
+    expect(
+      screen.getByText(/not recorded as independent positive concept evidence/),
+    ).toBeInTheDocument();
+  });
   it.each([
     ["ordinary run", false, successful, 0],
     [
