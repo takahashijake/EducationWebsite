@@ -13,6 +13,7 @@ const examples: Record<string, string[]> = {
   "linked-lists": ["7", "", "", ""],
   "stacks-queues": ["B\nA", "A", ""],
   graphs: [""],
+  "weighted-shortest-paths": [""],
   trees: ["", "", ""],
   "operators-expressions": ["26 False", "3.4\n3\n2", "True"],
   conditionals: ["ready", "Continue", "Member, below minimum"],

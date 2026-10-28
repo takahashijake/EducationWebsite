@@ -8,7 +8,7 @@ See [C++ architecture, security, authoring, and deployment](docs/cpp-playground.
 
 The integrated [Programming Fundamentals assessment](/assessments/programming-fundamentals) combines 12 authored Python reasoning problems, deterministic scoring, missed-topic review links, and retry. Its answer form resets on reload; V0.5 concept evidence from submitted answers persists separately from lesson and project progress. Neither a single attempt nor reading completion establishes mastery.
 
-The roadmap contains **46 topics in eight sections: 16 published lessons and 30 planned previews**. All seven Programming Fundamentals topics are published. Trees and Graphs now join Arrays and Strings, Linked Lists, Stacks and Queues, Searching, and Sorting. The wider CS curriculum remains in development; Graph Theory Fundamentals remains planned.
+The roadmap contains **47 topics in eight sections: 17 published lessons and 30 planned previews**. All seven Programming Fundamentals topics are published. Trees and Graphs now join Arrays and Strings, Linked Lists, Stacks and Queues, Searching, and Sorting. The wider CS curriculum remains in development; Graph Theory Fundamentals remains planned.
 
 Follow the advisory programming sequence:
 
@@ -18,9 +18,9 @@ The project is also available from the Projects navigation and the roadmap path 
 
 Continue with **Arrays and Strings → Introduction to Big O Notation → Searching → [Sorting](/lessons/sorting)**. These are advisory foundations, not locked assessments. Arrays and Strings covers boundaries and traversal; Searching compares linear scans with binary search on sorted input. Sorting teaches bubble, selection, and insertion sort with shared step-by-step players, a same-input comparison, exact value-comparison/swap/write counts, and five in-place Python Code Labs. The players trace authored algorithms on small predefined inputs; they do not trace learner-submitted Python. Public tests provide feedback rather than secure grading.
 
-Learning Insights now groups evidence by subject and includes 53 focused skills; every tree and graph skill has two independently authored retrieval questions. The existing `cs-fundamentals:evidence:v1` records, reading completion, and workspace keys remain valid. Skill states remain cautious: reading completion and a passing public test do not establish mastery.
+Learning Insights now groups evidence by subject and includes 59 focused skills; every tree, graph, and weighted-path skill has two independently authored retrieval questions. The existing `cs-fundamentals:evidence:v1` records, reading completion, and workspace keys remain valid. Skill states remain cautious: reading completion and a passing public test do not establish mastery.
 
-[Adaptive practice](/practice/adaptive) adds a five-question, browser-local session alongside the fixed [retrieval questions](/practice/retrieval). Sixty-nine authored question families, including twelve Trees and twelve Graphs families, generate deterministic variations for tree structure, BST reasoning, graph traversal, reachability, and costs alongside earlier topics. The next problem reflects focused mistakes, due reviews, relevant prerequisites, and a learner's manual concept choice. Wrong choices receive an authored explanation, progressive hints, lesson links, and a related variation. A correct first answer after using a hint is counted as assisted session practice, not independent positive concept evidence. These bounded templates are not LLM tutoring, secure grading, or proof of mastery.
+[Adaptive practice](/practice/adaptive) adds a five-question, browser-local session alongside the fixed [retrieval questions](/practice/retrieval). Eighty-one authored question families, including twelve each for Trees, Graphs, and Weighted Shortest Paths, generate deterministic variations for tree structure, BST reasoning, graph traversal, reachability, and weighted costs alongside earlier topics. The next problem reflects focused mistakes, due reviews, relevant prerequisites, and a learner's manual concept choice. Wrong choices receive an authored explanation, progressive hints, lesson links, and a related variation. A correct first answer after using a hint is counted as assisted session practice, not independent positive concept evidence. These bounded templates are not LLM tutoring, secure grading, or proof of mastery.
 
 Sorting adds six focused skills and twelve independent retrieval questions to [Learning Insights](/learning). Its three in-place Python references are stable bubble and insertion sort and conventional swap-based selection sort; the five labs include two boundary or stability repairs. The comparison panel derives every count from the same pure step generators as the players. It counts value-ordering comparisons, two indexed writes per non-self swap, and one write per shift or key insertion; counts are not elapsed-time measurements. For ordinary Python programs, use `sorted()` or `.sort()` rather than these educational quadratic sorts. See [the V0.8 review](docs/v0.8-review.md) for contracts and limits.
 
@@ -41,6 +41,12 @@ Five Pyodide Code Labs use `Node(value, next=None)` and ask learners to traverse
 ## V1.2 Trees and binary search trees
 
 [Trees](/lessons/trees) teaches node relationships, edge-based height, four traversal orders, the global BST ordering invariant, search, unique-key insertion, and all three deletion cases. The bounded player shows stable node identities, recursive frames or FIFO queue state, full structural snapshots, curated shapes, learner-composed BST operations, and a prediction before reveal. Two-child deletion moves the existing inorder successor node; duplicate insertion is a no-op. Six Pyodide Code Labs cover three depth-first traversals, level-order, height, search, insertion, and deletion. Six permanent skills, twelve focused retrieval questions, and twelve seeded adaptive families join Learning Insights and the existing evidence pipeline. Player predictions are exploratory and do not record positive concept evidence. See [the V1.2 review](docs/v1.2-review.md).
+
+## V1.3 Weighted graphs and Dijkstra shortest paths
+
+[Weighted Graphs and Shortest Paths](/lessons/weighted-shortest-paths) follows Graphs and Big O as advisory foundations. It compares hop count with total edge cost, traces nonnegative-weight Dijkstra using a bounded binary min-heap, and shows tentative distances, predecessors, settled vertices, stale queue entries, route reconstruction, and unreachable destinations. The player supports directed and undirected graphs, zero-weight edges, curated scenarios, and a validated small graph composer. Its predictions are exploratory and do not award positive mastery evidence.
+
+Six browser Python Code Labs cover weighted adjacency, route cost, minimum selection, relaxation, Dijkstra, and path reconstruction. Six permanent skills have twelve focused retrieval questions and twelve seeded adaptive families in the existing five-question practice flow. Python runs in the browser's disposable Pyodide Worker; public checks provide formative feedback, not hidden grading. Dijkstra requires nonnegative weights: negative edges can invalidate its settled-distance proof. See [V1.3 implementation review](docs/v1.3-review.md).
 
 ## Delivered learning experience
 
@@ -67,7 +73,7 @@ Open `http://localhost:3000`. Production: `npm run build`, then `npm start`. No 
 
 ## Architecture
 
-Next.js App Router, TypeScript, React, and Tailwind CSS retain the existing architecture. All 46 topic routes, the projects index, and catalog project routes are statically prerendered. Server components render lesson instruction; focused client components handle traces, practice, and browser storage. The project renderer also prerenders its initial content, then hydrates browser progress.
+Next.js App Router, TypeScript, React, and Tailwind CSS retain the existing architecture. All 47 topic routes, the projects index, and catalog project routes are statically prerendered. Server components render lesson instruction; focused client components handle traces, practice, and browser storage. The project renderer also prerenders its initial content, then hydrates browser progress.
 
 ```text
 src/app/lessons/[slug]/page.tsx    Stable topic routes, published lessons/planned previews
@@ -83,6 +89,9 @@ src/content/dsa-coding-exercises.ts Seven Python DSA challenges
 src/content/dsa-catalog.ts       Focused retrieval and activity mappings
 src/content/sorting-lesson.ts    Bubble, selection, insertion, and comparison lesson
 src/content/sorting-coding-exercises.ts Five Python sorting labs
+src/lib/weighted-graph-steps.ts Pure bounded Dijkstra snapshots and heap
+src/components/weighted-graph-visualizer.tsx Weighted graph player and composer
+src/content/weighted-*.ts      Lesson, Python labs, retrieval, and adaptive families
 src/content/stack-queue-lesson.ts Complete LIFO/FIFO lesson and transfer problems
 src/content/stack-queue-coding-exercises.ts Six browser Python labs
 src/lib/stack-queue-steps.ts Pure bounded stack/queue snapshots
@@ -157,7 +166,7 @@ The unchanged **`cs-fundamentals:progress:v1`** key retains its format:
 
 No migration or write occurs on load. Existing valid V1 completion data survives. Unknown IDs, still-planned IDs, invalid values, and duplicates do not inflate progress. Completing/undoing a lesson uses its existing permanent ID. Publishing more lessons changes the denominator without deleting earned completions.
 
-Global reading progress is completed published lessons / **16**; the programming path separately counts its **7** members. The original three completions yield 3/16 globally (19%) and 1/7 on the programming path (14%). Projects do not change either denominator. The existing `ProgressProvider` retains its deterministic server snapshot, cross-tab events, and session fallback on denied writes.
+Global reading progress is completed published lessons / **17**; the programming path separately counts its **7** members. The original three completions yield 3/17 globally (18%) and 1/7 on the programming path (14%). Projects do not change either denominator. The existing `ProgressProvider` retains its deterministic server snapshot, cross-tab events, and session fallback on denied writes.
 
 Projects use a separate, explicitly versioned key per project:
 
@@ -189,7 +198,7 @@ npx playwright install --with-deps chromium # once per environment
 npm run test:e2e
 ```
 
-Build before the production browser suite. Coverage includes adaptive sessions and remediation, all 16 published lessons, all 46 topic routes, project routes, unknown/planned routes, prerequisite/content integrity, answer feedback and retry, trace boundaries and nested calls, array, search, sorting, linked-list, stack/queue, and graph and tree visualizations, Python examples and recursion boundaries, project references, Code Labs, reveal behavior, progress isolation, malformed/denied storage, reloads, and cross-tab changes. Desktop Chromium and a mobile viewport run the browser flows, including keyboard interactions and horizontal containment checks.
+Build before the production browser suite. Coverage includes adaptive sessions and remediation, all 17 published lessons, all 47 topic routes, project routes, unknown/planned routes, prerequisite/content integrity, answer feedback and retry, trace boundaries and nested calls, array, search, sorting, linked-list, stack/queue, and graph and tree visualizations, Python examples and recursion boundaries, project references, Code Labs, reveal behavior, progress isolation, malformed/denied storage, reloads, and cross-tab changes. Desktop Chromium and a mobile viewport run the browser flows, including keyboard interactions and horizontal containment checks.
 
 This container's Chromium requires extracted system libraries. Its environment-specific invocation is:
 
@@ -201,13 +210,13 @@ This path is not an application dependency. See [the V0.3 review](docs/v0.3-revi
 
 ## Current limitations and next direction
 
-- 16 published lessons and one project; 30 broader CS topics remain planned.
+- 17 published lessons and one project; 30 broader CS topics remain planned.
 - Existing Python traces/questions are authored demonstrations. C++ activities execute learner code and evaluate public I/O cases; client-side grading does not verify technique, all possible behavior, or mastery.
 - The visit-level understanding summary resets on reload, while V0.5 concept evidence persists in the browser. Project evidence combines fixed questions and self-reported coding/checklists; revealing a solution does not establish independent skill.
 - Desktop/mobile Chromium coverage does not certify cross-browser, screen-reader, or educational effectiveness. Independent human accessibility and teaching review remain valuable.
 - No authentication, payments, external AI APIs, backend, CMS, credentials, or cloud sync.
 
-**Recommended next direction:** explore self-balancing trees or weighted graph paths, and arrange human educational and accessibility review before stronger learning-effectiveness claims. See [the V1.2 review](docs/v1.2-review.md) for current scope and risks.
+**Recommended next direction:** teach Bellman-Ford with negative-edge and negative-cycle reasoning, then arrange human educational and accessibility review before stronger learning-effectiveness claims. See [the V1.3 review](docs/v1.3-review.md) for current scope and risks.
 
 Python language references used during authoring: [Errors and Exceptions](https://docs.python.org/3/tutorial/errors.html), [Defining Functions](https://docs.python.org/3/tutorial/controlflow.html#defining-functions), and [RecursionError](https://docs.python.org/3/library/exceptions.html#RecursionError). Actual examples are checked with the local Python version recorded in the review.
 

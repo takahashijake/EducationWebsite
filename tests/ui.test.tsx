@@ -122,7 +122,9 @@ describe("navigation and pages", () => {
     expect(
       screen.getByRole("link", { name: /^Start learning$/ }),
     ).toHaveAttribute("href", "/roadmap");
-    expect(screen.getAllByRole("link", { name: /available/i })).toHaveLength(availableTopics.length);
+    expect(screen.getAllByRole("link", { name: /available/i })).toHaveLength(
+      availableTopics.length,
+    );
   });
   it("renders every roadmap section and topic link with truthful status", () => {
     localStorage.setItem(
@@ -138,8 +140,10 @@ describe("navigation and pages", () => {
     const topicLinks = screen
       .getAllByRole("link")
       .filter((link) => link.classList.contains("topic-card"));
-    expect(topicLinks).toHaveLength(46);
-    expect(screen.getAllByText("Planned", { exact: true })).toHaveLength(topics.filter((topic) => topic.status === "planned").length + 1); // Topics plus legend
+    expect(topicLinks).toHaveLength(topics.length);
+    expect(screen.getAllByText("Planned", { exact: true })).toHaveLength(
+      topics.filter((topic) => topic.status === "planned").length + 1,
+    ); // Topics plus legend
     expect(screen.getByRole("progressbar")).toHaveAttribute(
       "aria-valuenow",
       "0",
@@ -165,7 +169,11 @@ describe("navigation and pages", () => {
         screen
           .getAllByRole("group")
           .filter((element) => element.tagName === "FIELDSET"),
-      ).toHaveLength(3 + (lessons[topic.id].exercises?.length ?? 0));
+      ).toHaveLength(
+        3 +
+          (lessons[topic.id].exercises?.length ?? 0) +
+          (topic.id === "weighted-shortest-paths" ? 1 : 0),
+      );
       expect(
         screen.getByRole("button", { name: /mark lesson complete/i }),
       ).toBeInTheDocument();

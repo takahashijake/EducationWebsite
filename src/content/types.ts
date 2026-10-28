@@ -92,6 +92,7 @@ export type Demonstration =
   | { kind: "linked-list"; caption: string }
   | { kind: "stacks-queues"; caption: string }
   | { kind: "graph-traversal"; caption: string }
+  | { kind: "weighted-dijkstra"; caption: string }
   | { kind: "tree-bst"; caption: string }
   | CodeTrace
   | { kind: "sorting-comparison"; caption: string }

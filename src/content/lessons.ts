@@ -9,6 +9,8 @@ import { linkedListLesson } from "./linked-list-lesson";
 import { stackQueueLesson } from "./stack-queue-lesson";
 import { stackQueueCodingExercises } from "./stack-queue-coding-exercises";
 import { graphLesson } from "./graph-lesson";
+import { weightedLesson } from "./weighted-lesson";
+import { weightedCodingExercises } from "./weighted-coding-exercises";
 import { treeLesson } from "./tree-lesson";
 import { treeCodingExercises } from "./tree-coding-exercises";
 import { graphCodingExercises } from "./graph-coding-exercises";
@@ -23,6 +25,7 @@ const authoredLessons: Record<string, Lesson> = {
   "linked-lists": linkedListLesson,
   "stacks-queues": stackQueueLesson,
   graphs: graphLesson,
+  "weighted-shortest-paths": weightedLesson,
   trees: treeLesson,
   "variables-data-types": {
     topicId: "variables-data-types",
@@ -323,6 +326,7 @@ export const lessons: Record<string, Lesson> = Object.fromEntries(
               ...linkedListCodingExercises,
               ...stackQueueCodingExercises,
               ...graphCodingExercises,
+              ...weightedCodingExercises,
               ...treeCodingExercises,
             ].some((exercise) => exercise.topicId === id)
           ? {
@@ -332,6 +336,7 @@ export const lessons: Record<string, Lesson> = Object.fromEntries(
                 ...linkedListCodingExercises,
                 ...stackQueueCodingExercises,
                 ...graphCodingExercises,
+                ...weightedCodingExercises,
                 ...treeCodingExercises,
               ].filter((exercise) => exercise.topicId === id),
             }

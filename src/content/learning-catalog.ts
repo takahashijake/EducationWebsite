@@ -21,6 +21,12 @@ import {
 import { linkedListCodingExercises } from "./linked-list-coding-exercises";
 import { stackQueueCodingExercises } from "./stack-queue-coding-exercises";
 import { graphCodingExercises } from "./graph-coding-exercises";
+import { weightedCodingExercises } from "./weighted-coding-exercises";
+import {
+  weightedLessonMap,
+  weightedPythonMap,
+  weightedRetrievalQuestions,
+} from "./weighted-catalog";
 import { treeCodingExercises } from "./tree-coding-exercises";
 import {
   treeLessonMap,
@@ -390,6 +396,48 @@ export const skills: Skill[] = [
     ["tree-structure", "structure-complexity"],
   ),
   define(
+    "weighted-path-costs",
+    "Weighted path costs",
+    "Sum directed edge weights, including zero.",
+    "weighted-shortest-paths",
+    ["graph-adjacency", "structure-complexity"],
+  ),
+  define(
+    "weighted-hops-cost",
+    "Minimum hops versus cost",
+    "Compare edge count with total weight.",
+    "weighted-shortest-paths",
+    ["graph-bfs", "weighted-path-costs"],
+  ),
+  define(
+    "weighted-relaxation",
+    "Edge relaxation",
+    "Improve tentative estimates and predecessors strictly.",
+    "weighted-shortest-paths",
+    ["weighted-path-costs", "graph-direction"],
+  ),
+  define(
+    "weighted-priority-queue",
+    "Priority-queue selection",
+    "Select the minimum and skip stale entries.",
+    "weighted-shortest-paths",
+    ["weighted-relaxation", "structure-complexity"],
+  ),
+  define(
+    "weighted-settled-invariant",
+    "Settled-distance invariant",
+    "Justify greedy settling with nonnegative edges.",
+    "weighted-shortest-paths",
+    ["weighted-priority-queue"],
+  ),
+  define(
+    "weighted-complexity-limits",
+    "Complexity and limitations",
+    "State heap assumptions and choose algorithms by weight rules.",
+    "weighted-shortest-paths",
+    ["weighted-settled-invariant", "graph-complexity"],
+  ),
+  define(
     "graph-adjacency",
     "Graph adjacency and representation",
     "Build neighbor lists and compare sparse storage.",
@@ -460,6 +508,7 @@ const lessonMap: Record<string, string[]> = {
   ...linkedListLessonMap,
   ...stackQueueLessonMap,
   ...graphLessonMap,
+  ...weightedLessonMap,
   ...treeLessonMap,
   "variables-q1": ["types"],
   "variables-q2": ["assignment"],
@@ -499,6 +548,7 @@ const lessonTopics: Record<string, string> = {
   linked: "linked-lists",
   stackqueue: "stacks-queues",
   graphs: "graphs",
+  weighted: "weighted-shortest-paths",
   trees: "trees",
   variables: "variables-data-types",
   operators: "operators-expressions",
@@ -811,6 +861,7 @@ export const retrievalQuestions: RetrievalQuestion[] = [
   ...linkedListRetrievalQuestions,
   ...stackQueueRetrievalQuestions,
   ...graphRetrievalQuestions,
+  ...weightedRetrievalQuestions,
   ...treeRetrievalQuestions,
 ];
 export const retrievalActivities: Activity[] = retrievalQuestions.map(
@@ -930,6 +981,16 @@ export const graphPythonActivities: Activity[] = graphCodingExercises.map(
     title: exercise.title,
   }),
 );
+export const weightedPythonActivities: Activity[] = weightedCodingExercises.map(
+  (exercise) => ({
+    id: exercise.id,
+    source: "python",
+    skillIds: weightedPythonMap[exercise.id] ?? [],
+    revision: exercise.revision ?? 1,
+    href: "/lessons/weighted-shortest-paths#code-lab",
+    title: exercise.title,
+  }),
+);
 export const treePythonActivities: Activity[] = treeCodingExercises.map(
   (exercise) => ({
     id: exercise.id,
@@ -973,6 +1034,7 @@ export const activities = [
   ...linkedListPythonActivities,
   ...stackQueuePythonActivities,
   ...graphPythonActivities,
+  ...weightedPythonActivities,
   ...treePythonActivities,
   transferActivity,
   ...adaptiveActivities,

@@ -338,6 +338,17 @@ export const topics: Topic[] = [
     status: "planned",
   },
   {
+    id: "weighted-shortest-paths",
+    slug: "weighted-shortest-paths",
+    sectionId: "algorithms",
+    title: "Weighted Graphs and Shortest Paths",
+    description:
+      "Find minimum-cost routes with weighted edges and Dijkstra’s algorithm.",
+    order: 7,
+    status: "available",
+    prerequisites: ["graphs", "big-o-notation"],
+  },
+  {
     id: "binary-number-representation",
     slug: "binary-number-representation",
     sectionId: "architecture",

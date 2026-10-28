@@ -11,9 +11,9 @@ import { lessons } from "@/content/lessons";
 import { evaluateAnswer } from "@/lib/quiz";
 
 describe("curriculum contracts", () => {
-  it("has eight sections and all 46 requested topics, with unique stable IDs and slugs", () => {
+  it("has eight sections and all 47 curriculum topics, with unique stable IDs and slugs", () => {
     expect(sections).toHaveLength(8);
-    expect(topics).toHaveLength(46);
+    expect(topics).toHaveLength(47);
     expect(new Set(sections.map((section) => section.id)).size).toBe(
       sections.length,
     );
@@ -36,6 +36,7 @@ describe("curriculum contracts", () => {
       "stacks-queues",
       "trees",
       "variables-data-types",
+      "weighted-shortest-paths",
     ]);
   });
   it("resolves all section and prerequisite references and maintains ordering", () => {
