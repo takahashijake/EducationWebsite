@@ -31,4 +31,10 @@ export const adaptiveSkillIds: readonly string[] = [
   "graph-dfs",
   "graph-reachability",
   "graph-complexity",
+  "tree-structure",
+  "tree-traversal",
+  "tree-ordering",
+  "bst-search",
+  "bst-mutations",
+  "tree-complexity",
 ] as const;

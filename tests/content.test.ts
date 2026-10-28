@@ -34,6 +34,7 @@ describe("curriculum contracts", () => {
       "searching",
       "sorting",
       "stacks-queues",
+      "trees",
       "variables-data-types",
     ]);
   });
