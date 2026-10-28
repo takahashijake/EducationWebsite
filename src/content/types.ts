@@ -89,6 +89,7 @@ export type CodeTrace = TraceProgram & {
 export type Demonstration =
   | { kind: "types" | "binary" | "complexity"; caption: string }
   | { kind: "linked-list"; caption: string }
+  | { kind: "stacks-queues"; caption: string }
   | CodeTrace
   | { kind: "sorting-comparison"; caption: string }
   | {

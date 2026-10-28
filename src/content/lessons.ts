@@ -6,6 +6,8 @@ import { dsaCodingExercises } from "./dsa-coding-exercises";
 import { sortingCodingExercises } from "./sorting-coding-exercises";
 import { sortingLesson } from "./sorting-lesson";
 import { linkedListLesson } from "./linked-list-lesson";
+import { stackQueueLesson } from "./stack-queue-lesson";
+import { stackQueueCodingExercises } from "./stack-queue-coding-exercises";
 import { linkedListCodingExercises } from "./linked-list-coding-exercises";
 import type { Lesson } from "./types";
 
@@ -15,6 +17,7 @@ const authoredLessons: Record<string, Lesson> = {
   ...dsaLessons,
   sorting: sortingLesson,
   "linked-lists": linkedListLesson,
+  "stacks-queues": stackQueueLesson,
   "variables-data-types": {
     topicId: "variables-data-types",
     minutes: 12,
@@ -312,12 +315,14 @@ export const lessons: Record<string, Lesson> = Object.fromEntries(
               ...dsaCodingExercises,
               ...sortingCodingExercises,
               ...linkedListCodingExercises,
+              ...stackQueueCodingExercises,
             ].some((exercise) => exercise.topicId === id)
           ? {
               codingExercises: [
                 ...dsaCodingExercises,
                 ...sortingCodingExercises,
                 ...linkedListCodingExercises,
+                ...stackQueueCodingExercises,
               ].filter((exercise) => exercise.topicId === id),
             }
           : {}),

@@ -3095,3 +3095,15 @@ textarea:focus-visible {
 .linked-controls button:disabled { cursor: default; opacity: .55; }
 .linked-controls button:focus-visible, .linked-visualizer select:focus-visible { outline: 3px solid #ff9d00; outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) { .linked-visualizer * { scroll-behavior: auto; animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+
+.structure-player { border: 1px solid var(--border, #c8d2d9); border-radius: 1rem; padding: 1rem; margin: 1.5rem 0; }
+.structure-fields { display: flex; flex-wrap: wrap; gap: .8rem; margin: 1rem 0; }
+.structure-fields label { display: grid; gap: .25rem; flex: 1 1 11rem; font-weight: 600; }
+.structure-fields input, .structure-fields select { min-width: 0; width: 100%; padding: .55rem; border: 1px solid #777; border-radius: .4rem; background: var(--surface, #fff); color: inherit; }
+.structure-nodes { display: flex; flex-wrap: wrap; gap: .6rem; padding: 0; list-style: none; margin: 1rem 0; }
+.structure-nodes li { display: grid; gap: .15rem; min-width: 6.5rem; padding: .65rem; border: 2px solid currentColor; border-radius: .5rem; overflow-wrap: anywhere; }
+.structure-nodes small { font-size: .78rem; }
+.structure-player .linked-controls { flex-wrap: wrap; }
+.structure-player { max-width: 100%; min-width: 0; }
+.structure-fields input:focus-visible, .structure-fields select:focus-visible { outline: 3px solid #ff9d00; outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .structure-player * { scroll-behavior: auto; animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }

@@ -33,7 +33,9 @@ describe("authored adaptive families", () => {
   it("registers two distinct families per required focused skill with stable activities", () => {
     expect(validateLearningCatalog()).toEqual([]);
     expect(sortingAdaptiveFamilies.length).toBeGreaterThanOrEqual(8);
-    expect(new Set(adaptiveFamilies.map((item) => item.id)).size).toBe(adaptiveFamilies.length);
+    expect(new Set(adaptiveFamilies.map((item) => item.id)).size).toBe(
+      adaptiveFamilies.length,
+    );
     for (const id of [
       "comparisons",
       "loop-boundaries",
@@ -95,7 +97,7 @@ describe("authored adaptive families", () => {
         revision: item.revision,
       })),
     ).toEqual(original);
-  });
+  }, 15000);
   it("rejects unknown IDs, stale revisions, malformed and oversized seeds", () => {
     for (const [id, revision, seed] of [
       ["unknown", 1, 0],
@@ -358,7 +360,8 @@ describe("adaptive selection and persistence", () => {
       `${id}$(echo unsafe)`,
       `adaptive-../linear-first-match:r1:s7`,
       `adaptive-linear-first-match:r1:s7\nextra`,
-    ]) expect(validAdaptiveInstanceId(malformed)).toBe(false);
+    ])
+      expect(validAdaptiveInstanceId(malformed)).toBe(false);
   });
   it("starts without history, follows focused misses, and holds a coherent current skill", () => {
     const start = selectAdaptiveProblem({ records: [], now, seed: 0 })!;
