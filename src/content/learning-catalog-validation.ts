@@ -6,6 +6,7 @@ import { dsaCodingExercises } from "./dsa-coding-exercises";
 import { sortingCodingExercises } from "./sorting-coding-exercises";
 import { linkedListCodingExercises } from "./linked-list-coding-exercises";
 import { stackQueueCodingExercises } from "./stack-queue-coding-exercises";
+import { graphCodingExercises } from "./graph-coding-exercises";
 import { adaptiveFamilies } from "./adaptive-families";
 import { adaptiveSkillIds } from "./adaptive-skills";
 import {
@@ -93,6 +94,7 @@ export function validateLearningCatalog(
     ...sortingCodingExercises,
     ...linkedListCodingExercises,
     ...stackQueueCodingExercises,
+    ...graphCodingExercises,
   ]) {
     if (!activityIds.has(exercise.id))
       errors.push(`Unmapped Python lab ${exercise.id}`);
@@ -137,6 +139,7 @@ export function validateLearningCatalog(
       "sorting",
       "linked-lists",
       "stacks-queues",
+      "graphs",
     ].includes(item.topicId),
   )) {
     if (
@@ -224,5 +227,15 @@ export function validateLearningCatalog(
   ))
     if (!stackQueueFamilies.some((family) => family.skillId === skill.id))
       errors.push(`Missing adaptive stack/queue coverage ${skill.id}`);
+  const graphFamilies = adaptiveFamilies.filter(
+    (family) => family.topicId === "graphs",
+  );
+  if (graphFamilies.length < 12)
+    errors.push("Insufficient adaptive graph families");
+  for (const skill of registry.filter((item) => item.topicId === "graphs"))
+    if (
+      graphFamilies.filter((family) => family.skillId === skill.id).length < 2
+    )
+      errors.push(`Insufficient adaptive graph coverage ${skill.id}`);
   return errors;
 }

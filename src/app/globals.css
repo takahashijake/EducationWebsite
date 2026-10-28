@@ -3107,3 +3107,20 @@ textarea:focus-visible {
 .structure-player { max-width: 100%; min-width: 0; }
 .structure-fields input:focus-visible, .structure-fields select:focus-visible { outline: 3px solid #ff9d00; outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) { .structure-player * { scroll-behavior: auto; animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+
+.graph-player { border: 1px solid var(--border, #c8d2d9); border-radius: 1rem; padding: clamp(.75rem, 2vw, 1.25rem); margin: 1.5rem 0; max-width: 100%; min-width: 0; }
+.graph-controls, .graph-compose { display: flex; flex-wrap: wrap; gap: .75rem; align-items: end; margin: 1rem 0; }
+.graph-controls label, .graph-compose label { display: grid; gap: .25rem; min-width: 7rem; flex: 1 1 8rem; font-weight: 600; }
+.graph-controls select, .graph-compose select, .graph-prediction select { width: 100%; min-width: 0; padding: .55rem; border: 1px solid #64748b; border-radius: .4rem; background: var(--surface, #fff); color: inherit; }
+.graph-compose label:has(input[type=checkbox]) { display: flex; align-items: center; gap: .4rem; }
+.graph-main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(12rem, 1fr); gap: 1rem; align-items: start; }
+.graph-main svg { width: 100%; max-width: 360px; height: auto; }
+.graph-state { min-width: 0; overflow-wrap: anywhere; border: 1px solid var(--border, #c8d2d9); border-radius: .6rem; padding: .8rem; }
+.graph-state h4 { margin: .25rem 0; }
+.graph-state ul { padding-left: 1.2rem; }
+.graph-prediction { border: 1px solid var(--border, #c8d2d9); border-radius: .6rem; padding: .75rem; margin: 1rem 0; }
+.graph-prediction select { max-width: 12rem; margin-right: .5rem; }
+.graph-player button { padding: .55rem .8rem; border: 1px solid currentColor; border-radius: .4rem; cursor: pointer; }
+.graph-player button:disabled { cursor: default; opacity: .55; }
+.graph-player button:focus-visible, .graph-player select:focus-visible, .graph-player input:focus-visible { outline: 3px solid #f59e0b; outline-offset: 2px; }
+@media (max-width: 650px) { .graph-main { grid-template-columns: minmax(0, 1fr); } .graph-state { width: 100%; } }

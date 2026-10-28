@@ -25,4 +25,10 @@ export const adaptiveSkillIds: readonly string[] = [
   "queue-references",
   "structure-complexity",
   "structure-transfer",
+  "graph-adjacency",
+  "graph-direction",
+  "graph-bfs",
+  "graph-dfs",
+  "graph-reachability",
+  "graph-complexity",
 ] as const;

@@ -20,6 +20,12 @@ import {
 } from "./linked-list-catalog";
 import { linkedListCodingExercises } from "./linked-list-coding-exercises";
 import { stackQueueCodingExercises } from "./stack-queue-coding-exercises";
+import { graphCodingExercises } from "./graph-coding-exercises";
+import {
+  graphLessonMap,
+  graphPythonMap,
+  graphRetrievalQuestions,
+} from "./graph-catalog";
 import {
   stackQueueLessonMap,
   stackQueuePythonMap,
@@ -335,6 +341,48 @@ export const skills: Skill[] = [
     "stacks-queues",
     ["stack-lifo", "queue-fifo"],
   ),
+  define(
+    "graph-adjacency",
+    "Graph adjacency and representation",
+    "Build neighbor lists and compare sparse storage.",
+    "graphs",
+    ["sequence-traversal"],
+  ),
+  define(
+    "graph-direction",
+    "Directed and undirected edges",
+    "Follow arrows and represent two-way edges correctly.",
+    "graphs",
+    ["graph-adjacency"],
+  ),
+  define(
+    "graph-bfs",
+    "Breadth-first frontier",
+    "Predict FIFO discovery and mark on enqueue.",
+    "graphs",
+    ["queue-fifo", "graph-adjacency"],
+  ),
+  define(
+    "graph-dfs",
+    "Depth-first frames",
+    "Trace recursive descent and backtracking.",
+    "graphs",
+    ["unwinding", "graph-adjacency"],
+  ),
+  define(
+    "graph-reachability",
+    "Reachability and shortest paths",
+    "Separate unreachable vertices from minimum-edge routes.",
+    "graphs",
+    ["graph-bfs", "graph-dfs"],
+  ),
+  define(
+    "graph-complexity",
+    "Graph traversal costs and transfer",
+    "Compare list and matrix scans and reason about dependencies.",
+    "graphs",
+    ["graph-adjacency", "structure-complexity"],
+  ),
 ];
 export type Activity = {
   id: string;
@@ -363,6 +411,7 @@ const lessonMap: Record<string, string[]> = {
   ...sortingLessonMap,
   ...linkedListLessonMap,
   ...stackQueueLessonMap,
+  ...graphLessonMap,
   "variables-q1": ["types"],
   "variables-q2": ["assignment"],
   "variables-q3": ["types"],
@@ -400,6 +449,7 @@ const lessonTopics: Record<string, string> = {
   sorting: "sorting",
   linked: "linked-lists",
   stackqueue: "stacks-queues",
+  graphs: "graphs",
   variables: "variables-data-types",
   operators: "operators-expressions",
   conditionals: "conditionals",
@@ -710,6 +760,7 @@ export const retrievalQuestions: RetrievalQuestion[] = [
   ...sortingRetrievalQuestions,
   ...linkedListRetrievalQuestions,
   ...stackQueueRetrievalQuestions,
+  ...graphRetrievalQuestions,
 ];
 export const retrievalActivities: Activity[] = retrievalQuestions.map(
   (question) => ({
@@ -818,6 +869,16 @@ export const stackQueuePythonActivities: Activity[] =
     href: `/lessons/${exercise.topicId}#code-lab`,
     title: exercise.title,
   }));
+export const graphPythonActivities: Activity[] = graphCodingExercises.map(
+  (exercise) => ({
+    id: exercise.id,
+    source: "python",
+    skillIds: graphPythonMap[exercise.id] ?? [],
+    revision: exercise.revision ?? 1,
+    href: "/lessons/graphs#code-lab",
+    title: exercise.title,
+  }),
+);
 export const transferActivity: Activity = {
   id: "python-expense-summary",
   source: "python",
@@ -850,6 +911,7 @@ export const activities = [
   ...sortingPythonActivities,
   ...linkedListPythonActivities,
   ...stackQueuePythonActivities,
+  ...graphPythonActivities,
   transferActivity,
   ...adaptiveActivities,
 ];
