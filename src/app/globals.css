@@ -3124,3 +3124,20 @@ textarea:focus-visible {
 .graph-player button:disabled { cursor: default; opacity: .55; }
 .graph-player button:focus-visible, .graph-player select:focus-visible, .graph-player input:focus-visible { outline: 3px solid #f59e0b; outline-offset: 2px; }
 @media (max-width: 650px) { .graph-main { grid-template-columns: minmax(0, 1fr); } .graph-state { width: 100%; } }
+
+.tree-player { border: 1px solid var(--border, #c8d2d9); border-radius: 1rem; padding: clamp(.75rem, 2vw, 1.25rem); margin: 1.5rem 0; max-width: 100%; min-width: 0; }
+.tree-controls, .tree-compose { display: flex; flex-wrap: wrap; gap: .75rem; align-items: end; margin: 1rem 0; }
+.tree-controls label { display: grid; gap: .25rem; min-width: 8rem; flex: 1 1 9rem; font-weight: 600; }
+.tree-controls select, .tree-controls input, .tree-prediction select { width: 100%; min-width: 0; padding: .55rem; border: 1px solid #64748b; border-radius: .4rem; background: var(--surface, #fff); color: inherit; }
+.tree-main { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(12rem, 1fr); gap: 1rem; align-items: start; }
+.tree-main svg { width: 100%; height: auto; overflow: visible; }
+.tree-state { min-width: 0; overflow-wrap: anywhere; border: 1px solid var(--border, #c8d2d9); border-radius: .6rem; padding: .8rem; }
+.tree-state h4 { margin: .25rem 0; }
+.tree-state ul { padding-left: 1.2rem; }
+.tree-prediction { border: 1px solid var(--border, #c8d2d9); border-radius: .6rem; padding: .75rem; margin: 1rem 0; }
+.tree-prediction select { max-width: 12rem; margin-right: .5rem; }
+.tree-player button { padding: .55rem .8rem; border: 1px solid currentColor; border-radius: .4rem; cursor: pointer; }
+.tree-player button:disabled { cursor: default; opacity: .55; }
+.tree-player button:focus-visible, .tree-player select:focus-visible, .tree-player input:focus-visible { outline: 3px solid #f59e0b; outline-offset: 2px; }
+@media (max-width: 650px) { .tree-main { grid-template-columns: minmax(0, 1fr); } }
+@media (prefers-reduced-motion: reduce) { .tree-player *, .tree-player *::before, .tree-player *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }

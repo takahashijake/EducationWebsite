@@ -21,6 +21,12 @@ import {
 import { linkedListCodingExercises } from "./linked-list-coding-exercises";
 import { stackQueueCodingExercises } from "./stack-queue-coding-exercises";
 import { graphCodingExercises } from "./graph-coding-exercises";
+import { treeCodingExercises } from "./tree-coding-exercises";
+import {
+  treeLessonMap,
+  treePythonMap,
+  treeRetrievalQuestions,
+} from "./tree-catalog";
 import {
   graphLessonMap,
   graphPythonMap,
@@ -342,6 +348,48 @@ export const skills: Skill[] = [
     ["stack-lifo", "queue-fifo"],
   ),
   define(
+    "tree-structure",
+    "Tree relationships and height",
+    "Identify roots, children, leaves, depth, and edge-based height.",
+    "trees",
+    ["linked-node-identity"],
+  ),
+  define(
+    "tree-traversal",
+    "Tree traversal orders",
+    "Trace recursive depth-first orders and FIFO level-order.",
+    "trees",
+    ["tree-structure", "unwinding", "queue-fifo"],
+  ),
+  define(
+    "tree-ordering",
+    "Global BST ordering",
+    "Apply strict ordering across complete subtrees.",
+    "trees",
+    ["tree-structure"],
+  ),
+  define(
+    "bst-search",
+    "BST search paths",
+    "Choose one branch and recognize absent keys.",
+    "trees",
+    ["tree-ordering"],
+  ),
+  define(
+    "bst-mutations",
+    "BST insertion and deletion",
+    "Rewire references while preserving node identity.",
+    "trees",
+    ["bst-search", "tree-ordering"],
+  ),
+  define(
+    "tree-complexity",
+    "BST height and costs",
+    "Compare balanced and skewed paths and memory costs.",
+    "trees",
+    ["tree-structure", "structure-complexity"],
+  ),
+  define(
     "graph-adjacency",
     "Graph adjacency and representation",
     "Build neighbor lists and compare sparse storage.",
@@ -412,6 +460,7 @@ const lessonMap: Record<string, string[]> = {
   ...linkedListLessonMap,
   ...stackQueueLessonMap,
   ...graphLessonMap,
+  ...treeLessonMap,
   "variables-q1": ["types"],
   "variables-q2": ["assignment"],
   "variables-q3": ["types"],
@@ -450,6 +499,7 @@ const lessonTopics: Record<string, string> = {
   linked: "linked-lists",
   stackqueue: "stacks-queues",
   graphs: "graphs",
+  trees: "trees",
   variables: "variables-data-types",
   operators: "operators-expressions",
   conditionals: "conditionals",
@@ -761,6 +811,7 @@ export const retrievalQuestions: RetrievalQuestion[] = [
   ...linkedListRetrievalQuestions,
   ...stackQueueRetrievalQuestions,
   ...graphRetrievalQuestions,
+  ...treeRetrievalQuestions,
 ];
 export const retrievalActivities: Activity[] = retrievalQuestions.map(
   (question) => ({
@@ -879,6 +930,16 @@ export const graphPythonActivities: Activity[] = graphCodingExercises.map(
     title: exercise.title,
   }),
 );
+export const treePythonActivities: Activity[] = treeCodingExercises.map(
+  (exercise) => ({
+    id: exercise.id,
+    source: "python",
+    skillIds: treePythonMap[exercise.id] ?? [],
+    revision: exercise.revision ?? 1,
+    href: "/lessons/trees#code-lab",
+    title: exercise.title,
+  }),
+);
 export const transferActivity: Activity = {
   id: "python-expense-summary",
   source: "python",
@@ -912,6 +973,7 @@ export const activities = [
   ...linkedListPythonActivities,
   ...stackQueuePythonActivities,
   ...graphPythonActivities,
+  ...treePythonActivities,
   transferActivity,
   ...adaptiveActivities,
 ];

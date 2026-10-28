@@ -41,6 +41,7 @@ export type Lesson = {
   demonstration: Demonstration;
   demonstrations?: Demonstration[];
   sections?: { title: string; paragraphs: string[]; code?: string }[];
+  relatedTopicIds?: string[];
   exercises?: PracticeExercise[];
   codingExercises?: CodingExercise[];
   nextStep?: string;
@@ -91,6 +92,7 @@ export type Demonstration =
   | { kind: "linked-list"; caption: string }
   | { kind: "stacks-queues"; caption: string }
   | { kind: "graph-traversal"; caption: string }
+  | { kind: "tree-bst"; caption: string }
   | CodeTrace
   | { kind: "sorting-comparison"; caption: string }
   | {

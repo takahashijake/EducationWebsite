@@ -250,19 +250,31 @@ export const topics: Topic[] = [
     sectionId: "data-structures",
     title: "Trees",
     description:
-      "Represent hierarchies and traverse parent-child relationships.",
+      "Explore binary trees, traversals, and binary search tree operations.",
     order: 5,
-    status: "planned",
+    status: "available",
+    prerequisites: [
+      "recursion",
+      "stacks-queues",
+      "linked-lists",
+      "big-o-notation",
+    ],
   },
   {
     id: "graphs",
     slug: "graphs",
     sectionId: "data-structures",
     title: "Graphs",
-    description: "Represent networks and reason through BFS, DFS, paths, and reachability.",
+    description:
+      "Represent networks and reason through BFS, DFS, paths, and reachability.",
     order: 6,
     status: "available",
-    prerequisites: ["arrays-strings", "recursion", "stacks-queues", "big-o-notation"],
+    prerequisites: [
+      "arrays-strings",
+      "recursion",
+      "stacks-queues",
+      "big-o-notation",
+    ],
   },
   {
     id: "big-o-notation",

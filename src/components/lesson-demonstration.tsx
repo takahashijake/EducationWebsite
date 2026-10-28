@@ -5,6 +5,7 @@ import { SortingComparison } from "./sorting-comparison";
 import { LinkedListVisualizer } from "./linked-list-visualizer";
 import { StackQueueVisualizer } from "./stack-queue-visualizer";
 import { GraphVisualizer } from "./graph-visualizer";
+import { TreeVisualizer } from "./tree-visualizer";
 export function LessonDemonstration({
   demonstration,
 }: {
@@ -22,6 +23,8 @@ export function LessonDemonstration({
   if (demonstration.kind === "sorting-comparison") return <SortingComparison />;
   if (demonstration.kind === "stacks-queues")
     return <StackQueueVisualizer caption={demonstration.caption} />;
+  if (demonstration.kind === "tree-bst")
+    return <TreeVisualizer caption={demonstration.caption} />;
   if (demonstration.kind === "graph-traversal")
     return <GraphVisualizer caption={demonstration.caption} />;
   if (demonstration.kind === "linked-list")

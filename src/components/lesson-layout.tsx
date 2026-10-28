@@ -138,6 +138,21 @@ export function LessonLayout({
               )}
             </section>
           ))}
+          {lesson.relatedTopicIds && (
+            <section aria-label="Related lessons">
+              <h2>Related lessons</h2>
+              <ul>
+                {lesson.relatedTopicIds.map((id) => {
+                  const related = topics.find((item) => item.id === id)!;
+                  return (
+                    <li key={id}>
+                      <Link href={topicHref(related)}>{related.title}</Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          )}
           <section id="worked-example">
             <span className="eyebrow">LET’S WORK THROUGH IT</span>
             <h2>{lesson.workedExample.title}</h2>

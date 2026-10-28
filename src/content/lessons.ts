@@ -9,6 +9,8 @@ import { linkedListLesson } from "./linked-list-lesson";
 import { stackQueueLesson } from "./stack-queue-lesson";
 import { stackQueueCodingExercises } from "./stack-queue-coding-exercises";
 import { graphLesson } from "./graph-lesson";
+import { treeLesson } from "./tree-lesson";
+import { treeCodingExercises } from "./tree-coding-exercises";
 import { graphCodingExercises } from "./graph-coding-exercises";
 import { linkedListCodingExercises } from "./linked-list-coding-exercises";
 import type { Lesson } from "./types";
@@ -21,6 +23,7 @@ const authoredLessons: Record<string, Lesson> = {
   "linked-lists": linkedListLesson,
   "stacks-queues": stackQueueLesson,
   graphs: graphLesson,
+  trees: treeLesson,
   "variables-data-types": {
     topicId: "variables-data-types",
     minutes: 12,
@@ -320,6 +323,7 @@ export const lessons: Record<string, Lesson> = Object.fromEntries(
               ...linkedListCodingExercises,
               ...stackQueueCodingExercises,
               ...graphCodingExercises,
+              ...treeCodingExercises,
             ].some((exercise) => exercise.topicId === id)
           ? {
               codingExercises: [
@@ -328,6 +332,7 @@ export const lessons: Record<string, Lesson> = Object.fromEntries(
                 ...linkedListCodingExercises,
                 ...stackQueueCodingExercises,
                 ...graphCodingExercises,
+                ...treeCodingExercises,
               ].filter((exercise) => exercise.topicId === id),
             }
           : {}),
