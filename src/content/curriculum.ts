@@ -259,9 +259,10 @@ export const topics: Topic[] = [
     slug: "graphs",
     sectionId: "data-structures",
     title: "Graphs",
-    description: "Store networks using adjacency lists and adjacency matrices.",
+    description: "Represent networks and reason through BFS, DFS, paths, and reachability.",
     order: 6,
-    status: "planned",
+    status: "available",
+    prerequisites: ["arrays-strings", "recursion", "stacks-queues", "big-o-notation"],
   },
   {
     id: "big-o-notation",

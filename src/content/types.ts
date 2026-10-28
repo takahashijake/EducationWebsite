@@ -90,6 +90,7 @@ export type Demonstration =
   | { kind: "types" | "binary" | "complexity"; caption: string }
   | { kind: "linked-list"; caption: string }
   | { kind: "stacks-queues"; caption: string }
+  | { kind: "graph-traversal"; caption: string }
   | CodeTrace
   | { kind: "sorting-comparison"; caption: string }
   | {
