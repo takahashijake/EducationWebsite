@@ -151,7 +151,8 @@ export function graphPath(
   start: string,
   target: string,
 ): string[] | null {
-  if (!(target in step.parents) || !(start in step.parents)) return null;
+  if (!Object.hasOwn(step.parents, target) || !Object.hasOwn(step.parents, start))
+    return null;
   const path: string[] = [];
   let current: string | null = target;
   while (current !== null) {
@@ -172,7 +173,10 @@ export function generateGraphSteps(
   const adjacency = graphAdjacency(graph);
   if (algorithm !== "bfs" && algorithm !== "dfs")
     throw new Error("Choose BFS or DFS.");
-  if (!(start in adjacency) || (target !== undefined && !(target in adjacency)))
+  if (
+    !Object.hasOwn(adjacency, start) ||
+    (target !== undefined && !Object.hasOwn(adjacency, target))
+  )
     throw new Error("Start and target must be vertices.");
   const discovered = new Set<string>();
   const finished = new Set<string>();

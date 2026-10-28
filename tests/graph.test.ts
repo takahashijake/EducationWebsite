@@ -161,6 +161,18 @@ describe("graph traversal engine", () => {
     expect(MAX_GRAPH_VERTICES).toBe(9);
     expect(() => generateGraphSteps(valid, "bfs", "X")).toThrow();
     expect(() => generateGraphSteps(valid, "bfs", "A", "X")).toThrow();
+    for (const inherited of ["toString", "constructor", "__proto__"]) {
+      expect(() => generateGraphSteps(valid, "bfs", inherited)).toThrow(
+        "Start and target must be vertices.",
+      );
+      expect(() => generateGraphSteps(valid, "bfs", "A", inherited)).toThrow(
+        "Start and target must be vertices.",
+      );
+      const final = generateGraphSteps(valid, "bfs", "A").at(-1)!;
+      expect(graphPath(final, inherited, inherited)).toBeNull();
+      expect(graphPath(final, "A", inherited)).toBeNull();
+      expect(graphPath(final, inherited, "A")).toBeNull();
+    }
   });
 });
 
