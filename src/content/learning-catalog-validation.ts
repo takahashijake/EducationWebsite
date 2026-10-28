@@ -5,6 +5,7 @@ import { codingExercises } from "./coding-exercises";
 import { dsaCodingExercises } from "./dsa-coding-exercises";
 import { sortingCodingExercises } from "./sorting-coding-exercises";
 import { linkedListCodingExercises } from "./linked-list-coding-exercises";
+import { stackQueueCodingExercises } from "./stack-queue-coding-exercises";
 import { adaptiveFamilies } from "./adaptive-families";
 import { adaptiveSkillIds } from "./adaptive-skills";
 import {
@@ -91,6 +92,7 @@ export function validateLearningCatalog(
     ...dsaCodingExercises,
     ...sortingCodingExercises,
     ...linkedListCodingExercises,
+    ...stackQueueCodingExercises,
   ]) {
     if (!activityIds.has(exercise.id))
       errors.push(`Unmapped Python lab ${exercise.id}`);
@@ -129,9 +131,13 @@ export function validateLearningCatalog(
       errors.push(`Unavailable retrieval topic ${question.topicId}`);
   }
   for (const skill of registry.filter((item) =>
-    ["arrays-strings", "searching", "sorting", "linked-lists"].includes(
-      item.topicId,
-    ),
+    [
+      "arrays-strings",
+      "searching",
+      "sorting",
+      "linked-lists",
+      "stacks-queues",
+    ].includes(item.topicId),
   )) {
     if (
       retrievalQuestions.filter(
@@ -208,5 +214,15 @@ export function validateLearningCatalog(
   ))
     if (!linkedFamilies.some((family) => family.skillId === skill.id))
       errors.push(`Missing adaptive linked-list coverage ${skill.id}`);
+  const stackQueueFamilies = adaptiveFamilies.filter(
+    (family) => family.topicId === "stacks-queues",
+  );
+  if (stackQueueFamilies.length < 12)
+    errors.push("Insufficient adaptive stack/queue families");
+  for (const skill of registry.filter(
+    (item) => item.topicId === "stacks-queues",
+  ))
+    if (!stackQueueFamilies.some((family) => family.skillId === skill.id))
+      errors.push(`Missing adaptive stack/queue coverage ${skill.id}`);
   return errors;
 }

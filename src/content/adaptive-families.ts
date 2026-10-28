@@ -2,6 +2,7 @@
 export { adaptiveSkillIds } from "./adaptive-skills";
 import { sortingAdaptiveFamilies } from "./sorting-adaptive-families";
 import { linkedListAdaptiveFamilies } from "./linked-list-adaptive-families";
+import { stackQueueAdaptiveFamilies } from "./stack-queue-adaptive-families";
 export type AdaptiveDifficulty = "foundation" | "application";
 export type AdaptiveOption = { text: string; misconception?: string };
 export type AdaptiveInstance = {
@@ -71,6 +72,7 @@ const family = (
 export const adaptiveFamilies: AdaptiveFamily[] = [
   ...sortingAdaptiveFamilies,
   ...linkedListAdaptiveFamilies,
+  ...stackQueueAdaptiveFamilies,
   family(
     "comparison-branch",
     "comparisons",

@@ -3,6 +3,7 @@ import type { Lesson } from "@/content/types";
 import { AlgorithmVisualizer } from "./algorithm-visualizer";
 import { SortingComparison } from "./sorting-comparison";
 import { LinkedListVisualizer } from "./linked-list-visualizer";
+import { StackQueueVisualizer } from "./stack-queue-visualizer";
 export function LessonDemonstration({
   demonstration,
 }: {
@@ -18,6 +19,8 @@ export function LessonDemonstration({
       />
     );
   if (demonstration.kind === "sorting-comparison") return <SortingComparison />;
+  if (demonstration.kind === "stacks-queues")
+    return <StackQueueVisualizer caption={demonstration.caption} />;
   if (demonstration.kind === "linked-list")
     return <LinkedListVisualizer caption={demonstration.caption} />;
   return (

@@ -19,6 +19,12 @@ import {
   linkedListRetrievalQuestions,
 } from "./linked-list-catalog";
 import { linkedListCodingExercises } from "./linked-list-coding-exercises";
+import { stackQueueCodingExercises } from "./stack-queue-coding-exercises";
+import {
+  stackQueueLessonMap,
+  stackQueuePythonMap,
+  stackQueueRetrievalQuestions,
+} from "./stack-queue-catalog";
 import { adaptiveFamilies } from "./adaptive-families";
 
 export type Skill = {
@@ -287,6 +293,48 @@ export const skills: Skill[] = [
     "linked-lists",
     ["linked-node-identity", "linked-head-insertion"],
   ),
+  define(
+    "stack-lifo",
+    "Stack LIFO reasoning",
+    "Predict which pushed item leaves next.",
+    "stacks-queues",
+    ["sequence-traversal"],
+  ),
+  define(
+    "stack-boundaries",
+    "Stack top and empty cases",
+    "Maintain top and handle empty operations.",
+    "stacks-queues",
+    ["stack-lifo", "linked-node-identity"],
+  ),
+  define(
+    "queue-fifo",
+    "Queue FIFO reasoning",
+    "Predict front and removal order.",
+    "stacks-queues",
+    ["sequence-traversal"],
+  ),
+  define(
+    "queue-references",
+    "Queue endpoint invariants",
+    "Maintain head and tail across empty and singleton transitions.",
+    "stacks-queues",
+    ["queue-fifo", "linked-node-identity"],
+  ),
+  define(
+    "structure-complexity",
+    "Stack and queue representation costs",
+    "Compare list, deque, and linked operations accurately.",
+    "stacks-queues",
+    ["sequence-operation-cost", "linked-complexity"],
+  ),
+  define(
+    "structure-transfer",
+    "Applied stack and queue transfer",
+    "Use LIFO or FIFO to solve nesting and task-order problems.",
+    "stacks-queues",
+    ["stack-lifo", "queue-fifo"],
+  ),
 ];
 export type Activity = {
   id: string;
@@ -314,6 +362,7 @@ const lessonMap: Record<string, string[]> = {
   ...dsaLessonMap,
   ...sortingLessonMap,
   ...linkedListLessonMap,
+  ...stackQueueLessonMap,
   "variables-q1": ["types"],
   "variables-q2": ["assignment"],
   "variables-q3": ["types"],
@@ -350,6 +399,7 @@ const lessonTopics: Record<string, string> = {
   searching: "searching",
   sorting: "sorting",
   linked: "linked-lists",
+  stackqueue: "stacks-queues",
   variables: "variables-data-types",
   operators: "operators-expressions",
   conditionals: "conditionals",
@@ -659,6 +709,7 @@ export const retrievalQuestions: RetrievalQuestion[] = [
   ...dsaRetrievalQuestions,
   ...sortingRetrievalQuestions,
   ...linkedListRetrievalQuestions,
+  ...stackQueueRetrievalQuestions,
 ];
 export const retrievalActivities: Activity[] = retrievalQuestions.map(
   (question) => ({
@@ -758,6 +809,15 @@ export const linkedListPythonActivities: Activity[] =
     href: `/lessons/${exercise.topicId}#code-lab`,
     title: exercise.title,
   }));
+export const stackQueuePythonActivities: Activity[] =
+  stackQueueCodingExercises.map((exercise) => ({
+    id: exercise.id,
+    source: "python",
+    skillIds: stackQueuePythonMap[exercise.id] ?? [],
+    revision: exercise.revision ?? 1,
+    href: `/lessons/${exercise.topicId}#code-lab`,
+    title: exercise.title,
+  }));
 export const transferActivity: Activity = {
   id: "python-expense-summary",
   source: "python",
@@ -789,6 +849,7 @@ export const activities = [
   ...dsaPythonActivities,
   ...sortingPythonActivities,
   ...linkedListPythonActivities,
+  ...stackQueuePythonActivities,
   transferActivity,
   ...adaptiveActivities,
 ];

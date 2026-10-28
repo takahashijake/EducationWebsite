@@ -231,7 +231,8 @@ export const topics: Topic[] = [
     description:
       "Manage work in last-in-first-out and first-in-first-out order.",
     order: 3,
-    status: "planned",
+    status: "available",
+    prerequisites: ["arrays-strings", "linked-lists", "big-o-notation"],
   },
   {
     id: "hash-tables",

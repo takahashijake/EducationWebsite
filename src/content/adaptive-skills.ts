@@ -19,4 +19,10 @@ export const adaptiveSkillIds: readonly string[] = [
   "linked-deletion",
   "linked-complexity",
   "linked-aliasing",
+  "stack-lifo",
+  "stack-boundaries",
+  "queue-fifo",
+  "queue-references",
+  "structure-complexity",
+  "structure-transfer",
 ] as const;

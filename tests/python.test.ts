@@ -11,6 +11,7 @@ const examples: Record<string, string[]> = {
   searching: ["3\n-1", ""],
   sorting: ["[1, 2, 4, 4] True", "", "", ""],
   "linked-lists": ["7", "", "", ""],
+  "stacks-queues": ["B\nA", "A", ""],
   "operators-expressions": ["26 False", "3.4\n3\n2", "True"],
   conditionals: ["ready", "Continue", "Member, below minimum"],
   loops: ["6", "40 2", "3\n2\n1\nDone", "1\n3\nDone", "1 1\n1 2\n2 1\n2 2"],
