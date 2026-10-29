@@ -11,6 +11,8 @@ import { stackQueueCodingExercises } from "./stack-queue-coding-exercises";
 import { graphLesson } from "./graph-lesson";
 import { bellmanLesson } from "./bellman-lesson";
 import { bellmanCodingExercises } from "./bellman-coding-exercises";
+import { dpLesson } from "./dp-lesson";
+import { dpCodingExercises } from "./dp-coding-exercises";
 import { weightedLesson } from "./weighted-lesson";
 import { weightedCodingExercises } from "./weighted-coding-exercises";
 import { treeLesson } from "./tree-lesson";
@@ -29,6 +31,7 @@ const authoredLessons: Record<string, Lesson> = {
   graphs: graphLesson,
   "weighted-shortest-paths": weightedLesson,
   "bellman-ford": bellmanLesson,
+  "dynamic-programming": dpLesson,
   trees: treeLesson,
   "variables-data-types": {
     topicId: "variables-data-types",
@@ -331,6 +334,7 @@ export const lessons: Record<string, Lesson> = Object.fromEntries(
               ...graphCodingExercises,
               ...weightedCodingExercises,
               ...bellmanCodingExercises,
+              ...dpCodingExercises,
               ...treeCodingExercises,
             ].some((exercise) => exercise.topicId === id)
           ? {
@@ -342,6 +346,7 @@ export const lessons: Record<string, Lesson> = Object.fromEntries(
                 ...graphCodingExercises,
                 ...weightedCodingExercises,
                 ...bellmanCodingExercises,
+                ...dpCodingExercises,
                 ...treeCodingExercises,
               ].filter((exercise) => exercise.topicId === id),
             }

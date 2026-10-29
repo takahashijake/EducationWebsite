@@ -15,6 +15,7 @@ const examples: Record<string, string[]> = {
   graphs: [""],
   "weighted-shortest-paths": [""],
   "bellman-ford": [""],
+  "dynamic-programming": ["5"],
   trees: ["", "", ""],
   "operators-expressions": ["26 False", "3.4\n3\n2", "True"],
   conditionals: ["ready", "Continue", "Member, below minimum"],

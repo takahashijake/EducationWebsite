@@ -8,6 +8,7 @@ import { linkedListCodingExercises } from "./linked-list-coding-exercises";
 import { stackQueueCodingExercises } from "./stack-queue-coding-exercises";
 import { graphCodingExercises } from "./graph-coding-exercises";
 import { bellmanCodingExercises } from "./bellman-coding-exercises";
+import { dpCodingExercises } from "./dp-coding-exercises";
 import { weightedCodingExercises } from "./weighted-coding-exercises";
 import { treeCodingExercises } from "./tree-coding-exercises";
 import { adaptiveFamilies } from "./adaptive-families";
@@ -100,6 +101,7 @@ export function validateLearningCatalog(
     ...graphCodingExercises,
     ...weightedCodingExercises,
     ...bellmanCodingExercises,
+    ...dpCodingExercises,
     ...treeCodingExercises,
   ]) {
     if (!activityIds.has(exercise.id))
@@ -148,6 +150,7 @@ export function validateLearningCatalog(
       "graphs",
       "weighted-shortest-paths",
       "bellman-ford",
+      "dynamic-programming",
       "trees",
     ].includes(item.topicId),
   )) {
@@ -271,6 +274,18 @@ export function validateLearningCatalog(
       bellmanFamilies.filter((family) => family.skillId === skill.id).length < 2
     )
       errors.push(`Insufficient Bellman–Ford adaptive coverage ${skill.id}`);
+  const dpFamilies = adaptiveFamilies.filter(
+    (family) => family.topicId === "dynamic-programming",
+  );
+  if (dpFamilies.length < 12)
+    errors.push("Insufficient dynamic programming adaptive families");
+  for (const skill of registry.filter(
+    (item) => item.topicId === "dynamic-programming",
+  ))
+    if (dpFamilies.filter((family) => family.skillId === skill.id).length < 2)
+      errors.push(
+        `Insufficient dynamic programming adaptive coverage ${skill.id}`,
+      );
   const treeFamilies = adaptiveFamilies.filter(
     (family) => family.topicId === "trees",
   );
