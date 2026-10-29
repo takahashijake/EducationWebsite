@@ -22,6 +22,12 @@ import { linkedListCodingExercises } from "./linked-list-coding-exercises";
 import { stackQueueCodingExercises } from "./stack-queue-coding-exercises";
 import { graphCodingExercises } from "./graph-coding-exercises";
 import { weightedCodingExercises } from "./weighted-coding-exercises";
+import { bellmanCodingExercises } from "./bellman-coding-exercises";
+import {
+  bellmanLessonMap,
+  bellmanPythonMap,
+  bellmanRetrievalQuestions,
+} from "./bellman-catalog";
 import {
   weightedLessonMap,
   weightedPythonMap,
@@ -438,6 +444,48 @@ export const skills: Skill[] = [
     ["weighted-settled-invariant", "graph-complexity"],
   ),
   define(
+    "bellman-negative-costs",
+    "Negative path costs",
+    "Add signed weights and distinguish a negative edge from a cycle.",
+    "bellman-ford",
+    ["weighted-path-costs", "graph-direction"],
+  ),
+  define(
+    "bellman-rounds",
+    "Relaxation rounds and invariants",
+    "Trace repeated complete edge scans and the V−1 bound.",
+    "bellman-ford",
+    ["weighted-relaxation", "bellman-negative-costs"],
+  ),
+  define(
+    "bellman-convergence",
+    "Early stopping and convergence",
+    "Stop only after a complete unchanged pass.",
+    "bellman-ford",
+    ["bellman-rounds"],
+  ),
+  define(
+    "bellman-cycle-detection",
+    "Reachable negative-cycle detection",
+    "Test reachable strict improvements after V−1 passes.",
+    "bellman-ford",
+    ["bellman-rounds", "graph-reachability"],
+  ),
+  define(
+    "bellman-cycle-impact",
+    "Cycle impact and path validity",
+    "Propagate cycle influence and report only valid finite paths.",
+    "bellman-ford",
+    ["bellman-cycle-detection", "graph-reachability"],
+  ),
+  define(
+    "bellman-algorithm-choice",
+    "Algorithm selection and complexity",
+    "Choose BFS, Dijkstra, or Bellman–Ford and state their assumptions.",
+    "bellman-ford",
+    ["bellman-cycle-impact", "weighted-complexity-limits"],
+  ),
+  define(
     "graph-adjacency",
     "Graph adjacency and representation",
     "Build neighbor lists and compare sparse storage.",
@@ -509,6 +557,7 @@ const lessonMap: Record<string, string[]> = {
   ...stackQueueLessonMap,
   ...graphLessonMap,
   ...weightedLessonMap,
+  ...bellmanLessonMap,
   ...treeLessonMap,
   "variables-q1": ["types"],
   "variables-q2": ["assignment"],
@@ -549,6 +598,7 @@ const lessonTopics: Record<string, string> = {
   stackqueue: "stacks-queues",
   graphs: "graphs",
   weighted: "weighted-shortest-paths",
+  bellman: "bellman-ford",
   trees: "trees",
   variables: "variables-data-types",
   operators: "operators-expressions",
@@ -862,6 +912,7 @@ export const retrievalQuestions: RetrievalQuestion[] = [
   ...stackQueueRetrievalQuestions,
   ...graphRetrievalQuestions,
   ...weightedRetrievalQuestions,
+  ...bellmanRetrievalQuestions,
   ...treeRetrievalQuestions,
 ];
 export const retrievalActivities: Activity[] = retrievalQuestions.map(
@@ -991,6 +1042,16 @@ export const weightedPythonActivities: Activity[] = weightedCodingExercises.map(
     title: exercise.title,
   }),
 );
+export const bellmanPythonActivities: Activity[] = bellmanCodingExercises.map(
+  (exercise) => ({
+    id: exercise.id,
+    source: "python",
+    skillIds: bellmanPythonMap[exercise.id] ?? [],
+    revision: exercise.revision ?? 1,
+    href: "/lessons/bellman-ford#code-lab",
+    title: exercise.title,
+  }),
+);
 export const treePythonActivities: Activity[] = treeCodingExercises.map(
   (exercise) => ({
     id: exercise.id,
@@ -1035,6 +1096,7 @@ export const activities = [
   ...stackQueuePythonActivities,
   ...graphPythonActivities,
   ...weightedPythonActivities,
+  ...bellmanPythonActivities,
   ...treePythonActivities,
   transferActivity,
   ...adaptiveActivities,

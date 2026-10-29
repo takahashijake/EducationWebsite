@@ -5,6 +5,7 @@ import { SortingComparison } from "./sorting-comparison";
 import { LinkedListVisualizer } from "./linked-list-visualizer";
 import { StackQueueVisualizer } from "./stack-queue-visualizer";
 import { GraphVisualizer } from "./graph-visualizer";
+import { BellmanFordVisualizer } from "./bellman-ford-visualizer";
 import { WeightedGraphVisualizer } from "./weighted-graph-visualizer";
 import { TreeVisualizer } from "./tree-visualizer";
 export function LessonDemonstration({
@@ -26,6 +27,8 @@ export function LessonDemonstration({
     return <StackQueueVisualizer caption={demonstration.caption} />;
   if (demonstration.kind === "tree-bst")
     return <TreeVisualizer caption={demonstration.caption} />;
+  if (demonstration.kind === "bellman-ford")
+    return <BellmanFordVisualizer caption={demonstration.caption} />;
   if (demonstration.kind === "weighted-dijkstra")
     return <WeightedGraphVisualizer caption={demonstration.caption} />;
   if (demonstration.kind === "graph-traversal")
