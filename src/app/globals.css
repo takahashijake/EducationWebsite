@@ -3141,3 +3141,7 @@ textarea:focus-visible {
 .tree-player button:focus-visible, .tree-player select:focus-visible, .tree-player input:focus-visible { outline: 3px solid #f59e0b; outline-offset: 2px; }
 @media (max-width: 650px) { .tree-main { grid-template-columns: minmax(0, 1fr); } }
 @media (prefers-reduced-motion: reduce) { .tree-player *, .tree-player *::before, .tree-player *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+.graph-compose input[type=number] { width: 100%; min-width: 0; padding: .55rem; border: 1px solid #64748b; border-radius: .4rem; background: var(--surface, #fff); color: inherit; }
+.graph-player .graph-state { min-width: 0; overflow-wrap: anywhere; }
+.graph-player .table-scroll { max-width: 100%; overflow-x: auto; }
+.graph-player .graph-prediction { max-width: 100%; }

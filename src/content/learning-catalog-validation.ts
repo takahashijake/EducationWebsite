@@ -7,6 +7,7 @@ import { sortingCodingExercises } from "./sorting-coding-exercises";
 import { linkedListCodingExercises } from "./linked-list-coding-exercises";
 import { stackQueueCodingExercises } from "./stack-queue-coding-exercises";
 import { graphCodingExercises } from "./graph-coding-exercises";
+import { weightedCodingExercises } from "./weighted-coding-exercises";
 import { treeCodingExercises } from "./tree-coding-exercises";
 import { adaptiveFamilies } from "./adaptive-families";
 import { adaptiveSkillIds } from "./adaptive-skills";
@@ -96,6 +97,7 @@ export function validateLearningCatalog(
     ...linkedListCodingExercises,
     ...stackQueueCodingExercises,
     ...graphCodingExercises,
+    ...weightedCodingExercises,
     ...treeCodingExercises,
   ]) {
     if (!activityIds.has(exercise.id))
@@ -142,6 +144,7 @@ export function validateLearningCatalog(
       "linked-lists",
       "stacks-queues",
       "graphs",
+      "weighted-shortest-paths",
       "trees",
     ].includes(item.topicId),
   )) {
@@ -240,6 +243,19 @@ export function validateLearningCatalog(
       graphFamilies.filter((family) => family.skillId === skill.id).length < 2
     )
       errors.push(`Insufficient adaptive graph coverage ${skill.id}`);
+  const weightedFamilies = adaptiveFamilies.filter(
+    (family) => family.topicId === "weighted-shortest-paths",
+  );
+  if (weightedFamilies.length < 12)
+    errors.push("Insufficient weighted adaptive families");
+  for (const skill of registry.filter(
+    (item) => item.topicId === "weighted-shortest-paths",
+  ))
+    if (
+      weightedFamilies.filter((family) => family.skillId === skill.id).length <
+      2
+    )
+      errors.push(`Insufficient weighted adaptive coverage ${skill.id}`);
   const treeFamilies = adaptiveFamilies.filter(
     (family) => family.topicId === "trees",
   );
