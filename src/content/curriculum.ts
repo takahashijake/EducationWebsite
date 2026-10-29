@@ -349,6 +349,16 @@ export const topics: Topic[] = [
     prerequisites: ["graphs", "big-o-notation"],
   },
   {
+    id: "bellman-ford",
+    slug: "bellman-ford",
+    sectionId: "algorithms",
+    title: "Bellman–Ford and Negative-Weight Paths",
+    description: "Reason about signed paths, relaxation passes, and negative cycles.",
+    order: 8,
+    status: "available",
+    prerequisites: ["graphs", "big-o-notation", "weighted-shortest-paths"],
+  },
+  {
     id: "binary-number-representation",
     slug: "binary-number-representation",
     sectionId: "architecture",

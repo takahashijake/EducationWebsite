@@ -7,6 +7,7 @@ import { sortingCodingExercises } from "./sorting-coding-exercises";
 import { linkedListCodingExercises } from "./linked-list-coding-exercises";
 import { stackQueueCodingExercises } from "./stack-queue-coding-exercises";
 import { graphCodingExercises } from "./graph-coding-exercises";
+import { bellmanCodingExercises } from "./bellman-coding-exercises";
 import { weightedCodingExercises } from "./weighted-coding-exercises";
 import { treeCodingExercises } from "./tree-coding-exercises";
 import { adaptiveFamilies } from "./adaptive-families";
@@ -98,6 +99,7 @@ export function validateLearningCatalog(
     ...stackQueueCodingExercises,
     ...graphCodingExercises,
     ...weightedCodingExercises,
+    ...bellmanCodingExercises,
     ...treeCodingExercises,
   ]) {
     if (!activityIds.has(exercise.id))
@@ -145,6 +147,7 @@ export function validateLearningCatalog(
       "stacks-queues",
       "graphs",
       "weighted-shortest-paths",
+      "bellman-ford",
       "trees",
     ].includes(item.topicId),
   )) {
@@ -256,6 +259,18 @@ export function validateLearningCatalog(
       2
     )
       errors.push(`Insufficient weighted adaptive coverage ${skill.id}`);
+  const bellmanFamilies = adaptiveFamilies.filter(
+    (family) => family.topicId === "bellman-ford",
+  );
+  if (bellmanFamilies.length < 12)
+    errors.push("Insufficient Bellman–Ford adaptive families");
+  for (const skill of registry.filter(
+    (item) => item.topicId === "bellman-ford",
+  ))
+    if (
+      bellmanFamilies.filter((family) => family.skillId === skill.id).length < 2
+    )
+      errors.push(`Insufficient Bellman–Ford adaptive coverage ${skill.id}`);
   const treeFamilies = adaptiveFamilies.filter(
     (family) => family.topicId === "trees",
   );

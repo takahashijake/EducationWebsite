@@ -11,9 +11,9 @@ import { lessons } from "@/content/lessons";
 import { evaluateAnswer } from "@/lib/quiz";
 
 describe("curriculum contracts", () => {
-  it("has eight sections and all 47 curriculum topics, with unique stable IDs and slugs", () => {
+  it("has eight sections and all 48 curriculum topics, with unique stable IDs and slugs", () => {
     expect(sections).toHaveLength(8);
-    expect(topics).toHaveLength(47);
+    expect(topics).toHaveLength(48);
     expect(new Set(sections.map((section) => section.id)).size).toBe(
       sections.length,
     );
@@ -21,6 +21,7 @@ describe("curriculum contracts", () => {
     expect(new Set(topics.map((topic) => topic.slug)).size).toBe(topics.length);
     expect(availableTopics.map((topic) => topic.id).sort()).toEqual([
       "arrays-strings",
+      "bellman-ford",
       "big-o-notation",
       "binary-number-representation",
       "conditionals",

@@ -14,6 +14,7 @@ const examples: Record<string, string[]> = {
   "stacks-queues": ["B\nA", "A", ""],
   graphs: [""],
   "weighted-shortest-paths": [""],
+  "bellman-ford": [""],
   trees: ["", "", ""],
   "operators-expressions": ["26 False", "3.4\n3\n2", "True"],
   conditionals: ["ready", "Continue", "Member, below minimum"],

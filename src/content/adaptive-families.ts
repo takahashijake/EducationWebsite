@@ -4,6 +4,7 @@ import { sortingAdaptiveFamilies } from "./sorting-adaptive-families";
 import { linkedListAdaptiveFamilies } from "./linked-list-adaptive-families";
 import { stackQueueAdaptiveFamilies } from "./stack-queue-adaptive-families";
 import { graphAdaptiveFamilies } from "./graph-adaptive-families";
+import { bellmanAdaptiveFamilies } from "./bellman-adaptive-families";
 import { weightedAdaptiveFamilies } from "./weighted-adaptive-families";
 import { treeAdaptiveFamilies } from "./tree-adaptive-families";
 export type AdaptiveDifficulty = "foundation" | "application";
@@ -78,6 +79,7 @@ export const adaptiveFamilies: AdaptiveFamily[] = [
   ...stackQueueAdaptiveFamilies,
   ...graphAdaptiveFamilies,
   ...weightedAdaptiveFamilies,
+  ...bellmanAdaptiveFamilies,
   ...treeAdaptiveFamilies,
   family(
     "comparison-branch",
