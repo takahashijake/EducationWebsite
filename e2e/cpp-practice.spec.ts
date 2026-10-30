@@ -3,6 +3,107 @@ import { cppExercises } from "../src/content/cpp-exercises";
 import { cppSolutions } from "../tests/cpp-solutions";
 import { normalizeOutput } from "../src/lib/coding-evaluation";
 
+test("beginner deep link exposes a persistent workspace and runs a real program", async ({
+  page,
+}) => {
+  test.setTimeout(180000);
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.goto("/lessons/variables-data-types#cpp-variables-output");
+  const panel = page.locator("#cpp-variables-output");
+  await expect(panel).toHaveJSProperty("open", true);
+  const editor = panel.getByRole("textbox", { name: /C\+\+ source/ });
+  await expect(editor).toBeVisible();
+  await editor.fill(cppSolutions["cpp-variables-output"]);
+  await panel.getByLabel("Program input (stdin)").fill("7\n");
+  await panel.getByRole("button", { name: "Run", exact: true }).click();
+  await expect(panel.getByRole("status").last()).toContainText(
+    "Successful execution",
+    { timeout: 90000 },
+  );
+  await expect(
+    panel.getByRole("heading", { name: "Standard output" }).locator(".."),
+  ).toContainText("Learners: 7");
+  await panel.getByRole("button", { name: "Submit solution" }).click();
+  await expect(panel.getByRole("status").last()).toContainText(
+    "3 of 3 public tests passed",
+    { timeout: 90000 },
+  );
+  await panel.locator(":scope > summary").click();
+  await panel.locator(":scope > summary").click();
+  await expect(editor).toContainText('"Learners: "');
+  await page.reload();
+  await expect(panel).toHaveJSProperty("open", true);
+  await expect(editor).toContainText('"Learners: "');
+  await panel.getByText(/Attempt history/).click();
+  await expect(
+    panel.getByText(/Previously passed all public tests/),
+  ).toBeVisible();
+  await page.goto("/practice/cpp");
+  await page.getByRole("link", { name: /Read and Print an Integer/ }).click();
+  await expect(panel).toHaveJSProperty("open", true);
+  await page.goBack();
+  await expect(
+    page.getByRole("heading", { name: "Learn it. Write it. Run it." }),
+  ).toBeVisible();
+  await page.goForward();
+  await expect(panel).toHaveJSProperty("open", true);
+  await expect(editor).toContainText('"Learners: "');
+  await page.goto("/lessons/operators-expressions");
+  const nextPanel = page.locator("#cpp-rectangle-area");
+  await nextPanel.locator(":scope > summary").click();
+  await expect(
+    nextPanel.getByRole("textbox", { name: /C\+\+ source/ }),
+  ).toContainText("int area = 0;");
+  await page.goBack();
+  await expect(panel).toHaveJSProperty("open", true);
+  await expect(editor).toContainText('"Learners: "');
+  expect(errors).toEqual([]);
+});
+
+test("coding task explains JavaScript dependency when scripts are unavailable", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+  await page.goto("/lessons/variables-data-types#cpp-variables-output");
+  const panel = page.locator("#cpp-variables-output");
+  await panel.locator(":scope > summary").click();
+  await expect(panel.getByText(/Enable JavaScript and reload/)).toBeVisible();
+  await context.close();
+});
+
+test("compiler download failure gives recovery guidance and a fresh Run succeeds", async ({
+  page,
+  context,
+}) => {
+  test.setTimeout(180000);
+  await context.route("**/cpp/runtime/clang.wasm", (route) => route.abort());
+  await page.goto("/lessons/variables-data-types#cpp-variables-output");
+  const panel = page.locator("#cpp-variables-output");
+  await panel
+    .getByRole("textbox", { name: /C\+\+ source/ })
+    .fill(cppSolutions["cpp-variables-output"]);
+  await panel.getByLabel("Program input (stdin)").fill("7\n");
+  await panel.getByRole("button", { name: "Run", exact: true }).click();
+  await expect(panel.getByRole("status").last()).toContainText(
+    "Runtime unavailable",
+    { timeout: 90000 },
+  );
+  await expect(
+    panel.getByText(/Check your connection and browser console/),
+  ).toBeVisible();
+  await context.unroute("**/cpp/runtime/clang.wasm");
+  await panel.getByRole("button", { name: "Run", exact: true }).click();
+  await expect(panel.getByRole("status").last()).toContainText(
+    "Successful execution",
+    { timeout: 90000 },
+  );
+  await expect(
+    panel.getByRole("heading", { name: "Standard output" }).locator(".."),
+  ).toContainText("Learners: 7");
+});
+
 test.setTimeout(180000);
 test("complete a C++ lesson practice flow, repair a boundary, restore a draft, and return to the pathway", async ({
   page,
@@ -17,7 +118,7 @@ test("complete a C++ lesson practice flow, repair a boundary, restore a draft, a
   await page.goto("/practice/cpp");
   await page.getByRole("link", { name: /Sum with a for loop/ }).click();
   const panel = page.locator("#cpp-inclusive-sum");
-  await panel.locator(":scope > summary").click();
+  await expect(panel).toHaveJSProperty("open", true);
   const editor = panel.getByRole("textbox", { name: /C\+\+ source/ });
   await expect(editor).toBeVisible();
   await expect(panel.locator(".cm-lineNumbers")).toBeVisible();
@@ -61,7 +162,7 @@ test("complete a C++ lesson practice flow, repair a boundary, restore a draft, a
     ),
   ).toBeNull();
   await page.reload();
-  await panel.locator(":scope > summary").click();
+  await expect(panel).toHaveJSProperty("open", true);
   await expect(editor).toContainText("i <= n");
   await panel
     .getByText("Attempt history (3 most recent)", { exact: true })

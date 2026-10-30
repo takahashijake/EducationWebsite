@@ -60,6 +60,10 @@ Six browser Python Code Labs teach signed adjacency, strict relaxation, repeated
 
 Six browser Python Code Labs progress from repeated subproblems through memoization and tabulation to minimum coin counts, coin reconstruction, and zero-one knapsack with item identities. Six permanent skills add twelve focused retrieval questions and twelve deterministic adaptive families. Public tests and assisted successes follow the existing conservative evidence rules. Python still runs only in a disposable browser Worker. See [the V1.5 implementation review](docs/v1.5-review.md) for contracts, limits, verification, and remaining risks.
 
+## V1.6 Interactive learning reliability
+
+Coding exercise deep links open the intended C++ workspace. Collapsing and reopening a task keeps its editor and unsaved interaction state; saved drafts and attempt history still use the existing V1 browser records. The first activity, **Read and Print an Integer**, now names the operation and explains the sequence from editing through input, Run, actual output, Submit, and feedback. Runtime and editor failures give recovery instructions. A build-time `NEXT_PUBLIC_APP_BASE_PATH` supports same-origin subpath deployment for Next.js pages and assets, the C++ compiler Worker, and the Python Worker and harness. See [the V1.6 review](docs/v1.6-review.md) for verified workflows and remaining limits.
+
 ## Delivered learning experience
 
 Every lesson begins with objectives, connects explanations to a demonstration and worked examples, and ends with misconceptions, takeaways, and three explanatory knowledge checks. The six lessons after Variables also provide prediction or debugging exercises. Incorrect answers explain the underlying reasoning; retry clears the current attempt.
@@ -82,6 +86,29 @@ npm run dev
 ```
 
 Open `http://localhost:3000`. Production: `npm run build`, then `npm start`. No credentials or environment variables are required.
+
+On Windows, use Node.js 20.19+ and PowerShell in the repository directory. `npm ci --include=dev`, `npm run dev`, and the verification commands below use the same npm scripts; Python 3 on PATH is needed for authoring tests. Browser execution uses self-hosted assets prepared by npm and does not require a local C++ or Python compiler.
+
+### Deploy below a URL path
+
+Set `NEXT_PUBLIC_APP_BASE_PATH` **before building** to the path where the app is served, for example `/learning`. It must begin with `/`, have no trailing slash, and contain only ordinary URL path segments. Set the same value when starting the production server. The default is the origin root. Next.js embeds `basePath` in the client build, so changing this value requires a new build. The proxy must forward the complete prefixed path to Next.js without stripping the prefix. Do not set `assetPrefix` for this same-origin deployment.
+
+```bash
+NEXT_PUBLIC_APP_BASE_PATH=/learning npm run build
+NEXT_PUBLIC_APP_BASE_PATH=/learning npm run start -- --port 3102
+```
+
+PowerShell:
+
+```powershell
+$env:NEXT_PUBLIC_APP_BASE_PATH = '/learning'
+npm run build
+npm run start -- --port 3102
+```
+
+Open `/learning/lessons/variables-data-types#cpp-variables-output`. In browser DevTools Network, check that CSS and JavaScript load under `/learning/_next/`, the C++ Worker under `/learning/cpp/worker.js`, and Python assets under `/learning/python/0.29.3/` plus `/learning/python-harness.py`. A first C++ run downloads about 95 MB of same-origin compiler assets. Worker or WebAssembly requests must return successfully and retain their JavaScript or `application/wasm` content types. The C++ Worker response must retain its restrictive Content Security Policy. If an editor remains on its loading message, enable JavaScript, inspect Console and failed Network requests, then reload. If a runtime load fails, check the path, proxy, and connection and retry Run. Saved drafts are browser-local and scoped to the origin, so switching to a different origin does not transfer them automatically.
+
+For isolated browser verification, `npm run test:e2e` starts its own production server on port 3101. Build with the path above and run `E2E_BASE_PATH=/learning E2E_PORT=3102 npx playwright test e2e/subpath.spec.ts` to test a subpath build. Windows PowerShell can set those two environment variables with `$env:` before invoking `npx playwright`.
 
 ## Architecture
 

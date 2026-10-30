@@ -88,7 +88,12 @@ export function CppPlayground({
     if (busy || !practiceReady) return;
     const token = ++generation.current;
     setEvidence(undefined);
-    setActive({ source, stdin, message: "Loading C++ compiler..." });
+    setActive({
+      source,
+      stdin,
+      message:
+        "Loading C++ compiler and preparing compilation… The first run downloads about 95 MB of same-origin assets.",
+    });
     let results: ProgramResult[];
     try {
       results = await engine.execute(
@@ -107,7 +112,7 @@ export function CppPlayground({
               stdin,
               message:
                 event.state === "compiling"
-                  ? "Compiling C++ (first download is about 95 MB)..."
+                  ? "Loading C++ compiler and compiling… The first run downloads about 95 MB of same-origin assets."
                   : `Running${mode === "submit" ? ` case ${(event.caseIndex ?? 0) + 1} of ${exercise.tests.length}` : " program"}...`,
             });
         },
@@ -160,8 +165,13 @@ export function CppPlayground({
         technique you used or certify mastery. After passing, explain why your
         solution works and try an extra boundary input.
       </p>
+      <p>
+        Edit the starter below, type example input in Program input, then select
+        Run. Compare Standard output with Example output above. Select Submit
+        solution to check every public case and see test feedback.
+      </p>
       <label className="editor-label" id={`${exercise.id}-label`}>
-        C++ source
+        Your editable C++ code
       </label>
       <CodeEditor
         label={`${exercise.title} C++ source`}
@@ -171,6 +181,11 @@ export function CppPlayground({
         }}
         onRun={() => void execute("run")}
       />
+      <noscript>
+        <p role="alert">
+          Enable JavaScript and reload to edit or run C++ code in this browser.
+        </p>
+      </noscript>
       <p className="editor-help">
         Ctrl+Enter / Cmd+Enter: Run. Standard undo, redo, and selection
         shortcuts work. Tab moves to the next control. Source limit: 24,000
@@ -253,6 +268,13 @@ export function CppPlayground({
         <div className="execution-panel">
           <h4>{labels[first.kind]}</h4>
           <pre tabIndex={0}>{first.error}</pre>
+          {first.kind === "loading-error" && (
+            <p>
+              Check your connection and browser console, then select Run or
+              Submit solution to retry. The compiler is served from this
+              application.
+            </p>
+          )}
         </div>
       )}
       {visible?.mode === "run" && first && (

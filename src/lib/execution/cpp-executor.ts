@@ -9,6 +9,7 @@ import {
   type ExecutionRequest,
   type ProgramResult,
 } from "./types";
+import { appResourceUrl } from "../app-resource-url";
 
 export type WorkerPort = Pick<
   Worker,
@@ -29,7 +30,7 @@ export class CppExecutor implements ExecutionEngine {
   private generation = 0;
   constructor(
     private createWorker: () => WorkerPort = () =>
-      new Worker("/cpp/worker.js", { type: "module" }),
+      new Worker(appResourceUrl("/cpp/worker.js"), { type: "module" }),
   ) {}
 
   private job(

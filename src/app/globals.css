@@ -71,6 +71,18 @@
   color: #4d5d58;
   border-right: 1px solid var(--line);
 }
+.plain-code-editor {
+  display: block;
+  width: 100%;
+  min-height: 320px;
+  padding: 12px;
+  font: 14px Consolas, monospace;
+}
+.plain-code-editor:focus-visible,
+.cpp-exercise > summary:focus-visible {
+  outline: 3px solid #a17126;
+  outline-offset: 2px;
+}
 .cpp-playground .editor-help,
 .practice-boundary {
   font-size: 12px;

@@ -1,4 +1,5 @@
 import config from "../../../python-runtime.json";
+import { appResourceUrl } from "../app-resource-url";
 import {
   DEFAULT_DEADLINE_MS,
   INITIALIZATION_DEADLINE_MS,
@@ -40,7 +41,7 @@ export class PythonExecutor implements ExecutionEngine {
   private active?: ActiveJob;
   constructor(
     private createWorker: () => WorkerPort = () =>
-      new Worker("/python-worker.js"),
+      new Worker(appResourceUrl("/python-worker.js")),
   ) {}
   execute(
     request: ExecutionRequest,
@@ -236,7 +237,7 @@ export class PythonExecutor implements ExecutionEngine {
         worker.postMessage({
           type: "init",
           id,
-          assetBase: `/python/${config.version}/`,
+          assetBase: appResourceUrl(`/python/${config.version}/`),
           version: config.version,
         });
       } catch (error) {
