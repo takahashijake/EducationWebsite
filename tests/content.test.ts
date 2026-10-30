@@ -26,6 +26,7 @@ describe("curriculum contracts", () => {
       "binary-number-representation",
       "conditionals",
       "debugging",
+      "dynamic-programming",
       "functions",
       "graphs",
       "linked-lists",

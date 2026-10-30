@@ -23,6 +23,8 @@ import { stackQueueCodingExercises } from "./stack-queue-coding-exercises";
 import { graphCodingExercises } from "./graph-coding-exercises";
 import { weightedCodingExercises } from "./weighted-coding-exercises";
 import { bellmanCodingExercises } from "./bellman-coding-exercises";
+import { dpCodingExercises } from "./dp-coding-exercises";
+import { dpLessonMap, dpPythonMap, dpRetrievalQuestions } from "./dp-catalog";
 import {
   bellmanLessonMap,
   bellmanPythonMap,
@@ -486,6 +488,48 @@ export const skills: Skill[] = [
     ["bellman-cycle-impact", "weighted-complexity-limits"],
   ),
   define(
+    "dp-overlapping-subproblems",
+    "Overlapping subproblems",
+    "Identify repeated states and when caching helps.",
+    "dynamic-programming",
+    ["base-cases", "sequence-traversal"],
+  ),
+  define(
+    "dp-state-recurrence",
+    "State and recurrence",
+    "Derive base cases and dependencies from a state definition.",
+    "dynamic-programming",
+    ["dp-overlapping-subproblems"],
+  ),
+  define(
+    "dp-memoization",
+    "Top-down memoization",
+    "Cache complete states and return immediately on a hit.",
+    "dynamic-programming",
+    ["dp-state-recurrence"],
+  ),
+  define(
+    "dp-tabulation-order",
+    "Bottom-up tabulation",
+    "Fill cells only after their dependencies exist.",
+    "dynamic-programming",
+    ["dp-state-recurrence", "sequence-boundaries"],
+  ),
+  define(
+    "dp-coin-change",
+    "Minimum coin change",
+    "Distinguish unreachable states, compare candidates, and reconstruct coins.",
+    "dynamic-programming",
+    ["dp-tabulation-order"],
+  ),
+  define(
+    "dp-knapsack-reconstruction",
+    "Zero-one knapsack",
+    "Use previous-row dependencies and reconstruct unique item identities.",
+    "dynamic-programming",
+    ["dp-tabulation-order"],
+  ),
+  define(
     "graph-adjacency",
     "Graph adjacency and representation",
     "Build neighbor lists and compare sparse storage.",
@@ -558,6 +602,7 @@ const lessonMap: Record<string, string[]> = {
   ...graphLessonMap,
   ...weightedLessonMap,
   ...bellmanLessonMap,
+  ...dpLessonMap,
   ...treeLessonMap,
   "variables-q1": ["types"],
   "variables-q2": ["assignment"],
@@ -599,6 +644,7 @@ const lessonTopics: Record<string, string> = {
   graphs: "graphs",
   weighted: "weighted-shortest-paths",
   bellman: "bellman-ford",
+  dp: "dynamic-programming",
   trees: "trees",
   variables: "variables-data-types",
   operators: "operators-expressions",
@@ -913,6 +959,7 @@ export const retrievalQuestions: RetrievalQuestion[] = [
   ...graphRetrievalQuestions,
   ...weightedRetrievalQuestions,
   ...bellmanRetrievalQuestions,
+  ...dpRetrievalQuestions,
   ...treeRetrievalQuestions,
 ];
 export const retrievalActivities: Activity[] = retrievalQuestions.map(
@@ -1052,6 +1099,16 @@ export const bellmanPythonActivities: Activity[] = bellmanCodingExercises.map(
     title: exercise.title,
   }),
 );
+export const dpPythonActivities: Activity[] = dpCodingExercises.map(
+  (exercise) => ({
+    id: exercise.id,
+    source: "python",
+    skillIds: dpPythonMap[exercise.id] ?? [],
+    revision: exercise.revision ?? 1,
+    href: "/lessons/dynamic-programming#code-lab",
+    title: exercise.title,
+  }),
+);
 export const treePythonActivities: Activity[] = treeCodingExercises.map(
   (exercise) => ({
     id: exercise.id,
@@ -1097,6 +1154,7 @@ export const activities = [
   ...graphPythonActivities,
   ...weightedPythonActivities,
   ...bellmanPythonActivities,
+  ...dpPythonActivities,
   ...treePythonActivities,
   transferActivity,
   ...adaptiveActivities,

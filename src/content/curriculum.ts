@@ -335,7 +335,8 @@ export const topics: Topic[] = [
     description:
       "Reuse solutions to overlapping subproblems with memoization or tables.",
     order: 6,
-    status: "planned",
+    status: "available",
+    prerequisites: ["recursion", "arrays-strings", "big-o-notation"],
   },
   {
     id: "weighted-shortest-paths",
@@ -353,7 +354,8 @@ export const topics: Topic[] = [
     slug: "bellman-ford",
     sectionId: "algorithms",
     title: "Bellman–Ford and Negative-Weight Paths",
-    description: "Reason about signed paths, relaxation passes, and negative cycles.",
+    description:
+      "Reason about signed paths, relaxation passes, and negative cycles.",
     order: 8,
     status: "available",
     prerequisites: ["graphs", "big-o-notation", "weighted-shortest-paths"],
