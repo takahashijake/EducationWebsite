@@ -40,7 +40,7 @@ self.onmessage = async ({ data }) => {
       python = await self.loadPyodide({ indexURL: data.assetBase });
       if (python.version !== data.version)
         throw new Error("Runtime version does not match the application pin");
-      const response = await fetch("/python-harness.py");
+      const response = await fetch(new URL("python-harness.py", self.location.href));
       if (!response.ok)
         throw new Error(`Harness download failed (${response.status})`);
       await python.runPythonAsync(await response.text());

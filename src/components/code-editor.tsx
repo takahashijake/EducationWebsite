@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { EditorState } from "@codemirror/state";
 import {
   EditorView,
@@ -31,52 +31,66 @@ export function CodeEditor({
 }) {
   const host = useRef<HTMLDivElement>(null);
   const editor = useRef<EditorView>(null);
+  const [ready, setReady] = useState(false);
+  const [failed, setFailed] = useState(false);
   const callbacks = useRef({ onChange, onRun });
   useEffect(() => {
     callbacks.current = { onChange, onRun };
   }, [onChange, onRun]);
   useEffect(() => {
-    const view = new EditorView({
-      parent: host.current!,
-      state: EditorState.create({
-        doc: value,
-        extensions: [
-          lineNumbers(),
-          highlightActiveLine(),
-          highlightActiveLineGutter(),
-          history(),
-          indentOnInput(),
-          bracketMatching(),
-          syntaxHighlighting(defaultHighlightStyle),
-          cpp(),
-          EditorState.changeFilter.of(
-            (transaction) => transaction.newDoc.length <= SOURCE_LIMIT,
-          ),
-          keymap.of([
-            {
-              key: "Mod-Enter",
-              run: () => {
-                callbacks.current.onRun();
-                return true;
+    let view: EditorView;
+    try {
+      view = new EditorView({
+        parent: host.current!,
+        state: EditorState.create({
+          doc: value,
+          extensions: [
+            lineNumbers(),
+            highlightActiveLine(),
+            highlightActiveLineGutter(),
+            history(),
+            indentOnInput(),
+            bracketMatching(),
+            syntaxHighlighting(defaultHighlightStyle),
+            cpp(),
+            EditorState.changeFilter.of(
+              (transaction) => transaction.newDoc.length <= SOURCE_LIMIT,
+            ),
+            keymap.of([
+              {
+                key: "Mod-Enter",
+                run: () => {
+                  callbacks.current.onRun();
+                  return true;
+                },
               },
-            },
-            ...defaultKeymap,
-            ...historyKeymap,
-          ]),
-          EditorView.contentAttributes.of({
-            "aria-label": label,
-            "aria-multiline": "true",
-            role: "textbox",
-            spellcheck: "false",
-          }),
-          EditorView.updateListener.of((update) => {
-            if (update.docChanged)
-              callbacks.current.onChange(update.state.doc.toString());
-          }),
-        ],
-      }),
-    });
+              ...defaultKeymap,
+              ...historyKeymap,
+            ]),
+            EditorView.contentAttributes.of({
+              "aria-label": label,
+              "aria-multiline": "true",
+              role: "textbox",
+              spellcheck: "false",
+            }),
+            EditorView.updateListener.of((update) => {
+              if (update.docChanged)
+                callbacks.current.onChange(update.state.doc.toString());
+            }),
+          ],
+        }),
+      });
+    } catch (error) {
+      console.error("C++ editor initialization failed; using plain editor.", error);
+      host.current?.replaceChildren();
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setFailed(true);
+      return;
+    }
     editor.current = view;
+    // The editor is mounted imperatively, so the loading message follows that mount.
+    setFailed(false);
+    setReady(true);
     return () => {
       view.destroy();
       editor.current = null;
@@ -91,5 +105,38 @@ export function CodeEditor({
         changes: { from: 0, to: view.state.doc.length, insert: value },
       });
   }, [value]);
-  return <div className="code-editor" ref={host} />;
+  return (
+    <>
+      <div className="code-editor" ref={host} />
+      {!ready && !failed && (
+        <p role="status">
+          Loading editable C++ code editor… If this message remains, enable
+          JavaScript, reload, and check failed page resources in the browser
+          Network panel.
+        </p>
+      )}
+      {failed && (
+        <div role="alert">
+          <p>
+            The enhanced editor could not load. Use the plain editor below, or
+            reload this page to retry.
+          </p>
+          <textarea
+            aria-label={label}
+            className="code-editor plain-code-editor"
+            spellCheck={false}
+            value={value}
+            maxLength={SOURCE_LIMIT}
+            onChange={(event) => onChange(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+                event.preventDefault();
+                onRun();
+              }
+            }}
+          />
+        </div>
+      )}
+    </>
+  );
 }

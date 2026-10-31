@@ -44,7 +44,7 @@ export const cppExercises: CodingExercise[] = [
     revision: 1,
     language: "cpp",
     topicId: "variables-data-types",
-    title: "Report the learner count",
+    title: "Read and Print an Integer",
     difficulty: "Beginner",
     objectives: [
       "Declare an integer variable.",
@@ -60,7 +60,7 @@ export const cppExercises: CodingExercise[] = [
         'The variable apples stores 4. The stream joins the label, value, and newline to print "Apples: 4".',
     },
     statement:
-      'Read one integer count from 0 to 1000. Print "Learners: " followed by that value and a newline.',
+      'In the editable C++ code below, read one whole number (0 to 1000) into count. Replace the comment with code that prints "Learners: ", the value of count, and a newline. Then enter 7 in Program input, select Run, and compare Standard output (your actual output) with the example output. Select Submit solution to check all public cases.',
     starter: program(
       "    int count = 0;\n    std::cin >> count;\n    // Print the label and count.",
     ),

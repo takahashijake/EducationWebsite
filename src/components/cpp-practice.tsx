@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef } from "react";
 import {
   cppExercises,
   exercisesForTopic,
@@ -12,15 +12,20 @@ import { CppPlayground } from "./cpp-playground";
 import { useProgress } from "./progress-provider";
 
 function ExercisePanel({ exercise }: { exercise: CodingExercise }) {
-  const [open, setOpen] = useState(false);
+  const panel = useRef<HTMLDetailsElement>(null);
+  useEffect(() => {
+    const exposeAnchor = () => {
+      if (window.location.hash !== `#${exercise.id}`) return;
+      if (panel.current) panel.current.open = true;
+    };
+    exposeAnchor();
+    window.addEventListener("hashchange", exposeAnchor);
+    return () => window.removeEventListener("hashchange", exposeAnchor);
+  }, [exercise.id]);
   const { practice } = useProgress();
   const entry = practice[exercise.id];
   return (
-    <details
-      className="cpp-exercise"
-      id={exercise.id}
-      onToggle={(event) => setOpen(event.currentTarget.open)}
-    >
+    <details ref={panel} className="cpp-exercise" id={exercise.id}>
       <summary>
         <span>{exercise.title}</span>
         <span className="exercise-badge">
@@ -64,7 +69,7 @@ function ExercisePanel({ exercise }: { exercise: CodingExercise }) {
             </div>
           </div>
         ))}
-        {open && <CppPlayground exercise={exercise} />}
+        <CppPlayground exercise={exercise} />
         <p>
           <Link href="/practice/cpp">Explore the C++ practice collection</Link>{" "}
           / <Link href="/roadmap">Return to the learning pathway</Link>

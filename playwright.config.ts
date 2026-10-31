@@ -1,10 +1,13 @@
 import { defineConfig, devices } from "@playwright/test";
+const port = Number(process.env.E2E_PORT ?? 3101);
+const origin = `http://127.0.0.1:${port}`;
+const basePath = process.env.E2E_BASE_PATH ?? "";
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: false,
   workers: 1,
   reporter: "list",
-  use: { baseURL: "http://127.0.0.1:3000", trace: "retain-on-failure" },
+  use: { baseURL: origin, trace: "retain-on-failure" },
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
     {
@@ -13,9 +16,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm run start",
-    url: "http://127.0.0.1:3000",
-    reuseExistingServer: !process.env.CI,
+    command: `npm run start -- --port ${port}`,
+    url: `${origin}${basePath}/`,
+    reuseExistingServer: false,
     timeout: 60000,
   },
 });
