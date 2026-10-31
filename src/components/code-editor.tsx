@@ -80,14 +80,16 @@ export function CodeEditor({
           ],
         }),
       });
-    } catch {
-      // CodeMirror initialization is an external DOM operation; expose a usable fallback if it fails.
+    } catch (error) {
+      console.error("C++ editor initialization failed; using plain editor.", error);
+      host.current?.replaceChildren();
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setFailed(true);
       return;
     }
     editor.current = view;
     // The editor is mounted imperatively, so the loading message follows that mount.
+    setFailed(false);
     setReady(true);
     return () => {
       view.destroy();
