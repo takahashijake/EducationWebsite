@@ -4,16 +4,35 @@ import Link from "next/link";
 import type { Lesson } from "@/content/types";
 import { PracticeExercise } from "./practice-exercise";
 import { KnowledgeCheck } from "./knowledge-check";
+import { lessonNeighbors, topics, topicHref } from "@/content/curriculum";
+import { recommend } from "@/lib/learning-evidence";
+import { useLearningEvidence } from "./use-learning-evidence";
 
 export function LessonPractice({ lesson }: { lesson: Lesson }) {
+  const { evidence, ready: evidenceReady } = useLearningEvidence();
   const [results, setResults] = useState<Record<string, boolean>>({});
   const [quiz, setQuiz] = useState<boolean[]>();
+  const [now] = useState(() => Date.now());
   const exercises = lesson.exercises ?? [];
   const total = exercises.length + lesson.questions.length;
   const answered = Object.keys(results).length + (quiz?.length ?? 0);
   const correct =
     Object.values(results).filter(Boolean).length +
     (quiz?.filter(Boolean).length ?? 0);
+  const topic = topics.find((item) => item.id === lesson.topicId)!;
+  const nextTopic = lessonNeighbors(topic).next;
+  const recommendation =
+    evidenceReady && answered > 0 && evidence.length > 0
+      ? recommend(evidence, now)[0]
+      : undefined;
+  const nextHref =
+    recommendation?.href ??
+    (nextTopic ? topicHref(nextTopic) : "/projects/number-guessing");
+  const nextReason =
+    recommendation?.reason ??
+    (nextTopic
+      ? `Continue with the published ${nextTopic.title} lesson; this lesson's checks are limited evidence.`
+      : "Apply published concepts in the guided project; lesson completion is reading progress.");
   return (
     <>
       {!!exercises.length && (
@@ -66,6 +85,17 @@ export function LessonPractice({ lesson }: { lesson: Lesson }) {
         <p>
           <Link href="/learning">
             View learning insights and targeted practice →
+          </Link>
+        </p>
+        <p className="next-guidance">
+          <strong>Recommended next:</strong> {nextReason}{" "}
+          <Link className="button secondary" href={nextHref}>
+            {recommendation
+              ? "Start recommended practice"
+              : nextTopic
+                ? `Continue to ${nextTopic.title}`
+                : "Try the guided project"}{" "}
+            →
           </Link>
         </p>
         {correct < total && (

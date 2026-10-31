@@ -12,6 +12,8 @@ import { dpCodingExercises } from "./dp-coding-exercises";
 import { weightedCodingExercises } from "./weighted-coding-exercises";
 import { treeCodingExercises } from "./tree-coding-exercises";
 import { adaptiveFamilies } from "./adaptive-families";
+import { generateAdaptiveInstance } from "./adaptive-families";
+import { misconceptions } from "./misconceptions";
 import { adaptiveSkillIds } from "./adaptive-skills";
 import {
   activities,
@@ -188,6 +190,59 @@ export function validateLearningCatalog(
       activity.href !== `/practice/adaptive?skill=${family.skillId}`
     )
       errors.push(`Invalid adaptive activity ${family.id}`);
+  }
+  for (const item of Object.values(misconceptions)) {
+    const family = adaptiveFamilies.find(
+      (candidate) => candidate.id === item.familyId,
+    );
+    const followUp = adaptiveFamilies.find(
+      (candidate) => candidate.id === item.followUpFamilyId,
+    );
+    if (
+      misconceptions[item.id] !== item ||
+      !item.description.trim() ||
+      !item.correction.trim() ||
+      !item.contrast.trim() ||
+      family?.skillId !== item.skillId ||
+      family?.revision !== item.revision ||
+      followUp?.skillId !== item.skillId ||
+      followUp?.id === family?.id ||
+      !item.followUpCaseTag.trim() ||
+      !Array.from({ length: 64 }, (_, seed) =>
+        generateAdaptiveInstance(followUp.id, followUp.revision, seed),
+      ).some((question) => question?.caseTag === item.followUpCaseTag) ||
+      family?.reviewHref !== item.reviewHref
+    )
+      errors.push(`Invalid misconception catalog entry ${item.id}`);
+  }
+  for (const family of adaptiveFamilies.filter(
+    (item) => item.id === "comparison-policy",
+  )) {
+    for (let seed = 0; seed < 64; seed++) {
+      const question = generateAdaptiveInstance(
+        family.id,
+        family.revision,
+        seed,
+      );
+      if (!question) {
+        errors.push(`Missing misconception instance ${seed}`);
+        continue;
+      }
+      for (const [index, option] of question.options.entries()) {
+        const item = option.misconceptionId
+          ? misconceptions[option.misconceptionId]
+          : undefined;
+        if (
+          (option.misconceptionId &&
+            (!item ||
+              item.familyId !== family.id ||
+              item.skillId !== family.skillId ||
+              index === question.correctIndex)) ||
+          (option.text.includes("==") && option.misconceptionId)
+        )
+          errors.push(`Invalid misconception mapping ${question.id}:${index}`);
+      }
+    }
   }
   if (
     new Set(adaptiveSkillIds).size !== adaptiveSkillIds.length ||

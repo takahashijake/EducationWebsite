@@ -6,15 +6,17 @@ import {
   evaluateAdaptiveAnswer,
 } from "@/content/adaptive-families";
 import { skills } from "@/content/learning-catalog";
+import { possibleMisconception } from "@/content/misconceptions";
 import { SESSION_LENGTH } from "@/lib/adaptive-session";
 import {
   relatedAdaptiveSkill,
   selectAdaptiveProblem,
   type AdaptiveSelection,
 } from "@/lib/adaptive-selection";
-import { diagnose, makeEvidence } from "@/lib/learning-evidence";
+import { diagnose, makeEvidence, recommend } from "@/lib/learning-evidence";
 import { useAdaptiveSession } from "./use-adaptive-session";
 import { useLearningEvidence } from "./use-learning-evidence";
+import { useMisconceptionSignals } from "./use-misconception-signals";
 
 export function AdaptivePractice({ initialSkill }: { initialSkill?: string }) {
   const {
@@ -23,6 +25,11 @@ export function AdaptivePractice({ initialSkill }: { initialSkill?: string }) {
     record,
     storageError: evidenceStorageError,
   } = useLearningEvidence();
+  const {
+    record: recordSignal,
+    counterevidence,
+    storageError: signalStorageError,
+  } = useMisconceptionSignals();
   const {
     store,
     ready: sessionReady,
@@ -39,6 +46,7 @@ export function AdaptivePractice({ initialSkill }: { initialSkill?: string }) {
   const [answer, setAnswer] = useState<number>();
   const [submitted, setSubmitted] = useState(false);
   const [hintLevel, setHintLevel] = useState(0);
+  const [recoverySource, setRecoverySource] = useState<string>();
   const [logicalNow, setLogicalNow] = useState(() => Date.now());
   const attempted = useRef(false);
   const feedback = useRef<HTMLDivElement>(null);
@@ -108,17 +116,26 @@ export function AdaptivePractice({ initialSkill }: { initialSkill?: string }) {
       : null;
   const correct = evaluation?.correct === true;
   const independentCorrect = correct && hintLevel === 0;
+  const possible =
+    problem && answer !== undefined
+      ? possibleMisconception(problem, answer)
+      : null;
   const related = problem ? relatedAdaptiveSkill(problem.skillId) : undefined;
+  const recoveryNext =
+    submitted && recoverySource
+      ? recommend(evidence, logicalNow)[0]
+      : undefined;
 
   function advance(
-    mode: "related" | "recommended" | "variation" | "manual",
+    mode: "related" | "recommended" | "variation" | "manual" | "recovery",
     requested?: string,
   ) {
+    if (mode === "recovery" && store.session.total >= SESSION_LENGTH) restart();
     const nextStore = problem ? present(problem.id) : store;
     const override =
       mode === "related" || mode === "manual"
         ? requested
-        : mode === "variation"
+        : mode === "variation" || mode === "recovery"
           ? problem?.skillId
           : undefined;
     const currentTime = Date.now();
@@ -130,8 +147,20 @@ export function AdaptivePractice({ initialSkill }: { initialSkill?: string }) {
       recent: nextStore.recent,
       manualSkill: override,
       currentSkill: mode === "variation" ? problem?.skillId : undefined,
+      excludeFamilyId: mode === "recovery" ? problem?.familyId : undefined,
+      requiredCaseTag:
+        mode === "recovery" ? possible?.followUpCaseTag : undefined,
     });
-    setSelection(next);
+    setRecoverySource(mode === "recovery" ? problem?.id : undefined);
+    setSelection(
+      next && mode === "recovery"
+        ? {
+            ...next,
+            reason:
+              "This different question checks the equality boundary independently after your previous answer.",
+          }
+        : next,
+    );
     setSelectionAttempted(true);
     setAnswer(undefined);
     setSubmitted(false);
@@ -152,22 +181,42 @@ export function AdaptivePractice({ initialSkill }: { initialSkill?: string }) {
       return;
     attempted.current = true;
     setSubmitted(true);
+    setLogicalNow(Date.now());
     const outcome = correct
       ? hintLevel > 0
         ? "assisted-correct"
         : "independent-correct"
       : "incorrect";
+    const accepted = submit(
+      problem.id,
+      problem.skillId,
+      outcome,
+      hintLevel > 0,
+    );
+    const attemptId = crypto.randomUUID();
     if (
-      submit(problem.id, problem.skillId, outcome, hintLevel > 0) &&
+      accepted &&
       (outcome === "independent-correct" || outcome === "incorrect")
     )
       record([
         makeEvidence(
           `adaptive-${problem.familyId}`,
           outcome === "independent-correct",
-          crypto.randomUUID(),
+          attemptId,
         ),
       ]);
+    if (accepted && outcome === "incorrect" && hintLevel === 0 && possible)
+      recordSignal({
+        misconceptionId: possible.id,
+        revision: possible.revision,
+        activityId: `adaptive-${problem.familyId}`,
+        instanceId: problem.id,
+        attemptId,
+        choiceIndex: answer!,
+        at: new Date().toISOString(),
+      });
+    if (accepted && outcome === "independent-correct" && recoverySource)
+      counterevidence(recoverySource, problem.id, new Date().toISOString());
   }
   const session = store.session;
   const weak = diagnoses.find(
@@ -274,7 +323,9 @@ export function AdaptivePractice({ initialSkill }: { initialSkill?: string }) {
           {!submitted && hintLevel > 0 && (
             <div className="adaptive-hint">
               {problem.hints.slice(0, hintLevel).map((hint, index) => (
-                <p key={index}><strong>Hint {index + 1}:</strong> {hint}</p>
+                <p key={index}>
+                  <strong>Hint {index + 1}:</strong> {hint}
+                </p>
               ))}
             </div>
           )}
@@ -295,6 +346,25 @@ export function AdaptivePractice({ initialSkill }: { initialSkill?: string }) {
                   <strong>Authored note for this choice:</strong>{" "}
                   {evaluation.misconception}
                 </p>
+              )}
+              {!correct && possible && (
+                <div aria-label="Possible misconception recovery">
+                  <p>
+                    <strong>One possible reason:</strong> {possible.description}{" "}
+                    One answer cannot establish how you were thinking.
+                  </p>
+                  <p>
+                    <strong>Core idea:</strong> {possible.correction}
+                  </p>
+                  <p>
+                    <strong>Contrast:</strong> {possible.contrast}
+                  </p>
+                  <p>
+                    <Link href={possible.reviewHref}>
+                      Review this concept in the lesson →
+                    </Link>
+                  </p>
+                </div>
               )}
               <p>{problem.explanation}</p>
               {!correct && (
@@ -328,6 +398,30 @@ export function AdaptivePractice({ initialSkill }: { initialSkill?: string }) {
                   evidence; it does not prove a particular misconception.
                 </p>
               )}
+              {correct && recoverySource && (
+                <p>
+                  {independentCorrect
+                    ? "This different question adds independent counterevidence, but does not prove the earlier idea is gone."
+                    : "This hinted answer is practice only; try another question independently when ready."}
+                </p>
+              )}
+              {recoveryNext && (
+                <p>
+                  <strong>Recommended next:</strong> {recoveryNext.reason}{" "}
+                  <Link href={recoveryNext.href}>Open the activity →</Link>
+                </p>
+              )}
+            </div>
+          )}
+          {submitted && possible && (
+            <div className="playground-actions">
+              <button
+                type="button"
+                className="button"
+                onClick={() => advance("recovery")}
+              >
+                Try a different independent check
+              </button>
             </div>
           )}
           {session.total < SESSION_LENGTH && (
@@ -388,7 +482,7 @@ export function AdaptivePractice({ initialSkill }: { initialSkill?: string }) {
           </p>
         </section>
       )}
-      {(sessionStorageError || evidenceStorageError) && (
+      {(sessionStorageError || evidenceStorageError || signalStorageError) && (
         <p role="alert">
           Browser storage is unavailable. Practice remains usable in this tab
           for this session.
