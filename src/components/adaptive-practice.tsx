@@ -7,7 +7,7 @@ import {
 } from "@/content/adaptive-families";
 import { skills } from "@/content/learning-catalog";
 import { possibleMisconception } from "@/content/misconceptions";
-import { SESSION_LENGTH } from "@/lib/adaptive-session";
+import { presentAdaptiveInstance, SESSION_LENGTH } from "@/lib/adaptive-session";
 import {
   relatedAdaptiveSkill,
   selectAdaptiveProblem,
@@ -125,6 +125,19 @@ export function AdaptivePractice({ initialSkill }: { initialSkill?: string }) {
     submitted && recoverySource
       ? recommend(evidence, logicalNow)[0]
       : undefined;
+  const projectedStore = problem ? presentAdaptiveInstance(store, problem.id) : store;
+  const recoveryAvailable =
+    submitted && problem && possible
+      ? selectAdaptiveProblem({
+          records: evidence,
+          now: logicalNow,
+          seed: projectedStore.counter,
+          recent: projectedStore.recent,
+          manualSkill: problem.skillId,
+          excludeFamilyId: problem.familyId,
+          requiredCaseTag: possible.followUpCaseTag,
+        }) !== null
+      : false;
 
   function advance(
     mode: "related" | "recommended" | "variation" | "manual" | "recovery",
@@ -413,7 +426,7 @@ export function AdaptivePractice({ initialSkill }: { initialSkill?: string }) {
               )}
             </div>
           )}
-          {submitted && possible && (
+          {submitted && possible && recoveryAvailable && (
             <div className="playground-actions">
               <button
                 type="button"

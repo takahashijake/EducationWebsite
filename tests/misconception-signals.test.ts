@@ -68,6 +68,25 @@ describe("authored misconception recovery", () => {
     expect(next?.instance.skillId).toBe("comparisons");
     expect(next?.instance.caseTag).toBe("equality-boundary");
   });
+  it("does not promise a recovery when all qualifying recent cases are exhausted", () => {
+    const recent = Array.from({ length: 64 }, (_, seed) =>
+      generateAdaptiveInstance("comparison-branch", 1, seed),
+    )
+      .filter((question) => question?.caseTag === "equality-boundary")
+      .map((question) => question!.id);
+    expect(recent.length).toBeLessThanOrEqual(32);
+    expect(
+      selectAdaptiveProblem({
+        records: [],
+        now: Date.parse(at),
+        seed: 0,
+        recent,
+        manualSkill: "comparisons",
+        excludeFamilyId: "comparison-policy",
+        requiredCaseTag: "equality-boundary",
+      }),
+    ).toBeNull();
+  });
   it("stores bounded validated signals and rejects stale, malformed and obsolete records", () => {
     let store = emptyMisconceptions();
     for (let seed = 0; seed < MISCONCEPTION_LIMIT + 4; seed++)
