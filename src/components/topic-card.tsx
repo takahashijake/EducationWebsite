@@ -26,7 +26,9 @@ export function TopicCard({ topic }: { topic: Topic }) {
               Available
             </>
           ) : (
-            "Planned"
+            <>
+              <span>Planned</span> · preview only
+            </>
           )}
         </span>
         {topic.status === "available" && <Icon name="arrow" size={16} />}

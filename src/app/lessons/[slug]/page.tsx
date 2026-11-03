@@ -6,6 +6,7 @@ import {
   sections,
   topics,
   topicHref,
+  publishedAlternative,
 } from "@/content/curriculum";
 import { lessons } from "@/content/lessons";
 import { LessonLayout } from "@/components/lesson-layout";
@@ -44,6 +45,7 @@ export default async function TopicPage({
   const prerequisites = (topic.prerequisites ?? []).map((id) =>
     topics.find((item) => item.id === id)!,
   );
+  const alternative = publishedAlternative(topic);
   return (
     <div className="shell planned-shell">
       <nav aria-label="Breadcrumb" className="breadcrumbs">
@@ -83,9 +85,11 @@ export default async function TopicPage({
           </div>
         )}
         <div className="hero-actions">
-          <Link href="/lessons/variables-data-types" className="button">
-            Try an available lesson <Icon name="arrow" size={16} />
-          </Link>
+          {alternative && (
+            <Link href={topicHref(alternative)} className="button">
+              Study {alternative.title} instead <Icon name="arrow" size={16} />
+            </Link>
+          )}
           <Link href={`/roadmap#${section.id}`} className="text-link">
             Back to roadmap
           </Link>

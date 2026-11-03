@@ -26,6 +26,8 @@ export type SelectionInput = {
   recent?: readonly string[];
   manualSkill?: string;
   currentSkill?: string;
+  excludeFamilyId?: string;
+  requiredCaseTag?: string;
 };
 const supported = new Set(adaptiveSkillIds);
 const validNow = (now: number) => (Number.isFinite(now) && now >= 0 ? now : 0);
@@ -96,7 +98,9 @@ export function selectAdaptiveProblem(
       ),
     );
   const familyOptions = adaptiveFamilies.filter(
-    (item) => item.skillId === recommendation.skillId,
+    (item) =>
+      item.skillId === recommendation.skillId &&
+      item.id !== input.excludeFamilyId,
   );
   if (!familyOptions.length) return null;
   const last = recent.at(-1) ?? "";
@@ -115,7 +119,11 @@ export function selectAdaptiveProblem(
         family.revision,
         (input.seed + offset) & 0x7fffffff,
       );
-      if (candidate && !recent.includes(candidate.id)) {
+      if (
+        candidate &&
+        !recent.includes(candidate.id) &&
+        (!input.requiredCaseTag || candidate.caseTag === input.requiredCaseTag)
+      ) {
         instance = candidate;
         break;
       }
@@ -123,7 +131,8 @@ export function selectAdaptiveProblem(
     if (instance) break;
   }
   // A bounded recent list normally leaves unseen variants; if it does not, reuse the oldest.
-  instance ??= safeInstance(ranked[0].id, ranked[0].revision, input.seed);
+  if (!input.requiredCaseTag)
+    instance ??= safeInstance(ranked[0].id, ranked[0].revision, input.seed);
   if (!instance) return null;
   const skillTitle =
     skills.find((item) => item.id === recommendation.skillId)?.title ??

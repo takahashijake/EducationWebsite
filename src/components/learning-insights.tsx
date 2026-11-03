@@ -7,9 +7,17 @@ import { diagnose, recommend } from "@/lib/learning-evidence";
 import { useProgress } from "./progress-provider";
 import { useLearningEvidence } from "./use-learning-evidence";
 import { adaptiveSkillIds } from "@/content/adaptive-skills";
+import { misconceptions } from "@/content/misconceptions";
+import { useMisconceptionSignals } from "./use-misconception-signals";
 export function LearningInsights() {
   const { completedIds, ready: progressReady } = useProgress();
   const { evidence, ready, storageError, clear } = useLearningEvidence();
+  const {
+    signals,
+    ready: signalsReady,
+    storageError: signalsStorageError,
+    clear: clearSignals,
+  } = useMisconceptionSignals();
   const [confirmClear, setConfirmClear] = useState(false);
   const keepButton = useRef<HTMLButtonElement>(null);
   useEffect(() => {
@@ -30,12 +38,18 @@ export function LearningInsights() {
     () => recommend(evidence, now),
     [evidence, now],
   );
-  if (!ready || !progressReady)
+  if (!ready || !progressReady || !signalsReady)
     return <p role="status">Loading your local learning profile…</p>;
   const next = recommendations[0];
   const due = summaries.filter(
     (entry) => entry.dueAt && Date.parse(entry.dueAt) <= now,
   );
+  const latestSignal =
+    [...signals].reverse().find((signal) => !signal.counterevidenceAt) ??
+    signals.at(-1);
+  const possible = latestSignal
+    ? misconceptions[latestSignal.misconceptionId]
+    : undefined;
   const publishedTopics = availableTopics;
   return (
     <div className="insights-grid">
@@ -208,13 +222,59 @@ export function LearningInsights() {
       </section>
       <section className="insight-panel">
         <h2>What should I work on next?</h2>
+        {possible && latestSignal && (
+          <div role="note">
+            <p>
+              <strong>Possible boundary misunderstanding:</strong>{" "}
+              {possible.description}
+            </p>
+            <p>
+              Your answer to {activityById[latestSignal.activityId]?.title} on{" "}
+              <time dateTime={latestSignal.at}>
+                {new Date(latestSignal.at).toLocaleDateString()}
+              </time>{" "}
+              suggested this possibility. One choice cannot establish your
+              reasoning.
+            </p>
+            {latestSignal.counterevidenceAt ? (
+              <p>
+                A later independent question in a different form was correct on{" "}
+                <time dateTime={latestSignal.counterevidenceAt}>
+                  {new Date(
+                    latestSignal.counterevidenceAt,
+                  ).toLocaleDateString()}
+                </time>
+                . That is useful counterevidence, not proof the earlier
+                misunderstanding is gone.
+              </p>
+            ) : (
+              <Link
+                className="button"
+                href={`/practice/adaptive?skill=${possible.skillId}`}
+              >
+                Try an independent{" "}
+                {skills
+                  .find((item) => item.id === possible.skillId)
+                  ?.title.toLowerCase()}{" "}
+                check →
+              </Link>
+            )}
+          </div>
+        )}
         {next && (
           <div>
             <strong>
               {skills.find((skill) => skill.id === next.skillId)?.title}
             </strong>
             <p>{next.reason}</p>
-            <Link className="button" href={next.href}>
+            <Link
+              className={
+                possible && !latestSignal?.counterevidenceAt
+                  ? undefined
+                  : "button"
+              }
+              href={next.href}
+            >
               Start recommended practice →
             </Link>
             {adaptiveSkillIds.includes(next.skillId) && (
@@ -263,8 +323,8 @@ export function LearningInsights() {
       <section className="insight-panel">
         <h2>Your data</h2>
         <p>
-          Evidence stays in this browser. You can clear it without removing
-          lesson completion or code drafts.
+          Evidence and possible misconception notes stay in this browser. You
+          can clear them without removing lesson completion or code drafts.
         </p>
         {confirmClear ? (
           <div role="group" aria-label="Confirm evidence clearing">
@@ -274,6 +334,7 @@ export function LearningInsights() {
             <button
               onClick={() => {
                 clear();
+                clearSignals();
                 setConfirmClear(false);
               }}
             >
@@ -285,7 +346,7 @@ export function LearningInsights() {
             Clear learning evidence…
           </button>
         )}
-        {storageError && (
+        {(storageError || signalsStorageError) && (
           <p role="alert">
             Browser storage is unavailable. Evidence is kept for this session
             only.

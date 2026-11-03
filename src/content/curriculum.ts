@@ -582,6 +582,24 @@ export function topicsForSection(sectionId: string) {
 export function topicHref(topic: Topic) {
   return `/lessons/${topic.slug}`;
 }
+/** A reachable lesson near a planned topic, with published prerequisites preferred. */
+export function publishedAlternative(topic: Topic): Topic | undefined {
+  const queue = [...(topic.prerequisites ?? [])];
+  const seen = new Set<string>();
+  while (queue.length) {
+    const id = queue.shift()!;
+    if (seen.has(id)) continue;
+    seen.add(id);
+    const candidate = topics.find((item) => item.id === id);
+    if (candidate?.status === "available") return candidate;
+    if (candidate) queue.push(...(candidate.prerequisites ?? []));
+  }
+  return (
+    topicsForSection(topic.sectionId).find(
+      (item) => item.status === "available",
+    ) ?? availableTopics[0]
+  );
+}
 
 // Stable IDs define the core path independently of other published sections.
 export const programmingPath = [

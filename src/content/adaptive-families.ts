@@ -9,7 +9,11 @@ import { dpAdaptiveFamilies } from "./dp-adaptive-families";
 import { weightedAdaptiveFamilies } from "./weighted-adaptive-families";
 import { treeAdaptiveFamilies } from "./tree-adaptive-families";
 export type AdaptiveDifficulty = "foundation" | "application";
-export type AdaptiveOption = { text: string; misconception?: string };
+export type AdaptiveOption = {
+  text: string;
+  misconception?: string;
+  misconceptionId?: string;
+};
 export type AdaptiveInstance = {
   id: string;
   familyId: string;
@@ -26,11 +30,12 @@ export type AdaptiveInstance = {
   explanation: string;
   hints: [string, string];
   workedStep: string;
+  caseTag?: string;
 };
 type Choice = AdaptiveOption & { correct?: true };
 type Draft = Pick<
   AdaptiveInstance,
-  "prompt" | "context" | "explanation" | "hints" | "workedStep"
+  "prompt" | "context" | "explanation" | "hints" | "workedStep" | "caseTag"
 > & { choices: [Choice, Choice, Choice] };
 type Random = {
   int: (min: number, max: number) => number;
@@ -46,9 +51,14 @@ export type AdaptiveFamily = {
   generate: (random: Random) => Draft;
 };
 const right = (text: string): Choice => ({ text, correct: true });
-const wrong = (text: string, misconception: string): Choice => ({
+const wrong = (
+  text: string,
+  misconception: string,
+  misconceptionId?: string,
+): Choice => ({
   text,
   misconception,
+  misconceptionId,
 });
 const range = (start: number, stop: number, step = 1) => {
   const values: number[] = [];
@@ -97,6 +107,7 @@ export const adaptiveFamilies: AdaptiveFamily[] = [
       const noun = r.pick(["score", "temperature", "stock"]);
       return {
         prompt: "Which branch runs?",
+        caseTag: value === boundary ? "equality-boundary" : undefined,
         context: `${noun} = ${value}\nif ${noun} ${operator} ${boundary}:\n    print('accept')\nelse:\n    print('wait')`,
         choices: [
           runs
@@ -143,11 +154,13 @@ export const adaptiveFamilies: AdaptiveFamily[] = [
             : wrong(
                 `${noun} >= ${boundary}`,
                 "This includes equality, contrary to a strictly greater-than rule.",
+                "comparison-includes-equality",
               ),
           inclusive
             ? wrong(
                 `${noun} > ${boundary}`,
                 "This excludes the boundary, although ‘at least’ includes equality.",
+                "comparison-excludes-equality",
               )
             : right(`${noun} > ${boundary}`),
           wrong(
@@ -756,14 +769,16 @@ export function generateAdaptiveInstance(
     reviewHref: item.reviewHref,
     prompt: draft.prompt,
     context: draft.context,
-    options: choices.map(({ text, misconception }) => ({
+    options: choices.map(({ text, misconception, misconceptionId }) => ({
       text,
       misconception,
+      misconceptionId,
     })),
     correctIndex,
     explanation: draft.explanation,
     hints: draft.hints,
     workedStep: draft.workedStep,
+    caseTag: draft.caseTag,
   };
 }
 

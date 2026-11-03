@@ -64,6 +64,10 @@ Six browser Python Code Labs progress from repeated subproblems through memoizat
 
 Coding exercise deep links open the intended C++ workspace. Collapsing and reopening a task keeps its editor and unsaved interaction state; saved drafts and attempt history still use the existing V1 browser records. The first activity, **Read and Print an Integer**, now names the operation and explains the sequence from editing through input, Run, actual output, Submit, and feedback. Runtime and editor failures give recovery instructions. A build-time `NEXT_PUBLIC_APP_BASE_PATH` supports same-origin subpath deployment for Next.js pages and assets, the C++ compiler Worker, and the Python Worker and harness. See [the V1.6 review](docs/v1.6-review.md) for verified workflows and remaining limits.
 
+## V1.7 Misconception-aware learning
+
+The Comparisons adaptive skill now offers authored, uncertainty-aware recovery for two boundary-rule mistakes, followed by a different independent question. A separate bounded browser record preserves possible misconception signals without changing V1 evidence or completion semantics. Learning Insights explains the latest signal and any later independent counterevidence. Lesson checks offer a contextual next action, and planned topic previews point to a published alternative. See [the V1.7 review](docs/v1.7-review.md) for scope, tests, and limitations.
+
 ## Delivered learning experience
 
 Every lesson begins with objectives, connects explanations to a demonstration and worked examples, and ends with misconceptions, takeaways, and three explanatory knowledge checks. The six lessons after Variables also provide prediction or debugging exercises. Incorrect answers explain the underlying reasoning; retry clears the current attempt.
