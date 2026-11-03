@@ -17,6 +17,7 @@ import { ProgressIndicator } from "./progress-indicator";
 import { Icon } from "./icon";
 import { LearningPath } from "./learning-path";
 import { CppPractice } from "./cpp-practice";
+import { InvariantJourney } from "./invariant-journey";
 import { exercisesForTopic } from "@/content/cpp-exercises";
 const anchors = [
   ["objectives", "Learning objectives"],
@@ -59,6 +60,9 @@ export function LessonLayout({
             ))}
             {!!lesson.codingExercises?.length && (
               <a href="#coding-practice">Write and test Python</a>
+            )}
+            {topic.id === "weighted-shortest-paths" && (
+              <a href="#invariant-journey">Dijkstra invariant journey</a>
             )}
             {lesson.exercises?.length ? (
               <a href="#practice">Prediction practice</a>
@@ -111,6 +115,12 @@ export function LessonLayout({
               ))}
             </ul>
           </section>
+          {topic.id === "weighted-shortest-paths" && (
+            <p className="next-guidance">
+              Apply this lesson in the five-stage Dijkstra invariant journey.{" "}
+              <a href="#invariant-journey">Start the guided journey →</a>
+            </p>
+          )}
           <section id="understanding">
             <h2>Start with the idea</h2>
             {lesson.introduction.map((text) => (
@@ -191,16 +201,46 @@ export function LessonLayout({
             </ul>
           </section>
           <LessonPractice key={topic.id} lesson={lesson} />
+          {topic.id === "weighted-shortest-paths" &&
+            lesson.codingExercises?.find(
+              (item) => item.id === "weighted-dijkstra",
+            ) && (
+              <div id="coding-practice">
+                <InvariantJourney
+                  exercise={lesson.codingExercises.find(
+                    (item) => item.id === "weighted-dijkstra",
+                  )!}
+                />
+              </div>
+            )}
           {!!lesson.codingExercises?.length && (
-            <div id="coding-practice">
-              <div id="code-lab">
-                {lesson.codingExercises.map((exercise) => (
-                  <CodeLab
-                    key={exercise.id}
-                    exercise={exercise}
-                    workspaceId={lessonWorkspaceId(topic.id, exercise.id)}
-                  />
-                ))}
+            <div
+              id={
+                topic.id === "weighted-shortest-paths"
+                  ? "other-code-labs"
+                  : "coding-practice"
+              }
+            >
+              <div
+                id={
+                  topic.id === "weighted-shortest-paths"
+                    ? undefined
+                    : "code-lab"
+                }
+              >
+                {lesson.codingExercises
+                  .filter(
+                    (exercise) =>
+                      topic.id !== "weighted-shortest-paths" ||
+                      exercise.id !== "weighted-dijkstra",
+                  )
+                  .map((exercise) => (
+                    <CodeLab
+                      key={exercise.id}
+                      exercise={exercise}
+                      workspaceId={lessonWorkspaceId(topic.id, exercise.id)}
+                    />
+                  ))}
               </div>
             </div>
           )}

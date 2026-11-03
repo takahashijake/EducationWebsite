@@ -3156,4 +3156,15 @@ textarea:focus-visible {
 .graph-compose input[type=number] { width: 100%; min-width: 0; padding: .55rem; border: 1px solid #64748b; border-radius: .4rem; background: var(--surface, #fff); color: inherit; }
 .graph-player .graph-state { min-width: 0; overflow-wrap: anywhere; }
 .graph-player .table-scroll { max-width: 100%; overflow-x: auto; }
+.invariant-journey { border: 1px solid var(--border, #c8d2d9); border-radius: 1rem; padding: clamp(1rem, 2.5vw, 1.75rem); margin: 2rem 0; min-width: 0; }
+.invariant-journey > section { margin: 1.5rem 0; padding: 1rem; border: 1px solid var(--border, #c8d2d9); border-radius: .75rem; }
+.journey-steps { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1rem 0; }
+.journey-steps button { padding: .55rem .75rem; border: 1px solid var(--border, #c8d2d9); border-radius: .5rem; background: transparent; cursor: pointer; }
+.journey-steps button[aria-current="step"] { background: #e4f1f6; border-color: #32758f; font-weight: 700; }
+.journey-choice { display: block; margin: .55rem 0; }
+.journey-graph ul { display: grid; grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr)); gap: .25rem .75rem; padding-left: 1.4rem; }
+.journey-transfer label { display: block; margin: .7rem 0 .25rem; }
+.journey-transfer input:not([type="radio"]), .journey-transfer textarea, .invariant-journey textarea { display: block; width: 100%; max-width: 100%; padding: .6rem; border: 1px solid var(--border, #c8d2d9); border-radius: .4rem; }
+.journey-feedback { margin: 1rem 0; padding: .8rem 1rem; border-left: 4px solid #32758f; background: #edf6f8; overflow-wrap: anywhere; }
+.invariant-journey button:focus-visible, .invariant-journey input:focus-visible, .invariant-journey textarea:focus-visible, .invariant-journey a:focus-visible { outline: 3px solid #f59e0b; outline-offset: 2px; }
 .graph-player .graph-prediction { max-width: 100%; }

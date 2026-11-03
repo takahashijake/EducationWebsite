@@ -68,6 +68,10 @@ Coding exercise deep links open the intended C++ workspace. Collapsing and reope
 
 The Comparisons adaptive skill now offers authored, uncertainty-aware recovery for two boundary-rule mistakes, followed by a different independent question. A separate bounded browser record preserves possible misconception signals without changing V1 evidence or completion semantics. Learning Insights explains the latest signal and any later independent counterevidence. Lesson checks offer a contextual next action, and planned topic previews point to a published alternative. See [the V1.7 review](docs/v1.7-review.md) for scope, tests, and limitations.
 
+## V1.8 Integrated invariant transfer
+
+The Weighted Graphs and Shortest Paths lesson now includes a Dijkstra settled-distance journey: predict a valid minimum selection, write and self-review the proof, use the existing `weighted-dijkstra` Python Code Lab, solve a different directed network, and return for a negative-edge case after 24 hours. Journey progress uses a separate bounded browser record. Python drafts and public-test evidence keep their existing IDs and semantics. The website does not send revisit reminders or grade free-text explanations. See [the V1.8 review](docs/v1.8-review.md) for the educational design and limits.
+
 ## Delivered learning experience
 
 Every lesson begins with objectives, connects explanations to a demonstration and worked examples, and ends with misconceptions, takeaways, and three explanatory knowledge checks. The six lessons after Variables also provide prediction or debugging exercises. Incorrect answers explain the underlying reasoning; retry clears the current attempt.
@@ -273,7 +277,7 @@ This path is not an application dependency. See [the V0.3 review](docs/v0.3-revi
 - Desktop/mobile Chromium coverage does not certify cross-browser, screen-reader, or educational effectiveness. Independent human accessibility and teaching review remain valuable.
 - No authentication, payments, external AI APIs, backend, CMS, credentials, or cloud sync.
 
-**Recommended next direction:** arrange human teaching and accessibility review of Dynamic Programming, then use observed state-and-recurrence mistakes to guide focused V1.6 remediation. See [the V1.5 review](docs/v1.5-review.md) for current scope and risks.
+**Recommended next direction:** evaluate the Dijkstra invariant journey with learners and assistive-technology users, then use those findings before extending the pattern to Dynamic Programming. See [the V1.8 review](docs/v1.8-review.md) for current scope and risks.
 
 Python language references used during authoring: [Errors and Exceptions](https://docs.python.org/3/tutorial/errors.html), [Defining Functions](https://docs.python.org/3/tutorial/controlflow.html#defining-functions), and [RecursionError](https://docs.python.org/3/library/exceptions.html#RecursionError). Actual examples are checked with the local Python version recorded in the review.
 

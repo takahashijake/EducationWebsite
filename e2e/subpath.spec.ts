@@ -84,6 +84,11 @@ test("subpath pages hydrate, style, and load both same-origin execution runtimes
   await expect(
     lab.getByLabel("Standard output", { exact: true }),
   ).toContainText("python subpath ready");
+  await page.goto(`${base}/lessons/weighted-shortest-paths`);
+  const journey = page.getByRole("region", { name: "Dijkstra invariant transfer journey" });
+  await expect(journey).toBeVisible();
+  await journey.getByRole("button", { name: /2. Explain/ }).click();
+  await expect(journey.getByLabel("Your explanation")).toBeVisible();
   expect(css.some((path) => path.startsWith(`${base}/_next/`))).toBe(true);
   expect(cacheWarnings.length).toBeLessThanOrEqual(1);
   if (cacheWarnings.length)
