@@ -41,11 +41,15 @@ export function CodeLab({
   workspaceId,
   carryFrom,
   createEngine = () => new PythonExecutor(),
+  onPublicCheck,
 }: {
   exercise: CodingExercise;
   workspaceId: string;
   carryFrom?: { workspaceId: string; title: string };
   createEngine?: () => ExecutionEngine;
+  onPublicCheck?: (
+    result: { source: string; passed: boolean; assisted: boolean } | null,
+  ) => void;
 }) {
   const id = useId();
   const { record } = useLearningEvidence();
@@ -64,6 +68,8 @@ export function CodeLab({
   const [confirm, setConfirm] = useState<"reset" | "carry">();
   const engine = useRef<ExecutionEngine | undefined>(undefined);
   const sequence = useRef(0);
+  const previousSource = useRef(workspace.source);
+  const previousWorkspaceId = useRef(workspaceId);
   const confirmButton = useRef<HTMLButtonElement>(null);
   const editor = useRef<HTMLTextAreaElement>(null);
   const busy =
@@ -79,16 +85,32 @@ export function CodeLab({
     if (confirm) confirmButton.current?.focus();
   }, [confirm]);
   // A cross-tab edit invalidates displayed execution evidence, without writing it back.
-  useEffect(
-    () => () => {
-      sequence.current++;
-      engine.current?.cancel();
-    },
-    [workspace.source],
-  );
+  useEffect(() => {
+    const activeSequence = sequence;
+    const activeEngine = engine;
+    const changed =
+      previousSource.current !== workspace.source ||
+      previousWorkspaceId.current !== workspaceId;
+    previousSource.current = workspace.source;
+    previousWorkspaceId.current = workspaceId;
+    const frame = changed
+      ? requestAnimationFrame(() => {
+          setState("idle");
+          setResult(undefined);
+          setStreams({ stdout: "", stderr: "" });
+          onPublicCheck?.(null);
+        })
+      : 0;
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      activeSequence.current++;
+      activeEngine.current?.cancel();
+    };
+  }, [workspace.source, workspaceId, onPublicCheck]);
   const clearEvidence = () => {
     sequence.current++;
     engine.current?.cancel();
+    onPublicCheck?.(null);
     setState("idle");
     setResult(undefined);
     setStreams({ stdout: "", stderr: "" });
@@ -99,7 +121,9 @@ export function CodeLab({
   };
   const execute = async (tests: boolean) => {
     if (!workspace.ready || busy) return;
+    onPublicCheck?.(null);
     const requestId = ++sequence.current;
+    const sourceAtStart = workspace.source;
     engine.current ??= createEngine();
     setResult(undefined);
     setStreams({ stdout: "", stderr: "" });
@@ -125,21 +149,32 @@ export function CodeLab({
           }));
       },
     );
-    if (sequence.current === requestId) {
+    if (
+      sequence.current === requestId &&
+      workspace.currentSource() === sourceAtStart
+    ) {
       setResult(answer);
       setStreams({ stdout: answer.stdout, stderr: answer.stderr });
       const unique = new Map(answer.tests.map((row) => [row.id, row.status]));
       const allPassed = exercise.tests.every(
         (test) => unique.get(test.id) === "passed",
       );
-      if (
+      const completeCheck =
         tests &&
-        activityById[exercise.id] &&
         (answer.kind === "success" || answer.kind === "test-failure") &&
         (answer.kind === "success") === allPassed &&
         answer.tests.length === exercise.tests.length &&
         unique.size === exercise.tests.length &&
-        exercise.tests.every((test) => unique.has(test.id)) &&
+        exercise.tests.every((test) => unique.has(test.id));
+      if (completeCheck)
+        onPublicCheck?.({
+          source: sourceAtStart,
+          passed: allPassed,
+          assisted: revealedHints > 0 || referenceViewed,
+        });
+      if (
+        completeCheck &&
+        activityById[exercise.id] &&
         (!allPassed || (revealedHints === 0 && !referenceViewed))
       ) {
         record([makeEvidence(exercise.id, allPassed, crypto.randomUUID())]);
@@ -277,6 +312,7 @@ export function CodeLab({
           onClick={() => {
             sequence.current++;
             engine.current?.cancel();
+            onPublicCheck?.(null);
             setState("cancelled");
             setResult({
               kind: "cancelled",

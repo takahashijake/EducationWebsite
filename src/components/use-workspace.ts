@@ -55,11 +55,16 @@ export function useWorkspace(id: string | undefined, starter: string) {
     },
     [key, id],
   );
+  const currentSource = useCallback(() => {
+    if (!id) return starter;
+    return parseWorkspace(read(key), id)?.source ?? starter;
+  }, [id, key, starter]);
   return {
     source: saved?.source ?? starter,
     hasSaved: !!saved,
     ready: raw !== null,
     storageError: writeFailed || fallback.has(key),
     save,
+    currentSource,
   };
 }

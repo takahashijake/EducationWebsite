@@ -1,4 +1,11 @@
-import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { CodeLab } from "@/components/code-lab";
@@ -142,11 +149,13 @@ describe("instructional Code Lab", () => {
       dispose: vi.fn(),
     };
     const user = userEvent.setup();
+    const onPublicCheck = vi.fn();
     render(
       <CodeLab
         exercise={exercise}
         workspaceId="test:late-success"
         createEngine={() => engine}
+        onPublicCheck={onPublicCheck}
       />,
     );
     await user.click(screen.getByRole("button", { name: "Run Tests" }));
@@ -161,7 +170,110 @@ describe("instructional Code Lab", () => {
       });
     });
     expect(localStorage.getItem(EVIDENCE_KEY)).toBeNull();
+    expect(onPublicCheck).not.toHaveBeenCalledWith(
+      expect.objectContaining({ passed: true }),
+    );
     expect(screen.getByText("Execution cancelled")).toBeInTheDocument();
+  });
+  it("reports a current public pass and withdraws it after source edits", async () => {
+    const onPublicCheck = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <CodeLab
+        exercise={exercise}
+        workspaceId="test:journey-pass"
+        createEngine={() =>
+          engineWith({
+            ...successful,
+            tests: exercise.tests.map((test) => ({
+              id: test.id,
+              status: "passed",
+            })),
+          })
+        }
+        onPublicCheck={onPublicCheck}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Run Tests" }));
+    expect(onPublicCheck).toHaveBeenCalledWith({
+      source: exercise.starter,
+      passed: true,
+      assisted: false,
+    });
+    await user.type(screen.getByLabelText("Python source"), "# edit");
+    expect(onPublicCheck).toHaveBeenLastCalledWith(null);
+  });
+  it("withdraws a public pass when the workspace changes but source text matches", async () => {
+    const onPublicCheck = vi.fn();
+    const engine = engineWith({
+      ...successful,
+      tests: exercise.tests.map((test) => ({ id: test.id, status: "passed" })),
+    });
+    const props = { exercise, createEngine: () => engine, onPublicCheck };
+    const { rerender } = render(
+      <CodeLab {...props} workspaceId="test:workspace-one" />,
+    );
+    await userEvent
+      .setup()
+      .click(screen.getByRole("button", { name: "Run Tests" }));
+    expect(onPublicCheck).toHaveBeenLastCalledWith(
+      expect.objectContaining({ passed: true }),
+    );
+    onPublicCheck.mockClear();
+    rerender(<CodeLab {...props} workspaceId="test:workspace-two" />);
+    await waitFor(() => expect(onPublicCheck).toHaveBeenLastCalledWith(null));
+    expect(
+      within(screen.getByRole("region", { name: "Test result" })).getByText(
+        /Tests have not run for this code/,
+      ),
+    ).toBeInTheDocument();
+  });
+  it("discards a late public pass after another tab changes the workspace", async () => {
+    let finish!: (result: ExecutionResult) => void;
+    const onPublicCheck = vi.fn();
+    const engine = {
+      execute: vi.fn(
+        () =>
+          new Promise<ExecutionResult>((resolve) => {
+            finish = resolve;
+          }),
+      ),
+      cancel: vi.fn(),
+      dispose: vi.fn(),
+    };
+    const id = "test:cross-tab-running";
+    const user = userEvent.setup();
+    render(
+      <CodeLab
+        exercise={exercise}
+        workspaceId={id}
+        createEngine={() => engine}
+        onPublicCheck={onPublicCheck}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Run Tests" }));
+    act(() => {
+      localStorage.setItem(
+        workspaceKey(id),
+        serializeWorkspace(id, exercise.starter + "\n# second tab"),
+      );
+      window.dispatchEvent(
+        new StorageEvent("storage", { key: workspaceKey(id) }),
+      );
+    });
+    await act(async () =>
+      finish({
+        ...successful,
+        tests: exercise.tests.map((test) => ({
+          id: test.id,
+          status: "passed",
+        })),
+      }),
+    );
+    expect(onPublicCheck).not.toHaveBeenCalledWith(
+      expect.objectContaining({ passed: true }),
+    );
+    expect(screen.getByRole("button", { name: "Run Tests" })).toBeEnabled();
   });
   it("runs by keyboard, preserves normal Tab behavior, and separates execution from tests", async () => {
     const user = userEvent.setup();
