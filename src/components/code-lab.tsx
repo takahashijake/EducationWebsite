@@ -69,6 +69,7 @@ export function CodeLab({
   const engine = useRef<ExecutionEngine | undefined>(undefined);
   const sequence = useRef(0);
   const previousSource = useRef(workspace.source);
+  const previousWorkspaceId = useRef(workspaceId);
   const confirmButton = useRef<HTMLButtonElement>(null);
   const editor = useRef<HTMLTextAreaElement>(null);
   const busy =
@@ -87,8 +88,11 @@ export function CodeLab({
   useEffect(() => {
     const activeSequence = sequence;
     const activeEngine = engine;
-    const changed = previousSource.current !== workspace.source;
+    const changed =
+      previousSource.current !== workspace.source ||
+      previousWorkspaceId.current !== workspaceId;
     previousSource.current = workspace.source;
+    previousWorkspaceId.current = workspaceId;
     const frame = changed
       ? requestAnimationFrame(() => {
           setState("idle");
@@ -102,7 +106,7 @@ export function CodeLab({
       activeSequence.current++;
       activeEngine.current?.cancel();
     };
-  }, [workspace.source, onPublicCheck]);
+  }, [workspace.source, workspaceId, onPublicCheck]);
   const clearEvidence = () => {
     sequence.current++;
     engine.current?.cancel();

@@ -1,4 +1,11 @@
-import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { CodeLab } from "@/components/code-lab";
@@ -195,6 +202,31 @@ describe("instructional Code Lab", () => {
     });
     await user.type(screen.getByLabelText("Python source"), "# edit");
     expect(onPublicCheck).toHaveBeenLastCalledWith(null);
+  });
+  it("withdraws a public pass when the workspace changes but source text matches", async () => {
+    const onPublicCheck = vi.fn();
+    const engine = engineWith({
+      ...successful,
+      tests: exercise.tests.map((test) => ({ id: test.id, status: "passed" })),
+    });
+    const props = { exercise, createEngine: () => engine, onPublicCheck };
+    const { rerender } = render(
+      <CodeLab {...props} workspaceId="test:workspace-one" />,
+    );
+    await userEvent
+      .setup()
+      .click(screen.getByRole("button", { name: "Run Tests" }));
+    expect(onPublicCheck).toHaveBeenLastCalledWith(
+      expect.objectContaining({ passed: true }),
+    );
+    onPublicCheck.mockClear();
+    rerender(<CodeLab {...props} workspaceId="test:workspace-two" />);
+    await waitFor(() => expect(onPublicCheck).toHaveBeenLastCalledWith(null));
+    expect(
+      within(screen.getByRole("region", { name: "Test result" })).getByText(
+        /Tests have not run for this code/,
+      ),
+    ).toBeInTheDocument();
   });
   it("discards a late public pass after another tab changes the workspace", async () => {
     let finish!: (result: ExecutionResult) => void;
