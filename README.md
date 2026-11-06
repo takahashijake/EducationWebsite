@@ -116,7 +116,7 @@ npm run start -- --port 3102
 
 Open `/learning/lessons/variables-data-types#cpp-variables-output`. In browser DevTools Network, check that CSS and JavaScript load under `/learning/_next/`, the C++ Worker under `/learning/cpp/worker.js`, and Python assets under `/learning/python/0.29.3/` plus `/learning/python-harness.py`. A first C++ run downloads about 95 MB of same-origin compiler assets. Worker or WebAssembly requests must return successfully and retain their JavaScript or `application/wasm` content types. The C++ Worker response must retain its restrictive Content Security Policy. If an editor remains on its loading message, enable JavaScript, inspect Console and failed Network requests, then reload. If a runtime load fails, check the path, proxy, and connection and retry Run. Saved drafts are browser-local and scoped to the origin, so switching to a different origin does not transfer them automatically.
 
-For isolated browser verification, `npm run test:e2e` starts its own production server on port 3101. Build with the path above and run `E2E_BASE_PATH=/learning E2E_PORT=3102 npx playwright test e2e/subpath.spec.ts` to test a subpath build. Windows PowerShell can set those two environment variables with `$env:` before invoking `npx playwright`.
+For isolated browser verification, `npm run test:e2e` starts its own production server on port 3101. Build with the path above and run `NEXT_PUBLIC_APP_BASE_PATH=/learning E2E_BASE_PATH=/learning E2E_PORT=3102 npx playwright test e2e/subpath.spec.ts` to test a subpath build. Keep `NEXT_PUBLIC_APP_BASE_PATH` set when Playwright starts the production server. Windows PowerShell can set the three environment variables with `$env:` before invoking `npx playwright`.
 
 ## Architecture
 
